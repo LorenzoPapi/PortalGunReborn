@@ -55,11 +55,11 @@ jar {
     manifest {
         attributes([
             "Specification-Title": "portalgunreborn",
-            "Specification-Vendor": "e",
+            "Specification-Vendor": "LorenzoPapi",
             "Specification-Version": "1",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"e",
+            "Implementation-Vendor" :"LorenzoPapi",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
