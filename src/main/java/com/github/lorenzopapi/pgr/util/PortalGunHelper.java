@@ -155,7 +155,8 @@ public class PortalGunHelper {
 		boolean validPos = isDirectionSolid(world, pos, sideHit);
 		if (validPos) {
 			BlockPos offset = pos.offset(sideHit);
-			validPos = world.getBlockState(offset).getCollisionShape(world, offset).isEmpty() && isDirectionSolid(world, offset, sideHit) && world.getBlockState(pos).getBlock() != PGRRegistry.PORTAL_BLOCK;
+			//&& isDirectionSolid(world, offset, sideHit)
+			validPos = world.getBlockState(offset).getCollisionShape(world, offset).isEmpty() && world.getBlockState(offset).getBlock() != PGRRegistry.PORTAL_BLOCK;
 		}
 		return validPos;
 	}
