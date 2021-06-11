@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#D#",
+        "DND",
+        "#D#"
+    ],
+    "key": {
+        "#": {
+            "item": "portalgunreborn:ender_pearl_dust"
+        },
+        "D": {
+            "item": "minecraft:diamond"
+        },
+        "N": {
+            "item": "minecraft:nether_star"
+        }
+    },
+    "result": {
+        "item": "portalgunreborn:miniature_black_hole",
+        "count": 1
+    }
+}

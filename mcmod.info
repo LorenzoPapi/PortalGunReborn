@@ -1,0 +1,21 @@
+[
+{
+  "modid" : "portalgun",
+  "name" : "PortalGun",
+  "version" : "1.12.2-7.1.0",
+  "url" : "http://ichun.me/mods/portalgun/",
+  "credits" : "Valve, for Portal, Portal 2 and the sounds and concept used in the mod.",
+  "authorList": [
+    "iChun"
+  ],
+  "description": "Adds the Portal Gun and various other aspects from Portal/Portal 2 to Minecraft",
+  "logoFile" : "",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots": [
+  ],
+  "dependencies": [
+    "Forge", "iChunUtil"
+  ]
+}
+]

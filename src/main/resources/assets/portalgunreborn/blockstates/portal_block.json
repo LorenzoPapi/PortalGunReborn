@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "master=true": {
+      "model": "portalgunreborn:block/portal_block"
+    },
+    "master=false": {
+      "model": "portalgunreborn:block/portal_block"
+    }
+  }
+}

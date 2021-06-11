@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "iOi",
+        "ODO",
+        "iOi"
+    ],
+    "key": {
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "O": {
+            "item": "minecraft:obsidian"
+        },
+        "D": {
+            "item": "portalgunreborn:miniature_black_hole"
+        }
+    },
+    "result": {
+        "item": "portalgunreborn:portal_gun",
+        "count": 1
+    }
+}
