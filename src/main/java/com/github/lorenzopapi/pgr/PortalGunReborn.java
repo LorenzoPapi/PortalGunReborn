@@ -2,6 +2,7 @@ package com.github.lorenzopapi.pgr;
 
 import com.github.lorenzopapi.pgr.handler.*;
 import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
+import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -80,5 +81,7 @@ public class PortalGunReborn {
 
 	private void onClientSetup(FMLClientSetupEvent e) {
 		PGRConfig.KeyBinds.registerKeyBindings();
+		
+		TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
 	}
 }
