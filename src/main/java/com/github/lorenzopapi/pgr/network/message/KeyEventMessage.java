@@ -34,7 +34,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 		supplier.get().enqueueWork(() -> {
 			ServerPlayerEntity player = supplier.get().getSender();
 			ItemStack is = player.getHeldItemMainhand();
-			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 			switch (message.event) {
 				case 0:
 				case 1:

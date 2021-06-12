@@ -1,6 +1,7 @@
 package com.github.lorenzopapi.pgr.handler;
 
 import com.github.lorenzopapi.pgr.block.PortalBlock;
+import com.github.lorenzopapi.pgr.block.PortalTileEntity;
 import com.github.lorenzopapi.pgr.entity.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.item.PortalGunItem;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -10,22 +11,38 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = Reference.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PGRRegistry {
-	public static final PortalGunItem PORTAL_GUN = new PortalGunItem();
+	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MODID);
+	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MODID);
+
+	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
 	public static final PortalBlock PORTAL_BLOCK = new PortalBlock();
 	public static final EntityType<PortalProjectileEntity> PPE_TYPE = EntityType.Builder.<PortalProjectileEntity>create(PortalProjectileEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("portal_projectile");
+	public static final RegistryObject<TileEntityType<PortalTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalTileEntity::new, PORTAL_BLOCK).build(null));
 
 	//	@SubscribeEvent
 //	public void onModelBake(ModelBakeEvent event) {
 //		//event.getModelRegistry().putObject(new ModelResourceLocation("portalgun:item_portalgun", "inventory"), (new ModelBaseWrapper((IModelBase)new ItemRenderPortalGun())).setItemDualHanded());
 //	}
+
+	public static void register() {
+		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+		ITEMS.register(modBus);
+		TILE_ENTITIES.register(modBus);
+	}
 
 	@SubscribeEvent
 	public static void onItemRegistry(final RegistryEvent.Register<Item> e) {
@@ -36,7 +53,7 @@ public class PGRRegistry {
 				return true;
 			}
 		}, "miniature_black_hole");
-		registerItem(e, PORTAL_GUN, "portal_gun");
+//		registerItem(e, PORTAL_GUN, "portal_gun");
 	}
 
 	@SubscribeEvent

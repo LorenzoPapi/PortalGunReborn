@@ -4,6 +4,7 @@ import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.util.Reference;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -20,6 +22,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class PortalBlock extends Block {
@@ -51,7 +54,18 @@ public class PortalBlock extends Block {
 	public boolean canDropFromExplosion(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
 		return false;
 	}
-
+	
+	@Override
+	public boolean hasTileEntity(BlockState state) {
+		return true;
+	}
+	
+	@Nullable
+	@Override
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return new PortalTileEntity();
+	}
+	
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		Reference.LOGGER.info("Replacing!");
@@ -62,7 +76,12 @@ public class PortalBlock extends Block {
 			worldIn.removeBlock(pos, isMoving);
 		}
 	}
-
+	
+	// TODO: add a block state which indicates that it is the bottom center of the portal if it's a wall portal or dead center if it's a floor portal
+	public BlockRenderType getRenderType(BlockState state) {
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
+	}
+	
 	@Override
 	public boolean canDropFromExplosion(Explosion explosionIn) {
 		return false;
@@ -70,6 +89,6 @@ public class PortalBlock extends Block {
 
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		return Items.DRAGON_EGG.getDefaultInstance();
+		return Items.DRAGON_EGG.getDefaultInstance(); // LUL
 	}
 }

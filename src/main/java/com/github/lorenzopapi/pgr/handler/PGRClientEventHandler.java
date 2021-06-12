@@ -34,7 +34,7 @@ public class PGRClientEventHandler {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player != null && mc.currentScreen == null && !mc.isGamePaused()) {
 			ItemStack is = mc.player.getHeldItemMainhand();
-			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 			if (event.getAction() == 1) {
 				int pressed = event.getKey();
 				//Zoom code
@@ -86,7 +86,7 @@ public class PGRClientEventHandler {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player != null && mc.currentScreen == null && !mc.isGamePaused()) {
 			ItemStack is = mc.player.getHeldItemMainhand();
-			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 			if (event.getAction() == 1) {
 				int pressed = event.getButton();
 				//Zoom code
@@ -152,7 +152,7 @@ public class PGRClientEventHandler {
 				}
 		} else if (mc.player != null && mc.currentScreen == null && PGRConfig.CLIENT.portalgunIndicatorSize.get() > 0 && !mc.gameSettings.hideGUI) {
 			ItemStack is = mc.player.getHeldItemMainhand();
-			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 			if (isHoldingPortalGun && is.getTag() != null) { // && !GrabHandler.hasHandlerType((EntityLivingBase)mc.player, Side.CLIENT, null)
 				CompoundNBT tag = is.getTag();
 //				ChannelIndicator indicator = getPortalChannelIndicator(tag.getString("uuid"), tag.getString("channelName"), mc.player.getEntityWorld().getDimensionKey());
@@ -183,7 +183,7 @@ public class PGRClientEventHandler {
 			Minecraft mc = Minecraft.getInstance();
 			if (mc.player != null) {
 				ItemStack is = mc.player.getHeldItemMainhand();
-				boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+				boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 				if (this.zoom) {
 					if (this.zoomCounter < 5 && !mc.isGamePaused())
 						this.zoomCounter++;
@@ -221,7 +221,7 @@ public class PGRClientEventHandler {
 	public void onHandRender(RenderHandEvent event) {
 		Minecraft mc = Minecraft.getInstance();
 		ItemStack is = mc.player.getHeldItemMainhand();
-		boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN);
+		boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 		if (isHoldingPortalGun && this.zoomCounter >= 0)
 			this.handHack = true;
 	}

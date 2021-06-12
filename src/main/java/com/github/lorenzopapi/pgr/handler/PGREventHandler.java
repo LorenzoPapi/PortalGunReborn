@@ -31,21 +31,21 @@ public class PGREventHandler {
 	
 	public void onBlockBreak(BlockEvent.BreakEvent e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
-		if (is.getItem() == PGRRegistry.PORTAL_GUN)
+		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
 			e.setCanceled(true);
 	}
 
 	
 	public void onClickBlock(PlayerInteractEvent.LeftClickBlock e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
-		if (is.getItem() == PGRRegistry.PORTAL_GUN)
+		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
 			e.setCanceled(true);
 	}
 
 	
 	public void onItemCrafted(PlayerEvent.ItemCraftedEvent e) {
 		ItemStack is = e.getCrafting();
-		if (is.isItemEqual(new ItemStack(PGRRegistry.PORTAL_GUN))) {
+		if (is.isItemEqual(new ItemStack(PGRRegistry.PORTAL_GUN.get()))) {
 			PortalGunItem.setRandomNBTTags(is, e.getPlayer());
 			PortalsInWorldSavedData data = getWorldSaveData(e.getPlayer().world.getDimensionKey());
 			String uuid = is.getTag().getString("uuid");
@@ -67,7 +67,7 @@ public class PGREventHandler {
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
 		if (!(e.getEntityLiving().getEntityWorld()).isRemote && e.getEntityLiving() instanceof ZombieEntity) {
 			ZombieEntity zombie = (ZombieEntity)e.getEntityLiving();
-			if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN && zombie.getRNG().nextFloat() < 0.008F)
+			if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
 				PortalGunHelper.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
 		}
 	}
