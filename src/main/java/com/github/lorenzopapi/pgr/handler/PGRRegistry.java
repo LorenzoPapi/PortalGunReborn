@@ -1,9 +1,9 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.block.PortalBlock;
-import com.github.lorenzopapi.pgr.block.PortalTileEntity;
-import com.github.lorenzopapi.pgr.entity.PortalProjectileEntity;
-import com.github.lorenzopapi.pgr.item.PortalGunItem;
+import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
+import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
+import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portalgun.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
@@ -31,7 +31,7 @@ public class PGRRegistry {
 	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
 	public static final PortalBlock PORTAL_BLOCK = new PortalBlock();
 	public static final EntityType<PortalProjectileEntity> PPE_TYPE = EntityType.Builder.<PortalProjectileEntity>create(PortalProjectileEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("portal_projectile");
-	public static final RegistryObject<TileEntityType<PortalTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalTileEntity::new, PORTAL_BLOCK).build(null));
+	public static final RegistryObject<TileEntityType<PortalBlockTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalBlockTileEntity::new, PORTAL_BLOCK).build(null));
 
 	//	@SubscribeEvent
 //	public void onModelBake(ModelBakeEvent event) {
@@ -68,7 +68,7 @@ public class PGRRegistry {
 
 	@SubscribeEvent
 	public static void onSoundRegistry(final RegistryEvent.Register<SoundEvent> e) {
-		PGRSoundEvents.init(e);
+		PGRSounds.init(e);
 	}
 
 	private static void registerItem(RegistryEvent.Register<Item> e, Item item, String name) {

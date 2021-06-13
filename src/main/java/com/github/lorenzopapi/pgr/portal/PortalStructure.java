@@ -5,6 +5,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.awt.*;
+import java.util.Arrays;
+
 public class PortalStructure {
 
     public BlockPos[] positions = null;
@@ -14,7 +17,7 @@ public class PortalStructure {
     public int height = 2;
     public World world;
     public boolean isTypeA = true;
-    public int colour = 16777215;
+    public int color = Color.WHITE.getRGB();
     public boolean initialized = false;
 
     public PortalStructure() {}
@@ -22,7 +25,7 @@ public class PortalStructure {
     public PortalStructure readFromNBT(CompoundNBT tag) {
         this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
         this.isTypeA = tag.getBoolean("isTypeA");
-        this.colour = isTypeA ? info.colourA : info.colourB;
+        this.color = isTypeA ? info.colorA : info.colorB;
         this.positions = new BlockPos[tag.getInt("width") * tag.getInt("height")];
         for (int i = 0; i < tag.getInt("posLength"); i++) {
             this.positions[i] = new BlockPos(tag.getInt("x_" + i), tag.getInt("y_" + i), tag.getInt("z_" + i));
@@ -35,6 +38,9 @@ public class PortalStructure {
         tag.putBoolean("isTypeA", isTypeA);
         tag.putInt("height", height);
         tag.putInt("width", width);
+        if (positions == null || Arrays.asList(positions).contains(null)) {
+            positions = new BlockPos[0];
+        }
         tag.putInt("posLength", positions.length);
         for (int i = 0; i < positions.length; i++) {
             BlockPos pos = positions[i];
@@ -58,14 +64,11 @@ public class PortalStructure {
     public PortalStructure setWidthAndHeight(int w, int h) {
         this.width = w;
         this.height = h;
-        if (this.positions == null) {
-            this.positions = new BlockPos[w*h];
-        }
         return this;
     }
 
     public PortalStructure setPositions(BlockPos[] newPos) {
-        //If newpos size is not w*h, error by java >:)
+        positions = new BlockPos[width*height];
         System.arraycopy(newPos, 0, positions, 0, positions.length);
         return this;
     }
@@ -75,14 +78,13 @@ public class PortalStructure {
         return this;
     }
 
-    public PortalStructure setIndicator(String uuid, String name) {
-        this.info = new ChannelInfo(uuid, name);
-        this.colour = isTypeA ? info.colourA : info.colourB;
+    public PortalStructure setChannelInfo(ChannelInfo info) {
+        this.info = info;
         return this;
     }
 
-    public PortalStructure setColour(int i) {
-        this.colour = i;
+    public PortalStructure setColor(int color) {
+        this.color = color;
         return this;
     }
 

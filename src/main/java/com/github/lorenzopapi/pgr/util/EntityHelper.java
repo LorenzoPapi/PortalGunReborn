@@ -18,12 +18,8 @@ import net.minecraft.world.World;
 import java.util.function.Predicate;
 
 public class EntityHelper {
-	public static Vector3d getEntityPositionEyes(Entity ent, float ptc) {
-		return ent.getEyePosition(ptc);
-	}
-
 	public static void playSoundAtEntity(Entity ent, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
-		ent.getEntityWorld().playSound(ent.getEntityWorld().isRemote() ? Minecraft.getInstance().player : null, ent.getPosX(), ent.getPosY() + ent.getEyeHeight(), ent.getPosZ(), soundEvent, soundCategory, volume, pitch); // sound will not play if the world is a WorldClient unless the entity == mc.player.
+		ent.getEntityWorld().playSound(ent.getEntityWorld().isRemote() ? Minecraft.getInstance().player : null, ent.getPosX(), ent.getPosY() + ent.getEyeHeight(), ent.getPosZ(), soundEvent, soundCategory, volume, pitch);
 	}
 
 	public static RayTraceResult rayTrace(World world, Vector3d origin, Vector3d dest, Entity exception, boolean checkEntityCollision, RayTraceContext.BlockMode blockMode, Predicate<BlockInfo> blockFilter, RayTraceContext.FluidMode fluidMode, Predicate<Entity> filter) {

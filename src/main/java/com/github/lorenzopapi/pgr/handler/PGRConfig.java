@@ -45,8 +45,6 @@ public class PGRConfig {
 		public final ForgeConfigSpec.IntValue maxShootDistance;
 		public final ForgeConfigSpec.BooleanValue canFireThroughLiquid;
 		public final ForgeConfigSpec.BooleanValue canFireThroughGlass;
-		public final ForgeConfigSpec.BooleanValue canResizeWhenCreated;
-		public final ForgeConfigSpec.BooleanValue canPortalProjectilesChunkload;
 
 		public Common(ForgeConfigSpec.Builder builder) {
 			//TODO translation
@@ -54,8 +52,6 @@ public class PGRConfig {
 			maxShootDistance = builder.comment("Maximum distance to fire portals from the Portal Gun.").defineInRange("distance", 10000, 1, 0x7fffffff);
 			canFireThroughLiquid = builder.comment("Can the projectile fired by the Portal Gun go through liquid?").define("canGoThroughLiquid", false);
 			canFireThroughGlass = builder.comment("Can the projectile fired by the Portal Gun go through glass?").define("canGoThroughGlass", false);
-			canResizeWhenCreated = builder.comment("Can the portal that spawns from the projectile be resized downwards if the full size won't fit?").define("canResize", true);
-			canPortalProjectilesChunkload = builder.comment("Can the projectile fired by the Portal Gun load chunks?").define("canLoad", true);
 			builder.pop();
 		}
 	}

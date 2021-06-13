@@ -1,11 +1,11 @@
 package com.github.lorenzopapi.pgr.rendering;
 
+import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portal.PortalsInWorldSavedData;
+import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
 import com.github.lorenzopapi.pgr.util.Reference;
 import com.github.lorenzopapi.pgr.util.RendererHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.block.BlockState;
@@ -14,16 +14,13 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.shader.Shader;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.*;
+import net.minecraft.util.math.vector.Quaternion;
 
-import java.util.HashMap;
 import java.util.Random;
 
-public class PGRRenderer extends TileEntityRenderer {
+public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 	public PGRRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
 		super(rendererDispatcherIn);
 	}
@@ -38,10 +35,10 @@ public class PGRRenderer extends TileEntityRenderer {
 	private static int recursionDepth = 0;
 	
 	@Override
-	public void render(TileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+	public void render(PortalBlockTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 		if (recursionDepth > 1) return;
 		
-		PortalsInWorldSavedData data = Reference.pgrEventHandler.getWorldSaveData(tileEntityIn.getWorld().getDimensionKey());
+		PGRSavedData data = Reference.serverEH.getWorldSaveData(tileEntityIn.getWorld().getDimensionKey());
 		PortalStructure struct = data.findPortalByPosition(tileEntityIn.getWorld(), tileEntityIn.getPos());
 		if (struct == null || struct.positions == null || struct.positions.length < 1) return;
 		if (textureLocation == null) {

@@ -9,7 +9,7 @@
     "pgr.info.owner": "%s's Portal Gun",
     "pgr.info.channel": "Channel: %s",
     "pgr.info.size": "Size: %1$s x %2$s",
-    "pgr.info.grabStrength0": "Grab Strength: Errornous",
+    "pgr.info.grabStrength0": "Grab Strength: wegotaproblemhere",
     "pgr.info.grabStrength1": "Grab Strength: Small Entities",
     "pgr.info.grabStrength2": "Grab Strength: Blocks + Entities",
     "pgr.info.grabStrength3": "Grab Strength: Tile Entities + Large Entities",

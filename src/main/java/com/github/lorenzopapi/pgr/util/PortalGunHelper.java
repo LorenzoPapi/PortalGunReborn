@@ -1,15 +1,13 @@
 package com.github.lorenzopapi.pgr.util;
 
-import com.github.lorenzopapi.pgr.entity.PortalProjectileEntity;
-import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.handler.PGRSoundEvents;
-import com.github.lorenzopapi.pgr.item.PortalGunItem;
+import com.github.lorenzopapi.pgr.handler.PGRSounds;
+import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portal.PortalsInWorldSavedData;
-import com.github.lorenzopapi.pgr.util.EntityHelper;
-import com.github.lorenzopapi.pgr.util.Reference;
+import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portalgun.PortalProjectileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,46 +34,66 @@ public class PortalGunHelper {
 			tag = is.getTag();
 		}
 		if (tag != null) {
-			ChannelInfo channel = Reference.pgrEventHandler.lookupChannel(tag.getString("uuid"), tag.getString("channelName"));
-			PortalStructure info = new PortalStructure().setIndicator(tag.getString("uuid"), tag.getString("channelName")).setType(isTypeA).setColour(isTypeA ? channel.colourA : channel.colourB);
-			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, tag.getInt("width"), tag.getInt("height"), info, PGRConfig.COMMON.maxShootDistance.get()));
-			EntityHelper.playSoundAtEntity(living, isTypeA ? PGRSoundEvents.pg_wpn_portal_gun_fire_blue : PGRSoundEvents.pg_wpn_portal_gun_fire_red, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
+			ChannelInfo channel = Reference.serverEH.lookupChannel(tag.getString("uuid"), tag.getString("channelName"));
+			if (channel.colorA == -1 || channel.colorB == -1) {
+				int[] colors = generateChannelColor(channel.uuid, channel.channelName);
+				channel.setColor(colors[0], colors[1]);
+			}
+			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
+			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, structure));
+			EntityHelper.playSoundAtEntity(living, isTypeA ? PGRSounds.pg_wpn_portal_gun_fire_blue : PGRSounds.pg_wpn_portal_gun_fire_red, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
 		}
 	}
 
-	public static PortalsInWorldSavedData getSaveDataForWorld(ServerWorld world) {
+	public static PGRSavedData getSaveDataForWorld(ServerWorld world) {
 		String dataIdForDim = getDataIdForDim(world);
-		PortalsInWorldSavedData savedData = world.getSavedData().get(() -> new PortalsInWorldSavedData(dataIdForDim), dataIdForDim);
+		PGRSavedData savedData = world.getSavedData().get(() -> new PGRSavedData(dataIdForDim), dataIdForDim);
 		if (savedData == null) {
-			savedData = new PortalsInWorldSavedData(dataIdForDim);
+			savedData = new PGRSavedData(dataIdForDim);
 			world.getSavedData().set(savedData);
 			if (world.getDimensionKey() == World.OVERWORLD) {
-				savedData.addChannel("Global", new ChannelInfo("Global", "Chell").setColour(361215, 16756742));
-				savedData.addChannel("Global", new ChannelInfo("Global", "Atlas").setColour(5482192, 4064209));
-				savedData.addChannel("Global", new ChannelInfo("Global", "P-body").setColour(16373344, 8394260));
+				savedData.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
+				savedData.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
+				savedData.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
 
 			}
 		}
 		savedData.initialize(world);
 		savedData.markDirty();
-		Reference.pgrEventHandler.portalInfoByDimension.put(world.getDimensionKey(), savedData);
+		Reference.serverEH.portalInfoByDimension.put(world.getDimensionKey(), savedData);
 		return savedData;
 	}
 
 	public static boolean spawnPortal(World world, BlockPos blockHitPos, Direction sideHit, Direction upDir, PortalStructure portal, int width, int height) {
 		BlockPos[] positions = canPlacePortal(world, blockHitPos, sideHit, upDir, width, height);
 		if (positions != null) {
-			PortalsInWorldSavedData data = Reference.pgrEventHandler.getWorldSaveData(world.getDimensionKey());
+			PGRSavedData data = Reference.serverEH.getWorldSaveData(world.getDimensionKey());
+
+			// Check is portal is already placed: if true, delete it. Then, initializes the new portal
 			PortalStructure struct = data.findPortalOfSameType(portal);
 			if (struct != null) {
 				data.removePortal(struct);
 			}
-			portal.setPositions(positions);
-			portal.initialize(world);
+			portal.setPositions(positions).initialize(world);
+
+			// Updates channel indicator
+			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());
+			if (portal.isTypeA) {
+				indicator.setPortalAPlaced(true);
+			} else {
+				indicator.setPortalBPlaced(true);
+			}
+
+			// Searches pair and links it
 			PortalStructure possiblePair = data.findPair(portal);
 			if (possiblePair != null) {
 				portal.setPair(possiblePair);
 				possiblePair.setPair(portal);
+			}
+
+			// Adds channel to saved data in case it's not existing and then adds portal
+			if (!data.channelList.get(portal.info.uuid).contains(portal.info)) {
+				data.addChannel(portal.info.uuid, portal.info);
 			}
 			data.portals.add(portal);
 			return true;
@@ -155,7 +173,6 @@ public class PortalGunHelper {
 		boolean validPos = isDirectionSolid(world, pos, sideHit);
 		if (validPos) {
 			BlockPos offset = pos.offset(sideHit);
-			//&& isDirectionSolid(world, offset, sideHit)
 			validPos = world.getBlockState(offset).getCollisionShape(world, offset).isEmpty() && world.getBlockState(offset).getBlock() != PGRRegistry.PORTAL_BLOCK;
 		}
 		return validPos;
@@ -175,19 +192,19 @@ public class PortalGunHelper {
 	}
 
 	//Might change it if I feel like it lol
-	public static int[] generateChannelColour(String uuid, String channelName) {
+	public static int[] generateChannelColor(String uuid, String channelName) {
 		String generator = uuid + "_" + channelName;
 		Random rand = new Random();
 		rand.setSeed(Math.abs(generator.hashCode() * uuid.hashCode()));
-		int colourA = Math.round(1.6777215E7F * rand.nextFloat());
+		int colorA = Math.round(1.6777215E7F * rand.nextFloat());
 		float[] hsb = new float[3];
-		Color.RGBtoHSB(colourA >> 16 & 0xFF, colourA >> 8 & 0xFF, colourA & 0xFF, hsb);
+		Color.RGBtoHSB(colorA >> 16 & 0xFF, colorA >> 8 & 0xFF, colorA & 0xFF, hsb);
 		hsb[2] = 0.65F + 0.25F * hsb[2];
-		colourA = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+		colorA = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
 		hsb[0] = hsb[0] + 0.5F;
 		if (hsb[0] > 1.0F)
 			hsb[0] = hsb[0] - 1.0F;
-		int colourB = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-		return new int[] { colourA, colourB };
+		int colorB = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+		return new int[] { colorA, colorB };
 	}
 }
