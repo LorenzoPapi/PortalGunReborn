@@ -22,13 +22,15 @@ public class PortalStructure {
 
     public PortalStructure() {}
 
-    public PortalStructure readFromNBT(CompoundNBT tag) {
+    public PortalStructure readFromNBT(CompoundNBT tag, boolean readPositions) {
         this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
         this.isTypeA = tag.getBoolean("isTypeA");
         this.color = isTypeA ? info.colorA : info.colorB;
-        this.positions = new BlockPos[tag.getInt("width") * tag.getInt("height")];
-        for (int i = 0; i < tag.getInt("posLength"); i++) {
-            this.positions[i] = new BlockPos(tag.getInt("x_" + i), tag.getInt("y_" + i), tag.getInt("z_" + i));
+        if (readPositions) {
+            this.positions = new BlockPos[tag.getInt("width") * tag.getInt("height")];
+            for (int i = 0; i < tag.getInt("posLength"); i++) {
+                this.positions[i] = new BlockPos(tag.getInt("x_" + i), tag.getInt("y_" + i), tag.getInt("z_" + i));
+            }
         }
         return this;
     }

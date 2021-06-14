@@ -134,7 +134,7 @@ public class PortalProjectileEntity extends Entity {
 		Vector3d start = this.getPositionVec();
 		Vector3d end = this.getPositionVec().add(this.getMotion());
 		//TODO: check on glass and liquids
-		RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> blockInfo.state.getMaterial() != Material.GLASS, RayTraceContext.FluidMode.NONE, entity -> true);
+		RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> blockInfo.state.getMaterial() == Material.GLASS, RayTraceContext.FluidMode.ANY, entity -> true);
 		//RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> PGRConfig.COMMON.canFireThroughGlass.get() || blockInfo.state.getMaterial() != Material.GLASS, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.ANY : RayTraceContext.FluidMode.NONE, entity -> true);
 		if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
 			BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
@@ -192,7 +192,7 @@ public class PortalProjectileEntity extends Entity {
 		setColor(tag.getInt("color"));
 		this.pWidth = tag.getInt("portalWidth");
 		this.pHeight = tag.getInt("portalHeight");
-		this.structure = new PortalStructure().setWorld(world).setWidthAndHeight(pWidth, pHeight).readFromNBT(tag.getCompound("portalStructure"));
+		this.structure = new PortalStructure().setWorld(world).setWidthAndHeight(pWidth, pHeight).readFromNBT(tag.getCompound("portalStructure"), false);
 	}
 
 	@Override

@@ -111,7 +111,7 @@ public class PGRSavedData extends WorldSavedData {
 	public void read(CompoundNBT nbt) {
 		int portals = nbt.getInt("portals");
 		for (int i = 0; i < portals; i++) {
-			this.portals.add(new PortalStructure().readFromNBT(nbt.getCompound("portal_" + i)));
+			this.portals.add(new PortalStructure().readFromNBT(nbt.getCompound("portal_" + i), true));
 		}
 		int channels = nbt.getInt("channels");
 		for (int i = 0; i < channels; i++) {

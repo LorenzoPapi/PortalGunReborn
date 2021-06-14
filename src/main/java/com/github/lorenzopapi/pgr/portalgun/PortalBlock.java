@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -26,20 +27,18 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class PortalBlock extends Block {
-	public static final VoxelShape CUBE = makeCuboidShape(8, 8, 8, 8, 8, 8);
-
 	public PortalBlock() {
-		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10));
+		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10).doesNotBlockMovement());
 	}
 
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		return CUBE;
+		return VoxelShapes.empty();
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-		Reference.LOGGER.info("{}, {}, {}, {}", state, pos, blockIn, fromPos);
+	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
+		Reference.LOGGER.info("{}, {}, {}, {}", current, currentPos, changed, changedPos);
 	}
 
 	@Override
