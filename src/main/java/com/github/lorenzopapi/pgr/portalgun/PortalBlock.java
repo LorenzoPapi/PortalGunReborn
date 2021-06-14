@@ -7,12 +7,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -27,6 +32,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class PortalBlock extends Block {
+
 	public PortalBlock() {
 		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10).doesNotBlockMovement());
 	}
@@ -39,6 +45,23 @@ public class PortalBlock extends Block {
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
 		Reference.LOGGER.info("{}, {}, {}, {}", current, currentPos, changed, changedPos);
+	}
+
+	@Override
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		PortalStructure struct = Reference.serverEH.getWorldSaveData(world.getDimensionKey()).findPortalByPosition(world, pos);
+		if (struct.pair != null) {
+			BlockPos master = struct.pair.positions[0];
+			double x = master.getX(); //+ state.get(HORIZONTAL_FACING).getXOffset();/*offset*/
+			double y = master.getY();
+			double z = master.getZ(); //+ state.get(HORIZONTAL_FACING).getYOffset();
+			entity.teleportKeepLoaded(x, y, z);
+		}
+	}
+
+	@Override
+	public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+
 	}
 
 	@Override

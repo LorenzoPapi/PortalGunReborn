@@ -1,9 +1,15 @@
 {
   "variants": {
-    "master=true": {
+    "facing=east": {
       "model": "portalgunreborn:block/portal_block"
     },
-    "master=false": {
+    "facing=west": {
+      "model": "portalgunreborn:block/portal_block"
+    },
+    "facing=north": {
+      "model": "portalgunreborn:block/portal_block"
+    },
+    "facing=south": {
       "model": "portalgunreborn:block/portal_block"
     }
   }

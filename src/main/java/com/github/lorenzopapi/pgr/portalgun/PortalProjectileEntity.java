@@ -42,16 +42,16 @@ public class PortalProjectileEntity extends Entity {
 	public int pHeight;
 	public PortalStructure structure;
 	public LivingEntity shooter;
-	
-	public PortalProjectileEntity(World worldIn) {
-		this(PGRRegistry.PPE_TYPE, worldIn);
-	}
 
 	public PortalProjectileEntity(EntityType<PortalProjectileEntity> t, World worldIn) {
 		super(t, worldIn);
 		this.pWidth = 1;
 		this.pHeight = 2;
 		this.structure = null;
+	}
+
+	public PortalProjectileEntity(World world) {
+		this(PGRRegistry.PPE_TYPE, world);
 	}
 
 	public PortalProjectileEntity(World worldIn, Entity shooter, PortalStructure info) {
@@ -134,7 +134,7 @@ public class PortalProjectileEntity extends Entity {
 		Vector3d start = this.getPositionVec();
 		Vector3d end = this.getPositionVec().add(this.getMotion());
 		//TODO: check on glass and liquids
-		RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> blockInfo.state.getMaterial() == Material.GLASS, RayTraceContext.FluidMode.ANY, entity -> true);
+		RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> true, RayTraceContext.FluidMode.NONE, entity -> true);
 		//RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> PGRConfig.COMMON.canFireThroughGlass.get() || blockInfo.state.getMaterial() != Material.GLASS, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.ANY : RayTraceContext.FluidMode.NONE, entity -> true);
 		if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
 			BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;

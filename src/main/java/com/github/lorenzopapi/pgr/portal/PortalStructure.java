@@ -2,6 +2,7 @@ package com.github.lorenzopapi.pgr.portal;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -102,6 +103,7 @@ public class PortalStructure {
 
     public void removeStructure() {
         for (BlockPos pos : positions) {
+            world.removeTileEntity(pos);
             world.removeBlock(pos, false);
         }
     }
