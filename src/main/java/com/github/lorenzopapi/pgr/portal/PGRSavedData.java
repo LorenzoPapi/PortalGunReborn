@@ -1,13 +1,16 @@
 package com.github.lorenzopapi.pgr.portal;
 
-import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PGRSavedData extends WorldSavedData {
 	public HashMap<String, ArrayList<ChannelInfo>> channelList;
@@ -35,6 +38,12 @@ public class PGRSavedData extends WorldSavedData {
 					possiblePair.setPair(portal);
 				}
 			}
+			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());
+			if (portal.isTypeA) {
+				indicator.setPortalAPlaced(true);
+			} else {
+				indicator.setPortalBPlaced(true);
+			}
 		}
 	}
 
@@ -56,13 +65,10 @@ public class PGRSavedData extends WorldSavedData {
 		return new ChannelInfo(uuid, channelName);
 	}
 
-	public PortalStructure findPortalByPosition(World world, BlockPos pos) {
-		if (world.getBlockState(pos).getBlock() == PGRRegistry.PORTAL_BLOCK) {
-			for (PortalStructure struct : portals) {
-				List<BlockPos> positions = Arrays.asList(struct.positions);
-				if (positions.contains(pos)) {
-					return struct;
-				}
+	public PortalStructure findPortalByPosition(BlockPos pos) {
+		for (PortalStructure struct : portals) {
+			if (struct.positions.contains(pos)) {
+				return struct;
 			}
 		}
 		return null;
@@ -78,30 +84,25 @@ public class PGRSavedData extends WorldSavedData {
 	}
 
 	public void removePortal(PortalStructure struct) {
-		for (PortalStructure ps : portals) {
-			if (ps.isSameStruct(struct)) {
-				ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(ps.info.uuid, ps.info.channelName, ps.world.getDimensionKey());
-				if (ps.isTypeA) {
-					indicator.setPortalAPlaced(false);
-				} else {
-					indicator.setPortalBPlaced(false);
-				}
-				ps.removeStructure();
-				if (ps.pair != null) {
-					ps.pair.setPair(null);
-					ps.setPair(null);
-				}
-				portals.remove(ps);
-				break;
-			}
+		ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(struct.info.uuid, struct.info.channelName, struct.world.getDimensionKey());
+		if (struct.isTypeA) {
+			indicator.setPortalAPlaced(false);
+		} else {
+			indicator.setPortalBPlaced(false);
 		}
+		if (struct.pair != null) {
+			struct.pair.setPair(null);
+			struct.setPair(null);
+		}
+		struct.removeStructure();
+		portals.remove(struct);
 		markDirty();
 	}
 
 	public PortalStructure findPair(PortalStructure struct) {
-		for (PortalStructure ps : portals) {
-			if (ps.isPair(struct)) {
-				return ps;
+		for (PortalStructure pair : portals) {
+			if (pair.isPair(struct)) {
+				return pair;
 			}
 		}
 		return null;
@@ -109,35 +110,32 @@ public class PGRSavedData extends WorldSavedData {
 
 	@Override
 	public void read(CompoundNBT nbt) {
-		int portals = nbt.getInt("portals");
-		for (int i = 0; i < portals; i++) {
-			this.portals.add(new PortalStructure().readFromNBT(nbt.getCompound("portal_" + i), true));
+		ListNBT portalsToRead = nbt.getList("portals", 10);
+		for (int i = 0; i < portalsToRead.size(); i++) {
+			this.portals.add(new PortalStructure().readFromNBT(portalsToRead.getCompound(i)));
 		}
-		int channels = nbt.getInt("channels");
-		for (int i = 0; i < channels; i++) {
-			ChannelInfo info = new ChannelInfo().readFromNBT(nbt.getCompound("channel_" + i));
-			if (!info.uuid.equals("NULL")) {
+		ListNBT channelsToRead = nbt.getList("channels", 10);
+		for (int i = 0; i < channelsToRead.size(); i++) {
+			ChannelInfo info = new ChannelInfo().readFromNBT(channelsToRead.getCompound(i));
+			if (!info.uuid.equals("NULL"))
 				addChannel(info.uuid, info);
-			}
 		}
 	}
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		int numPortals = 0;
+		ListNBT portalsToSave = new ListNBT();
 		for (PortalStructure struct : portals) {
-			nbt.put("portal_" + numPortals, struct.writeToNBT(new CompoundNBT()));
-			numPortals++;
+			portalsToSave.add(struct.writeToNBT(new CompoundNBT()));
 		}
-		nbt.putInt("portals", numPortals);
-		int channels = 0;
+		nbt.put("portals", portalsToSave);
+		ListNBT channelsToSave = new ListNBT();
 		for (Map.Entry<String, ArrayList<ChannelInfo>> e : this.channelList.entrySet()) {
 			for (ChannelInfo channel : e.getValue()) {
-				nbt.put("channel_" + channels, channel.writeToNBT(new CompoundNBT()));
-				channels++;
+				channelsToSave.add(channel.writeToNBT(new CompoundNBT()));
 			}
 		}
-		nbt.putInt("channels", channels);
+		nbt.put("channels", channelsToSave);
 		return nbt;
 	}
 }

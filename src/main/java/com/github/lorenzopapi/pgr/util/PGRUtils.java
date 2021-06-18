@@ -24,9 +24,10 @@ import net.minecraft.world.server.ServerWorld;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
-public class PortalGunHelper {
+public class PGRUtils {
 	public static void shootPortal(LivingEntity living, ItemStack is, boolean isTypeA) {
 		CompoundNBT tag = is.getTag();
 		if (tag == null && living instanceof PlayerEntity) {
@@ -39,50 +40,40 @@ public class PortalGunHelper {
 				int[] colors = generateChannelColor(channel.uuid, channel.channelName);
 				channel.setColor(colors[0], colors[1]);
 			}
-			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
+			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setPortalColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
 			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, structure));
-			EntityHelper.playSoundAtEntity(living, isTypeA ? PGRSounds.pg_wpn_portal_gun_fire_blue : PGRSounds.pg_wpn_portal_gun_fire_red, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
+			EntityUtils.playSoundAtEntity(living, isTypeA ? PGRSounds.pg_wpn_portal_gun_fire_blue : PGRSounds.pg_wpn_portal_gun_fire_red, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
 		}
 	}
 
 	public static PGRSavedData getSaveDataForWorld(ServerWorld world) {
-		String dataIdForDim = getDataIdForDim(world);
-		PGRSavedData savedData = world.getSavedData().get(() -> new PGRSavedData(dataIdForDim), dataIdForDim);
-		if (savedData == null) {
-			savedData = new PGRSavedData(dataIdForDim);
-			world.getSavedData().set(savedData);
+		String dataId = "PGRPortalData_" + world.getDimensionKey().getLocation().getPath();
+		PGRSavedData data = world.getSavedData().get(() -> new PGRSavedData(dataId), dataId);
+		Reference.LOGGER.info(data);
+		if (data == null) {
+			data = new PGRSavedData(dataId);
+			world.getSavedData().set(data);
 			if (world.getDimensionKey() == World.OVERWORLD) {
-				savedData.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
-				savedData.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
-				savedData.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
-
+				data.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
+				data.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
+				data.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
 			}
 		}
-		savedData.initialize(world);
-		savedData.markDirty();
-		Reference.serverEH.portalInfoByDimension.put(world.getDimensionKey(), savedData);
-		return savedData;
+		data.initialize(world);
+		data.markDirty();
+		Reference.serverEH.portalInfoByDimension.put(world.getDimensionKey(), data);
+		return data;
 	}
 
 	public static boolean spawnPortal(World world, BlockPos blockHitPos, Direction sideHit, Direction upDir, PortalStructure portal, int width, int height) {
-		BlockPos[] positions = canPlacePortal(world, blockHitPos, sideHit, upDir, width, height);
+		List<BlockPos> positions = canPlacePortal(world, blockHitPos, sideHit, upDir, width, height);
 		if (positions != null) {
 			PGRSavedData data = Reference.serverEH.getWorldSaveData(world.getDimensionKey());
 
-			// Check is portal is already placed: if true, delete it. Then, initializes the new portal
+			// Check is portal is already placed: if true, delete it
 			PortalStructure struct = data.findPortalOfSameType(portal);
-			if (struct != null) {
+			if (struct != null)
 				data.removePortal(struct);
-			}
-			portal.setPositions(positions).initialize(world);
-
-			// Updates channel indicator
-			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());
-			if (portal.isTypeA) {
-				indicator.setPortalAPlaced(true);
-			} else {
-				indicator.setPortalBPlaced(true);
-			}
 
 			// Searches pair and links it
 			PortalStructure possiblePair = data.findPair(portal);
@@ -91,18 +82,27 @@ public class PortalGunHelper {
 				possiblePair.setPair(portal);
 			}
 
+			portal.setPositionsAndDirection(positions, sideHit.getAxis().isHorizontal() ? sideHit : upDir).initialize(world);
+
+			// Updates channel indicator
+			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());
+			if (portal.isTypeA)
+				indicator.setPortalAPlaced(true);
+			else
+				indicator.setPortalBPlaced(true);
+
 			// Adds channel to saved data in case it's not existing and then adds portal
-			if (!data.channelList.get(portal.info.uuid).contains(portal.info)) {
+			if (!data.channelList.get(portal.info.uuid).contains(portal.info))
 				data.addChannel(portal.info.uuid, portal.info);
-			}
+
 			data.portals.add(portal);
+			data.markDirty();
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
-	public static BlockPos[] canPlacePortal(World world, BlockPos positionHit, Direction sideHit, Direction facing, int pWidth, int pHeight) {
+	public static List<BlockPos> canPlacePortal(World world, BlockPos positionHit, Direction sideHit, Direction facing, int pWidth, int pHeight) {
 		HashMap<BlockPos, Boolean> checkedPositions = new HashMap<>();
 		// The total of the iterations is (2w-1)(2h-1)
 		for (int i = -pWidth + 1; i < pWidth; i++) {
@@ -157,16 +157,10 @@ public class PortalGunHelper {
 				continue;
 			}
 			if (validPos) {
-				validPositions.add(pos.offset(sideHit));
+				validPositions.add(pos.offset(sideHit).toImmutable());
 			}
 		}
-		if (validPositions.size() >= pWidth * pHeight) {
-			BlockPos[] validPositionsArr = new BlockPos[validPositions.size()];
-			validPositions.toArray(validPositionsArr);
-			return validPositionsArr;
-		} else {
-			return null;
-		}
+		return validPositions.size() >= pWidth * pHeight ? validPositions : null;
 	}
 
 	public static boolean isPositionValidForPortal(World world, BlockPos pos, Direction sideHit) {
@@ -185,10 +179,6 @@ public class PortalGunHelper {
 			IChunk ichunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 			return ichunk != null && Block.doesSideFillSquare(ichunk.getBlockState(pos).getCollisionShape(world, pos, ISelectionContext.dummy()), direction);
 		}
-	}
-
-	public static String getDataIdForDim(ServerWorld world) {
-		return "PGRPortalData_" + world.getDimensionKey().getLocation().getPath();
 	}
 
 	//Might change it if I feel like it lol

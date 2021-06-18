@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Reference {
 	public static final Logger LOGGER = LogManager.getLogger("Portal Gun Reborn");
-	public static final String MODID = "portalgunreborn";
+	public static final String MOD_ID = "portalgunreborn";
 	public static PGRServerHandler serverEH;
 	public static PGRClientHandler clientEH;
 }

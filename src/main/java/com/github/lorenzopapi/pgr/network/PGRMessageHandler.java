@@ -11,7 +11,7 @@ public class PGRMessageHandler {
 	private static final String PROTOCOL_VERSION = Integer.toString(1);
 	private static int counter = 0;
 	public static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
-			                                            .named(new ResourceLocation(Reference.MODID, "main_channel"))
+			                                            .named(new ResourceLocation(Reference.MOD_ID, "main_channel"))
 			                                            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
 			                                            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
 			                                            .networkProtocolVersion(() -> PROTOCOL_VERSION)

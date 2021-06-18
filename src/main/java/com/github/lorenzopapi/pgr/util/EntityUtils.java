@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
-public class EntityHelper {
+public class EntityUtils {
 	public static void playSoundAtEntity(Entity ent, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
 		ent.getEntityWorld().playSound(ent.getEntityWorld().isRemote() ? Minecraft.getInstance().player : null, ent.getPosX(), ent.getPosY() + ent.getEyeHeight(), ent.getPosZ(), soundEvent, soundCategory, volume, pitch);
 	}

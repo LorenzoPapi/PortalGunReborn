@@ -1,39 +1,57 @@
 package com.github.lorenzopapi.pgr.portal;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
+import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.DoubleNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.awt.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PortalStructure {
 
-    public BlockPos[] positions = null;
+    public List<BlockPos> positions = new ArrayList<>();
     public PortalStructure pair;
     public ChannelInfo info;
     public int width = 1;
     public int height = 2;
     public World world;
     public boolean isTypeA = true;
-    public int color = Color.WHITE.getRGB();
+    public int portalColor = 0; // Black
     public boolean initialized = false;
+    public Direction direction = Direction.NORTH;
 
     public PortalStructure() {}
 
-    public PortalStructure readFromNBT(CompoundNBT tag, boolean readPositions) {
+    public PortalStructure readFromNBT(CompoundNBT tag) {
         this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
         this.isTypeA = tag.getBoolean("isTypeA");
-        this.color = isTypeA ? info.colorA : info.colorB;
-        if (readPositions) {
-            this.positions = new BlockPos[tag.getInt("width") * tag.getInt("height")];
-            for (int i = 0; i < tag.getInt("posLength"); i++) {
-                this.positions[i] = new BlockPos(tag.getInt("x_" + i), tag.getInt("y_" + i), tag.getInt("z_" + i));
+        this.portalColor = isTypeA ? info.colorA : info.colorB;
+        if (tag.contains("direction")) {
+            this.direction = Direction.byHorizontalIndex(tag.getInt("direction"));
+            for (int i = 0; i < tag.getInt("posSize"); i++) {
+                ListNBT list = tag.getList("pos_" + i, 6);
+                this.positions.add(new BlockPos(list.getDouble(0), list.getDouble(1), list.getDouble(2)).toImmutable());
             }
         }
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "PortalStructure{" +
+                "positions=" + positions +
+                ", hasPair?=" + (pair != null) +
+                ", info=" + info +
+                ", width=" + width +
+                ", height=" + height +
+                ", isTypeA=" + isTypeA +
+                ", direction=" + direction +
+                '}';
     }
 
     public CompoundNBT writeToNBT(CompoundNBT tag) {
@@ -41,17 +59,23 @@ public class PortalStructure {
         tag.putBoolean("isTypeA", isTypeA);
         tag.putInt("height", height);
         tag.putInt("width", width);
-        if (positions == null || Arrays.asList(positions).contains(null)) {
-            positions = new BlockPos[0];
-        }
-        tag.putInt("posLength", positions.length);
-        for (int i = 0; i < positions.length; i++) {
-            BlockPos pos = positions[i];
-            tag.putInt("x_" + i, pos.getX());
-            tag.putInt("y_" + i, pos.getY());
-            tag.putInt("z_" + i, pos.getZ());
+        if (positions.size() > 0) {
+            tag.putInt("direction", direction.getHorizontalIndex());
+            tag.putInt("posSize", positions.size());
+            for (int i = 0; i < positions.size(); i++) {
+                BlockPos pos = positions.get(i).toImmutable();
+                tag.put("pos_" + i, newDoubleNBTList(pos.getX(), pos.getY(), pos.getZ()));
+            }
         }
         return tag;
+    }
+
+    private ListNBT newDoubleNBTList(double... numbers) {
+        ListNBT list = new ListNBT();
+        for (double d0 : numbers) {
+            list.add(DoubleNBT.valueOf(d0));
+        }
+        return list;
     }
 
     public void initialize(World world) {
@@ -60,7 +84,7 @@ public class PortalStructure {
             return;
         this.initialized = true;
         for (BlockPos pos : positions) {
-            world.setBlockState(pos, PGRRegistry.PORTAL_BLOCK.getDefaultState());
+            world.setBlockState(pos, PGRRegistry.PORTAL_BLOCK.getDefaultState().with(PortalBlock.HORIZONTAL_FACING, direction));
         }
     }
 
@@ -70,9 +94,11 @@ public class PortalStructure {
         return this;
     }
 
-    public PortalStructure setPositions(BlockPos[] newPos) {
-        positions = new BlockPos[width*height];
-        System.arraycopy(newPos, 0, positions, 0, positions.length);
+    public PortalStructure setPositionsAndDirection(List<BlockPos> newPos, Direction dir) {
+        positions = new ArrayList<>(width * height);
+        for (int i = 0; i < width*height; i++)
+            positions.add(newPos.get(i));
+        this.direction = dir;
         return this;
     }
 
@@ -86,8 +112,8 @@ public class PortalStructure {
         return this;
     }
 
-    public PortalStructure setColor(int color) {
-        this.color = color;
+    public PortalStructure setPortalColor(int portalColor) {
+        this.portalColor = portalColor;
         return this;
     }
 

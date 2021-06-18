@@ -4,9 +4,8 @@ import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.handler.PGRSounds;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.util.EntityHelper;
-import com.github.lorenzopapi.pgr.util.PortalGunHelper;
-import com.github.lorenzopapi.pgr.util.Reference;
+import com.github.lorenzopapi.pgr.util.EntityUtils;
+import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -63,7 +62,7 @@ public class PortalProjectileEntity extends Entity {
 		this.pWidth = info.width;
 		this.pHeight = info.height;
 		this.structure = info;
-		setColor(this.structure.color);
+		setColor(this.structure.portalColor);
 		getDataManager().set(MAX_DISTANCE, PGRConfig.COMMON.maxShootDistance.get());
 		Vector3d location = shooter.getEyePosition(1.0F);
 		Vector3d look = shooter.getLook(1.0F).normalize();
@@ -134,7 +133,7 @@ public class PortalProjectileEntity extends Entity {
 		Vector3d start = this.getPositionVec();
 		Vector3d end = this.getPositionVec().add(this.getMotion());
 		//TODO: check on glass and liquids
-		RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> true, RayTraceContext.FluidMode.NONE, entity -> true);
+		RayTraceResult rtr = EntityUtils.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> true, RayTraceContext.FluidMode.NONE, entity -> true);
 		//RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> PGRConfig.COMMON.canFireThroughGlass.get() || blockInfo.state.getMaterial() != Material.GLASS, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.ANY : RayTraceContext.FluidMode.NONE, entity -> true);
 		if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
 			BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
@@ -148,10 +147,9 @@ public class PortalProjectileEntity extends Entity {
 				setPosition(brtr.getHitVec().x - this.getMotion().x * 0.98D, brtr.getHitVec().y - this.getMotion().y * 0.98D, brtr.getHitVec().z - this.getMotion().z * 0.98D);
 			} else {
 				if (!this.world.isRemote) {
-					Reference.LOGGER.info("Encountered block!");
 					Vector3d lookDir = Vector3d.copy(Direction.fromAngle(this.rotationYaw).getDirectionVec());
 					Direction look = Direction.getFacingFromVector(lookDir.x, 0, lookDir.z);
-					if (PortalGunHelper.spawnPortal(this.world, pos, brtr.getFace(), look, this.structure, this.pWidth, this.pHeight)) {
+					if (PGRUtils.spawnPortal(this.world, pos, brtr.getFace(), look, this.structure, this.pWidth, this.pHeight)) {
 						if (this.shooter != null) {
 							ItemStack is = this.shooter.getHeldItemMainhand();
 							if (is.getTag() != null) {
@@ -162,13 +160,13 @@ public class PortalProjectileEntity extends Entity {
 									this.shooter.setItemStackToSlot(EquipmentSlotType.MAINHAND, is);
 								}
 							}
-							EntityHelper.playSoundAtEntity(this.shooter, this.structure.isTypeA ? PGRSounds.p_portal_open_blue : PGRSounds.p_portal_open_red, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							EntityUtils.playSoundAtEntity(this.shooter, this.structure.isTypeA ? PGRSounds.p_portal_open_blue : PGRSounds.p_portal_open_red, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
 					} else {
 						if (this.shooter != null) {
-							EntityHelper.playSoundAtEntity(this.shooter, PGRSounds.pg_portal_invalid_surface_swt, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							EntityUtils.playSoundAtEntity(this.shooter, PGRSounds.pg_portal_invalid_surface_swt, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
-						EntityHelper.playSoundAtEntity(this, PGRSounds.p_portal_invalid_surface, SoundCategory.BLOCKS, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+						EntityUtils.playSoundAtEntity(this, PGRSounds.p_portal_invalid_surface, SoundCategory.BLOCKS, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 					}
 				}
 				setDead();
@@ -192,7 +190,7 @@ public class PortalProjectileEntity extends Entity {
 		setColor(tag.getInt("color"));
 		this.pWidth = tag.getInt("portalWidth");
 		this.pHeight = tag.getInt("portalHeight");
-		this.structure = new PortalStructure().setWorld(world).setWidthAndHeight(pWidth, pHeight).readFromNBT(tag.getCompound("portalStructure"), false);
+		this.structure = new PortalStructure().setWorld(world).setWidthAndHeight(pWidth, pHeight).readFromNBT(tag.getCompound("portalStructure"));
 	}
 
 	@Override

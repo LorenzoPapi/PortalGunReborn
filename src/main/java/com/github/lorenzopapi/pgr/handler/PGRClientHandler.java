@@ -4,7 +4,7 @@ import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
 import com.github.lorenzopapi.pgr.network.message.KeyEventMessage;
 import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
 import com.github.lorenzopapi.pgr.util.Reference;
-import com.github.lorenzopapi.pgr.util.RendererHelper;
+import com.github.lorenzopapi.pgr.util.RendererUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.MainWindow;
@@ -18,10 +18,10 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 
 public class PGRClientHandler {
-	public final ResourceLocation texEmptyL = new ResourceLocation(Reference.MODID, "textures/overlay/lempty.png");
-	public final ResourceLocation texEmptyR = new ResourceLocation(Reference.MODID, "textures/overlay/rempty.png");
-	public final ResourceLocation texFullL = new ResourceLocation(Reference.MODID, "textures/overlay/lfull.png");
-	public final ResourceLocation texFullR = new ResourceLocation(Reference.MODID, "textures/overlay/rfull.png");
+	public final ResourceLocation texEmptyL = new ResourceLocation(Reference.MOD_ID, "textures/overlay/lempty.png");
+	public final ResourceLocation texEmptyR = new ResourceLocation(Reference.MOD_ID, "textures/overlay/rempty.png");
+	public final ResourceLocation texFullL = new ResourceLocation(Reference.MOD_ID, "textures/overlay/lfull.png");
+	public final ResourceLocation texFullR = new ResourceLocation(Reference.MOD_ID, "textures/overlay/rfull.png");
 	public boolean zoom;
 	public int zoomCounter = -1;
 	public double zoomOriFov = -1.0F;
@@ -84,6 +84,16 @@ public class PGRClientHandler {
 		}
 	}
 
+	public void onClickEvent(InputEvent.ClickInputEvent event) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player != null && mc.currentScreen == null && !mc.isGamePaused()) {
+			ItemStack is = mc.player.getHeldItemMainhand();
+			if (is.getItem() == PGRRegistry.PORTAL_GUN.get()) {
+				event.setSwingHand(false);
+			}
+		}
+	}
+
 	public void onMouseEvent(InputEvent.MouseInputEvent event) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player != null && mc.currentScreen == null && !mc.isGamePaused()) {
@@ -110,7 +120,7 @@ public class PGRClientHandler {
 						mc.gameSettings.mouseSensitivity = this.zoomOriMouse * (0.1F + 0.9F * (1.0F - (float)Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter - event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
 					}
 				}
-		} else if (mc.player != null && mc.currentScreen == null && PGRConfig.CLIENT.portalgunIndicatorSize.get() > 0 && !mc.gameSettings.hideGUI) {
+		} else if (mc.player != null && mc.gameSettings.getPointOfView().func_243192_a() && mc.currentScreen == null && PGRConfig.CLIENT.portalgunIndicatorSize.get() > 0 && !mc.gameSettings.hideGUI) {
 			ItemStack is = mc.player.getHeldItemMainhand();
 			boolean isHoldingPortalGun = (is.getItem() == PGRRegistry.PORTAL_GUN.get());
 			if (isHoldingPortalGun && is.getTag() != null) { // && !GrabHandler.hasHandlerType((EntityLivingBase)mc.player, Side.CLIENT, null)
@@ -126,11 +136,11 @@ public class PGRClientHandler {
 					double size = Math.min(width, height) * PGRConfig.CLIENT.portalgunIndicatorSize.get() / 100.0D;
 					double posX = (width + (PGRConfig.CLIENT.portalgunIndicatorSize.get() / 20.) - size) / 2.0D;
 					double posY = (height + (PGRConfig.CLIENT.portalgunIndicatorSize.get() / 20.) - size) / 2.0D;
-					RendererHelper.setColorFromInt(indicator.info.colorA);
-					RendererHelper.drawTexture(new MatrixStack(), indicator.portalAPlaced ? this.texFullL : this.texEmptyL, posX, posY, size, size, 0.0D);
-					RendererHelper.setColorFromInt(indicator.info.colorB);
-					RendererHelper.drawTexture(new MatrixStack(), indicator.portalBPlaced ? this.texFullR : this.texEmptyR, posX, posY, size, size, 0.0D);
-					RendererHelper.setColorFromInt(16777215);
+					RendererUtils.setColorFromInt(indicator.info.colorA);
+					RendererUtils.drawTexture(new MatrixStack(), indicator.portalAPlaced ? this.texFullL : this.texEmptyL, posX, posY, size, size, 0.0D);
+					RendererUtils.setColorFromInt(indicator.info.colorB);
+					RendererUtils.drawTexture(new MatrixStack(), indicator.portalBPlaced ? this.texFullR : this.texEmptyR, posX, posY, size, size, 0.0D);
+					RendererUtils.setColorFromInt(16777215);
 					GlStateManager.alphaFunc(516, 0.1F);
 					GlStateManager.disableBlend();
 				}

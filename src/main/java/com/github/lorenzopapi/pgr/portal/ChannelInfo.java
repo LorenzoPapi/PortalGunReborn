@@ -44,4 +44,16 @@ public class ChannelInfo {
 		tag.putInt("colorB", this.colorB);
 		return tag;
 	}
+
+	@Override
+	public String toString() {
+		return "ChannelInfo{" +
+				"uuid='" + uuid + '\'' +
+				", channelName='" + channelName + '\'' +
+				", colorA=" + colorA +
+				", colorB=" + colorB +
+				'}';
+	}
+
+
 }

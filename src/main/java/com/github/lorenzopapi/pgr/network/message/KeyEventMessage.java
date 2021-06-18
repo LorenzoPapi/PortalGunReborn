@@ -5,8 +5,8 @@ import com.github.lorenzopapi.pgr.handler.PGRSounds;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
-import com.github.lorenzopapi.pgr.util.EntityHelper;
-import com.github.lorenzopapi.pgr.util.PortalGunHelper;
+import com.github.lorenzopapi.pgr.util.EntityUtils;
+import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -65,7 +65,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 								data.removePortal(struct);
 							}
 							toRemove.clear();
-							EntityHelper.playSoundAtEntity(player, PGRSounds.pg_wpn_portal_fizzler_shimmy, player.getSoundCategory(), 0.2F, 1.0F);
+							EntityUtils.playSoundAtEntity(player, PGRSounds.pg_wpn_portal_fizzler_shimmy, player.getSoundCategory(), 0.2F, 1.0F);
 						}
 					}
 					break;
@@ -76,7 +76,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 //							PortalGunHelper.tryGrab((EntityLivingBase)player);
 //							break;
 //						}
-						PortalGunHelper.shootPortal(player, is, (message.event == 3));
+						PGRUtils.shootPortal(player, is, (message.event == 3));
 					}
 					break;
 				case 5:

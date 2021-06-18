@@ -5,9 +5,7 @@ import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.handler.PGRServerHandler;
 import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
-import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -18,9 +16,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import static com.github.lorenzopapi.pgr.util.Reference.LOGGER;
-import static com.github.lorenzopapi.pgr.util.Reference.MODID;
+import static com.github.lorenzopapi.pgr.util.Reference.MOD_ID;
 
-@Mod(MODID)
+@Mod(MOD_ID)
 public class PortalGunReborn {
 
 	/**
@@ -46,6 +44,7 @@ public class PortalGunReborn {
 			forgeBus.addListener(Reference.clientEH::onClientDisconnect);
 			forgeBus.addListener(Reference.clientEH::onRenderTick);
 			forgeBus.addListener(Reference.clientEH::onKeyEvent);
+			forgeBus.addListener(Reference.clientEH::onClickEvent);
 			//forgeBus.addListener(Reference.clientEH::onHandRender);
 			//forgeBus.addListener(Reference.clientEH::onFovModifierEvent);
 			forgeBus.addListener(Reference.clientEH::onMouseEvent);
@@ -58,9 +57,11 @@ public class PortalGunReborn {
 		// registries
 		PGRRegistry.register();
 
-		// left click handling
+		// left and right click handling
 		forgeBus.addListener(Reference.serverEH::onBlockBreak);
-		forgeBus.addListener(Reference.serverEH::onClickBlock);
+		forgeBus.addListener(Reference.serverEH::onLeftClickBlock);
+		forgeBus.addListener(Reference.serverEH::onRightClickItem);
+		forgeBus.addListener(Reference.serverEH::onRightClickBlock);
 		// item event handling
 		forgeBus.addListener(Reference.serverEH::onItemCrafted);
 		// entity event handling
@@ -74,6 +75,6 @@ public class PortalGunReborn {
 
 	private void onClientSetup(FMLClientSetupEvent e) {
 		PGRConfig.KeyBinds.registerKeyBindings();
-		TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
+		//TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
 	}
 }

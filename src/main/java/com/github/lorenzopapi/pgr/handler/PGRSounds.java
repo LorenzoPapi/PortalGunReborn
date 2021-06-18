@@ -43,7 +43,7 @@ public class PGRSounds {
 	}
 
 	private static SoundEvent register(RegistryEvent.Register<SoundEvent> registry, String name) {
-		ResourceLocation rs = new ResourceLocation(Reference.MODID, name);
+		ResourceLocation rs = new ResourceLocation(Reference.MOD_ID, name);
 		SoundEvent event = new SoundEvent(rs).setRegistryName(rs);
 		registry.getRegistry().register(event);
 		return event;

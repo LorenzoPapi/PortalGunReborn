@@ -4,7 +4,7 @@ import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
-import com.github.lorenzopapi.pgr.util.PortalGunHelper;
+import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.item.ItemStack;
@@ -27,28 +27,38 @@ public class PGRServerHandler {
 	public HashMap<RegistryKey<World>, PGRSavedData> portalInfoByDimension = new HashMap<>();
 	public ArrayList<ChannelIndicator> indicators = new ArrayList<>();
 
-	public void onBlockBreak(BlockEvent.BreakEvent e) {
+	public void onRightClickItem(PlayerInteractEvent.RightClickItem e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
 		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
 			e.setCanceled(true);
 	}
 
+	public void onRightClickBlock(PlayerInteractEvent.RightClickBlock e) {
+		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
+		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
+			e.setCanceled(true);
+	}
 	
-	public void onClickBlock(PlayerInteractEvent.LeftClickBlock e) {
+	public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
 		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
 			e.setCanceled(true);
 	}
 
-	
+	public void onBlockBreak(PlayerEvent.BreakSpeed e) {
+		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
+		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
+			e.setCanceled(true);
+	}
+
 	public void onItemCrafted(PlayerEvent.ItemCraftedEvent e) {
 		ItemStack is = e.getCrafting();
-		if (is.isItemEqual(new ItemStack(PGRRegistry.PORTAL_GUN.get()))) {
+		if (is.isItemEqual(PGRRegistry.PORTAL_GUN.get().getDefaultInstance())) {
 			PortalGunItem.setRandomNBTTags(is, e.getPlayer());
 			PGRSavedData data = getWorldSaveData(e.getPlayer().world.getDimensionKey());
 			String uuid = is.getTag().getString("uuid");
 			String name = is.getTag().getString("channelName");
-			int[] colors = PortalGunHelper.generateChannelColor(uuid, name);
+			int[] colors = PGRUtils.generateChannelColor(uuid, name);
 			ChannelInfo newInfo = new ChannelInfo(uuid, name).setColor(colors[0], colors[1]);
 			data.addChannel(uuid, newInfo);
 			data.markDirty();
@@ -66,7 +76,7 @@ public class PGRServerHandler {
 		if (!(e.getEntityLiving().getEntityWorld()).isRemote && e.getEntityLiving() instanceof ZombieEntity) {
 			ZombieEntity zombie = (ZombieEntity)e.getEntityLiving();
 			if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
-				PortalGunHelper.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
+				PGRUtils.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
 		}
 	}
 
@@ -74,7 +84,7 @@ public class PGRServerHandler {
 		PGRSavedData data = this.portalInfoByDimension.get(dimension);
 		if (data == null) {
 			ServerWorld world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
-			data = (world != null) ? PortalGunHelper.getSaveDataForWorld(world) : new PGRSavedData("PortalGunPortalData_somethingBroke");
+			data = (world != null) ? PGRUtils.getSaveDataForWorld(world) : new PGRSavedData("PortalGunPortalData_somethingBroke");
 		}
 		return data;
 	}

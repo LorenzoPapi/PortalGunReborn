@@ -23,10 +23,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-@Mod.EventBusSubscriber(modid = Reference.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PGRRegistry {
-	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MODID);
-	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MODID);
+	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
+	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
 
 	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
 	public static final PortalBlock PORTAL_BLOCK = new PortalBlock();
@@ -63,7 +63,7 @@ public class PGRRegistry {
 
 	@SubscribeEvent
 	public static void onEntityRegistry(final RegistryEvent.Register<EntityType<?>> e) {
-		e.getRegistry().register(PPE_TYPE.setRegistryName(new ResourceLocation(Reference.MODID, "portal_projectile")));
+		e.getRegistry().register(PPE_TYPE.setRegistryName(new ResourceLocation(Reference.MOD_ID, "portal_projectile")));
 	}
 
 	@SubscribeEvent
@@ -72,10 +72,10 @@ public class PGRRegistry {
 	}
 
 	private static void registerItem(RegistryEvent.Register<Item> e, Item item, String name) {
-		e.getRegistry().register(item.setRegistryName(new ResourceLocation(Reference.MODID, name)));
+		e.getRegistry().register(item.setRegistryName(new ResourceLocation(Reference.MOD_ID, name)));
 	}
 
 	private static void registerBlock(RegistryEvent.Register<Block> e, Block block, String name) {
-		e.getRegistry().register(block.setRegistryName(new ResourceLocation(Reference.MODID, name)));
+		e.getRegistry().register(block.setRegistryName(new ResourceLocation(Reference.MOD_ID, name)));
 	}
 }
