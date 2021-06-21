@@ -24,7 +24,6 @@ public class PortalGunReborn {
 	/**
 	 TODO:
 	    tags (OreDictionary)
-	    portal shooting (duh)
 	*/
 
 	public PortalGunReborn() {
@@ -55,7 +54,7 @@ public class PortalGunReborn {
 		// setup handling
 		modBus.addListener(this::onClientSetup);
 		// registries
-		PGRRegistry.register();
+		PGRRegistry.register(modBus);
 
 		// left and right click handling
 		forgeBus.addListener(Reference.serverEH::onBlockBreak);
@@ -66,6 +65,7 @@ public class PortalGunReborn {
 		forgeBus.addListener(Reference.serverEH::onItemCrafted);
 		// entity event handling
 		forgeBus.addListener(Reference.serverEH::onLivingUpdate);
+		forgeBus.addListener(Reference.serverEH::onHurtEvent);
 		// world event handling
 		forgeBus.addListener(Reference.serverEH::onWorldLoad);
 		forgeBus.addListener(Reference.serverEH::onWorldUnload);

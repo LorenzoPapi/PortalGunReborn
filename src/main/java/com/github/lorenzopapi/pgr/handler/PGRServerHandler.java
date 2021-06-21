@@ -8,14 +8,15 @@ import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -62,6 +63,12 @@ public class PGRServerHandler {
 			ChannelInfo newInfo = new ChannelInfo(uuid, name).setColor(colors[0], colors[1]);
 			data.addChannel(uuid, newInfo);
 			data.markDirty();
+		}
+	}
+
+	public void onHurtEvent(LivingHurtEvent e) {
+		if (e.getSource().damageType.equals("inWall")) {
+			e.setCanceled(true);
 		}
 	}
 

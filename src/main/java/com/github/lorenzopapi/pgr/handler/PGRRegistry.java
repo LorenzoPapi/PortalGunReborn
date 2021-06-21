@@ -19,7 +19,6 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -38,8 +37,7 @@ public class PGRRegistry {
 //		//event.getModelRegistry().putObject(new ModelResourceLocation("portalgun:item_portalgun", "inventory"), (new ModelBaseWrapper((IModelBase)new ItemRenderPortalGun())).setItemDualHanded());
 //	}
 
-	public static void register() {
-		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public static void register(IEventBus modBus) {
 		ITEMS.register(modBus);
 		TILE_ENTITIES.register(modBus);
 	}

@@ -48,17 +48,15 @@ public class PGRUtils {
 
 	public static PGRSavedData getSaveDataForWorld(ServerWorld world) {
 		String dataId = "PGRPortalData_" + world.getDimensionKey().getLocation().getPath();
-		PGRSavedData data = world.getSavedData().get(() -> new PGRSavedData(dataId), dataId);
-		Reference.LOGGER.info(data);
-		if (data == null) {
-			data = new PGRSavedData(dataId);
-			world.getSavedData().set(data);
+		PGRSavedData data = world.getSavedData().getOrCreate(() -> {
+			PGRSavedData ret = new PGRSavedData(dataId);
 			if (world.getDimensionKey() == World.OVERWORLD) {
-				data.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
-				data.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
-				data.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
+				ret.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
+				ret.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
+				ret.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
 			}
-		}
+			return ret;
+		}, dataId);
 		data.initialize(world);
 		data.markDirty();
 		Reference.serverEH.portalInfoByDimension.put(world.getDimensionKey(), data);

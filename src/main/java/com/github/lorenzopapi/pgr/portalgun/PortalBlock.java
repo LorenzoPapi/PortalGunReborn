@@ -57,16 +57,15 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
-		if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
-			if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
-				worldIn.removeBlock(currentPos, isMoving);
-			}
-		}
+//		if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
+//			if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
+//				worldIn.removeBlock(currentPos, isMoving);
+//			}
+//		}
 	}
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity ent) {
-
 		//		PortalStructure struct = Reference.serverEH.getWorldSaveData(world.getDimensionKey()).findPortalByPosition(pos);
 ////		if (struct != null && struct.pair != null) {
 ////			BlockPos pairPos = struct.pair.positions.get(struct.positions.indexOf(pos)).toImmutable();
