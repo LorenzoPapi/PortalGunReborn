@@ -29,14 +29,15 @@ import java.util.stream.StreamSupport;
 @Mixin(ICollisionReader.class)
 public interface ICollisionReaderMixin {
 
-     default boolean isPortalNear(BlockPos pos, World world) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (Direction d : new Direction[]{Direction.WEST, Direction.NORTH, Direction.EAST, Direction.SOUTH}) {
-            mutable.setAndMove(pos, d);
-            BlockState state = world.getBlockState(mutable);
-            if (state.getBlock() == PGRRegistry.PORTAL_BLOCK && state.get(PortalBlock.HORIZONTAL_FACING) == d) {
-                System.out.println("Found!");
-                return true;
+    default boolean isPortalNear(BlockPos pos, World world) {
+        if (world.getBlockState(pos).getBlock() != Blocks.AIR) {
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            for (Direction d : new Direction[]{Direction.WEST, Direction.NORTH, Direction.EAST, Direction.SOUTH}) {
+                mutable.setAndMove(pos, d);
+                BlockState state = world.getBlockState(mutable);
+                if (state.getBlock() == PGRRegistry.PORTAL_BLOCK && state.get(PortalBlock.HORIZONTAL_FACING) == d) {
+                    return true;
+                }
             }
         }
         return false;
