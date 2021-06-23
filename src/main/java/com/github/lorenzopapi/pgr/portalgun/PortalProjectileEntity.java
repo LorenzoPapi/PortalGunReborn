@@ -57,7 +57,7 @@ public class PortalProjectileEntity extends Entity {
 		this(worldIn);
 		if (shooter instanceof LivingEntity) {
 			this.getDataManager().set(SHOOTER, shooter.getEntityId());
-			this.shooter = (LivingEntity)shooter;
+			this.shooter = (LivingEntity) shooter;
 		}
 		this.pWidth = info.width;
 		this.pHeight = info.height;
@@ -93,12 +93,12 @@ public class PortalProjectileEntity extends Entity {
 		this.getDataManager().register(VELOCITY, new Rotations(0, 0, 0));
 	}
 
-	public void setColor(int i) {
-		this.getDataManager().set(COLOR, i);
-	}
-
 	public int getColor() {
 		return this.getDataManager().get(COLOR);
+	}
+
+	public void setColor(int i) {
+		this.getDataManager().set(COLOR, i);
 	}
 
 	public BlockPos getSpawnPos() {

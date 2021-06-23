@@ -20,21 +20,15 @@ import static com.github.lorenzopapi.pgr.util.Reference.MOD_ID;
 
 @Mod(MOD_ID)
 public class PortalGunReborn {
-
-	/**
-	 TODO:
-	    tags (OreDictionary)
-	*/
-
 	public PortalGunReborn() {
 		LOGGER.info("Hello from PGR!");
 		Reference.serverEH = new PGRServerHandler();
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-		
+
 		// config
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PGRConfig.COMMON_SPEC);
-		
+
 		// client events
 		if (FMLEnvironment.dist.isClient()) {
 			Reference.clientEH = new PGRClientHandler();

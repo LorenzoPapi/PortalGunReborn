@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -52,34 +52,16 @@ public class PortalBlock extends Block {
 			case NORTH:
 				return Block.makeCuboidShape(0, 0, 15, 16, 16, 16);
 		}
-		return super.getShape(state, worldIn, pos, context);
+		return VoxelShapes.empty();
 	}
 
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
-//		if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
-//			if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
-//				worldIn.removeBlock(currentPos, isMoving);
-//			}
-//		}
-	}
-
-	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity ent) {
-		//		PortalStructure struct = Reference.serverEH.getWorldSaveData(world.getDimensionKey()).findPortalByPosition(pos);
-////		if (struct != null && struct.pair != null) {
-////			BlockPos pairPos = struct.pair.positions.get(struct.positions.indexOf(pos)).toImmutable();
-////			BlockState pairState = world.getBlockState(pairPos);
-////			Direction pairDir = pairState.get(HORIZONTAL_FACING);
-////			double x = pairPos.getX() + pairDir.getXOffset();
-////			double z = pairPos.getZ() + pairDir.getZOffset();
-////			Reference.LOGGER.info("Entity: {}, {}, {}", ent.getPosX(), ent.getPosY(), ent.getPosZ());
-////			Reference.LOGGER.info("Pair: {}, {}, {}", x, pairPos.getY(), z);
-////			ent.setPositionAndRotation(x, pairPos.getY(), z, pairDir.getHorizontalAngle(), ent.rotationPitch);
-////		}
-//		if (struct == null) {
-//			world.removeBlock(pos, false);
-//		}
+		if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
+			if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
+				worldIn.removeBlock(currentPos, isMoving);
+			}
+		}
 	}
 
 	@Override
@@ -98,18 +80,19 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {}
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+	}
 
 	@Override
 	public boolean canDropFromExplosion(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean hasTileEntity(BlockState state) {
 		return true;
 	}
-	
+
 	@Nullable
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
@@ -118,17 +101,18 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		PortalStructure struct = Reference.serverEH.getWorldSaveData(worldIn.getDimensionKey()).findPortalByPosition(pos);
-		if (struct != null) {
+		worldIn.removeTileEntity(pos);
+		PortalStructure struct = PGRUtils.findPortalByPosition(worldIn, pos);
+		if (struct != null)
 			Reference.serverEH.getWorldSaveData(worldIn.getDimensionKey()).removePortal(struct);
-		}
+		super.onReplaced(state, worldIn, pos, newState, isMoving);
 	}
-	
+
 	// TODO: add a block state which indicates that it is the bottom center of the portal if it's a wall portal or dead center if it's a floor portal
 	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
-	
+
 	@Override
 	public boolean canDropFromExplosion(Explosion explosionIn) {
 		return false;

@@ -22,7 +22,8 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 
 	public int event;
 
-	public KeyEventMessage() {}
+	public KeyEventMessage() {
+	}
 
 	public KeyEventMessage(int e) {
 		this.event = e;

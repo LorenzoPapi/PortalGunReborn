@@ -28,7 +28,7 @@ public class ChannelIndicator implements Comparable<ChannelIndicator> {
 	}
 
 	public boolean equals(Object o) {
-		return (o instanceof ChannelIndicator && ((ChannelIndicator)o).info.equals(this.info) && ((ChannelIndicator)o).dimension == this.dimension);
+		return (o instanceof ChannelIndicator && ((ChannelIndicator) o).info.equals(this.info) && ((ChannelIndicator) o).dimension == this.dimension);
 	}
 
 	public int compareTo(ChannelIndicator o) {

@@ -16,7 +16,7 @@ displayName="Portal Gun Reborn" #mandatory
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="" #optional
-credits="TODO" #optional
+credits="e" #optional
 authors="LorenzoPapi" #optional
 description='''
 Remember the Portal Gun mod from back in the 1.7.10 days?

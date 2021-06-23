@@ -69,7 +69,7 @@ public class PGRUtils {
 			PGRSavedData data = Reference.serverEH.getWorldSaveData(world.getDimensionKey());
 
 			// Check is portal is already placed: if true, delete it
-			PortalStructure struct = data.findPortalOfSameType(portal);
+			PortalStructure struct = findPortalOfSameType(world, portal);
 			if (struct != null)
 				data.removePortal(struct);
 
@@ -98,6 +98,33 @@ public class PGRUtils {
 			return true;
 		}
 		return false;
+	}
+
+	public static void changeBehinds(World world, BlockPos pos, boolean remove) {
+		List<BlockPos> behinds = Reference.serverEH.getWorldSaveData(world).behinds;
+		if (remove)
+			behinds.remove(pos);
+		else
+			behinds.add(pos);
+		Reference.serverEH.getWorldSaveData(world).markDirty();
+	}
+
+	public static PortalStructure findPortalByPosition(World world, BlockPos pos) {
+		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+			if (struct.positions.contains(pos)) {
+				return struct;
+			}
+		}
+		return null;
+	}
+
+	public static PortalStructure findPortalOfSameType(World world, PortalStructure toCheck) {
+		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+			if (struct.isSameStruct(toCheck)) {
+				return struct;
+			}
+		}
+		return null;
 	}
 
 	public static List<BlockPos> canPlacePortal(World world, BlockPos positionHit, Direction sideHit, Direction facing, int pWidth, int pHeight) {
@@ -193,6 +220,6 @@ public class PGRUtils {
 		if (hsb[0] > 1.0F)
 			hsb[0] = hsb[0] - 1.0F;
 		int colorB = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-		return new int[] { colorA, colorB };
+		return new int[]{colorA, colorB};
 	}
 }

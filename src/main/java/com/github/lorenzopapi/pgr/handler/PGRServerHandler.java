@@ -8,7 +8,6 @@ import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.World;
@@ -39,7 +38,7 @@ public class PGRServerHandler {
 		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
 			e.setCanceled(true);
 	}
-	
+
 	public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);
 		if (is.getItem() == PGRRegistry.PORTAL_GUN.get())
@@ -56,7 +55,7 @@ public class PGRServerHandler {
 		ItemStack is = e.getCrafting();
 		if (is.isItemEqual(PGRRegistry.PORTAL_GUN.get().getDefaultInstance())) {
 			PortalGunItem.setRandomNBTTags(is, e.getPlayer());
-			PGRSavedData data = getWorldSaveData(e.getPlayer().world.getDimensionKey());
+			PGRSavedData data = getWorldSaveData(e.getPlayer().world);
 			String uuid = is.getTag().getString("uuid");
 			String name = is.getTag().getString("channelName");
 			int[] colors = PGRUtils.generateChannelColor(uuid, name);
@@ -75,16 +74,26 @@ public class PGRServerHandler {
 	public void onWorldLoad(WorldEvent.Load e) {
 		//I hate my life
 		if (e.getWorld() instanceof World) {
-			getWorldSaveData(((World) e.getWorld()).getDimensionKey());
+			getWorldSaveData((World) e.getWorld());
 		}
 	}
-	
+
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
 		if (!(e.getEntityLiving().getEntityWorld()).isRemote && e.getEntityLiving() instanceof ZombieEntity) {
-			ZombieEntity zombie = (ZombieEntity)e.getEntityLiving();
+			ZombieEntity zombie = (ZombieEntity) e.getEntityLiving();
 			if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
 				PGRUtils.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
 		}
+	}
+
+	public PGRSavedData getWorldSaveData(World world) {
+		RegistryKey<World> dimension = world.getDimensionKey();
+		PGRSavedData data = this.portalInfoByDimension.get(dimension);
+		if (data == null) {
+			ServerWorld serverWorld = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
+			data = (serverWorld != null) ? PGRUtils.getSaveDataForWorld(serverWorld) : new PGRSavedData("PortalGunPortalData_somethingBroke");
+		}
+		return data;
 	}
 
 	public PGRSavedData getWorldSaveData(RegistryKey<World> dimension) {
@@ -101,7 +110,7 @@ public class PGRServerHandler {
 		return data.getChannel(uuid, channelName);
 	}
 
-	
+
 	public void onWorldUnload(WorldEvent.Unload e) {
 		if (!e.getWorld().isRemote()) {
 			RegistryKey<World> dimension = null;

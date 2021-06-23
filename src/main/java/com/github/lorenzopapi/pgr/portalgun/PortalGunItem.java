@@ -24,6 +24,18 @@ public class PortalGunItem extends Item {
 		super(new Properties().maxStackSize(1).maxDamage(0).group(ItemGroup.TOOLS));
 	}
 
+	public static void setRandomNBTTags(ItemStack is, PlayerEntity player) {
+		CompoundNBT tag = new CompoundNBT();
+		tag.putString("uuid", UUIDTypeAdapter.fromUUID(player.getGameProfile().getId()));
+		tag.putString("username", player.getName().getString());
+		tag.putString("channelName", "Random Channel #" + is.hashCode());
+		tag.putInt("width", 1);
+		tag.putInt("height", 2);
+		tag.putInt("grabStrength", 4);
+		tag.putBoolean("lastFired", true);
+		is.setTag(tag);
+	}
+
 	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, PlayerEntity player) {
 		return true;
@@ -139,28 +151,5 @@ public class PortalGunItem extends Item {
 				        !oldStack.getTag().getString("uuid").equals(newStack.getTag().getString("uuid")) ||
 				        !oldStack.getTag().getString("channelName").equals(newStack.getTag().getString("channelName")) ||
 				        oldStack.getTag().getBoolean("lastFired") != newStack.getTag().getBoolean("lastFired"));
-	}
-
-	//TODO: Check
-	/*@Override
-	public UseAction getUseAction(ItemStack stack) {
-		return UseAction.BOW;
-	}*/
-//
-//	@Override
-//	public int getUseDuration(ItemStack stack) {
-//		return Integer.MAX_VALUE;
-//	}
-
-	public static void setRandomNBTTags(ItemStack is, PlayerEntity player) {
-		CompoundNBT tag = new CompoundNBT();
-		tag.putString("uuid", UUIDTypeAdapter.fromUUID(player.getGameProfile().getId()));
-		tag.putString("username", player.getName().getString());
-		tag.putString("channelName", "Random Channel #" + is.hashCode());
-		tag.putInt("width", 1);
-		tag.putInt("height", 2);
-		tag.putInt("grabStrength", 4);
-		tag.putBoolean("lastFired", true);
-		is.setTag(tag);
 	}
 }

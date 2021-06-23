@@ -109,15 +109,15 @@ public class PGRClientHandler {
 		if (event.phase == TickEvent.Phase.START) {
 			if (this.zoomCounter > -1)
 				if (this.zoom) {
-					mc.gameSettings.fov = this.zoomOriFov * (0.1F + 0.9F * (1.0F - (float)Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter + event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
-					mc.gameSettings.mouseSensitivity = this.zoomOriMouse * (0.1F + 0.9F * (1.0F - (float)Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter + event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
+					mc.gameSettings.fov = this.zoomOriFov * (0.1F + 0.9F * (1.0F - (float) Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter + event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
+					mc.gameSettings.mouseSensitivity = this.zoomOriMouse * (0.1F + 0.9F * (1.0F - (float) Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter + event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
 				} else {
 					if (this.zoomCounter == 0) {
 						mc.gameSettings.fov = this.zoomOriFov;
 						mc.gameSettings.mouseSensitivity = this.zoomOriMouse;
 					} else {
-						mc.gameSettings.fov = this.zoomOriFov * (0.1F + 0.9F * (1.0F - (float)Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter - event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
-						mc.gameSettings.mouseSensitivity = this.zoomOriMouse * (0.1F + 0.9F * (1.0F - (float)Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter - event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
+						mc.gameSettings.fov = this.zoomOriFov * (0.1F + 0.9F * (1.0F - (float) Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter - event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
+						mc.gameSettings.mouseSensitivity = this.zoomOriMouse * (0.1F + 0.9F * (1.0F - (float) Math.sin(Math.toRadians((90.0F * MathHelper.clamp((this.zoomCounter - event.renderTickTime) / 5.0F, 0.0F, 1.0F))))));
 					}
 				}
 		} else if (mc.player != null && mc.gameSettings.getPointOfView().func_243192_a() && mc.currentScreen == null && PGRConfig.CLIENT.portalgunIndicatorSize.get() > 0 && !mc.gameSettings.hideGUI) {

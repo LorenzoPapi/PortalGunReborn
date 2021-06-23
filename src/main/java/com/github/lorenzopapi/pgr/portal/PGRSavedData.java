@@ -15,12 +15,14 @@ import java.util.Map;
 public class PGRSavedData extends WorldSavedData {
 	public HashMap<String, ArrayList<ChannelInfo>> channelList;
 	public List<PortalStructure> portals;
+	public ArrayList<BlockPos> behinds;
 	public boolean initialized;
 
 	public PGRSavedData(String name) {
 		super(name);
 		this.channelList = new HashMap<>();
 		this.portals = new ArrayList<>();
+		this.behinds = new ArrayList<>();
 	}
 
 	public void initialize(World world) {
@@ -63,24 +65,6 @@ public class PGRSavedData extends WorldSavedData {
 			}
 		}
 		return new ChannelInfo(uuid, channelName);
-	}
-
-	public PortalStructure findPortalByPosition(BlockPos pos) {
-		for (PortalStructure struct : portals) {
-			if (struct.positions.contains(pos)) {
-				return struct;
-			}
-		}
-		return null;
-	}
-
-	public PortalStructure findPortalOfSameType(PortalStructure toCheck) {
-		for (PortalStructure struct : portals) {
-			if (struct.isSameStruct(toCheck)) {
-				return struct;
-			}
-		}
-		return null;
 	}
 
 	public void removePortal(PortalStructure struct) {

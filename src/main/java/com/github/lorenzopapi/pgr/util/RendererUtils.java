@@ -40,13 +40,13 @@ public class RendererUtils {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferbuilder.pos(matrix, (float)posX, (float)(posY + height), (float)zLevel).tex((float)u2, (float)v2).endVertex();
-		bufferbuilder.pos(matrix, (float)(posX + width), (float)(posY + height), (float)zLevel).tex((float)u1, (float)v2).endVertex();
-		bufferbuilder.pos(matrix, (float)(posX + width), (float)posY, (float)zLevel).tex((float)u1, (float)v1).endVertex();
-		bufferbuilder.pos(matrix, (float)posX, (float)posY, (float)zLevel).tex((float)u2, (float)v1).endVertex();
+		bufferbuilder.pos(matrix, (float) posX, (float) (posY + height), (float) zLevel).tex((float) u2, (float) v2).endVertex();
+		bufferbuilder.pos(matrix, (float) (posX + width), (float) (posY + height), (float) zLevel).tex((float) u1, (float) v2).endVertex();
+		bufferbuilder.pos(matrix, (float) (posX + width), (float) posY, (float) zLevel).tex((float) u1, (float) v1).endVertex();
+		bufferbuilder.pos(matrix, (float) posX, (float) posY, (float) zLevel).tex((float) u2, (float) v1).endVertex();
 		tessellator.draw();
 	}
-	
+
 	public static void drawSquare(
 			Vector4f corner1, Vector4f corner2, Vector4f corner3, Vector4f corner4, Vector3f normal, IVertexBuilder builder, int packedLightIn,
 			float minU, float maxU, float minV, float maxV

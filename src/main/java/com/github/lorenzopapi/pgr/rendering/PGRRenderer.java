@@ -1,9 +1,8 @@
 package com.github.lorenzopapi.pgr.rendering;
 
-import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
-import com.github.lorenzopapi.pgr.util.Reference;
+import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.RendererUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -21,25 +20,21 @@ import net.minecraft.util.math.vector.Quaternion;
 import java.util.Random;
 
 public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
-	public PGRRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-		super(rendererDispatcherIn);
-	}
-	
 	private static final RenderTypeBuffers buffersBlocks = new RenderTypeBuffers();
-	
 	private static PGRFrameBuffer buffer;
 	private static PGRFrameBuffer clipping;
 	private static DynamicTexture texture;
 	private static ResourceLocation textureLocation = null;
-	
 	private static int recursionDepth = 0;
-	
+
+	public PGRRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+		super(rendererDispatcherIn);
+	}
+
 	@Override
 	public void render(PortalBlockTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 		if (recursionDepth > 1) return;
-		
-		PGRSavedData data = Reference.serverEH.getWorldSaveData(tileEntityIn.getWorld().getDimensionKey());
-		PortalStructure struct = data.findPortalByPosition(tileEntityIn.getPos());
+		PortalStructure struct = PGRUtils.findPortalByPosition(tileEntityIn.getWorld(), tileEntityIn.getPos());
 		if (struct == null || struct.positions == null || struct.positions.size() < 1) return;
 		if (textureLocation == null) {
 			buffer = new PGRFrameBuffer(256, 256 * 2, true, Minecraft.IS_RUNNING_ON_MAC);
@@ -52,7 +47,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		if (!struct.positions.get(0).equals(tileEntityIn.getPos())) return;
 		PortalStructure pairStruct = struct.pair;
 		if (pairStruct == null) return;
-		
+
 		recursionDepth++;
 		int sizeX = struct.width;
 //		int sizeY = struct.height;
@@ -60,9 +55,10 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 //		buffer.resize(Minecraft.getInstance().getMainWindow().getFramebufferWidth(), Minecraft.getInstance().getMainWindow().getFramebufferHeight(), true);
 		buffer.resize(256, 256, true);
 //		clipping.resize(Minecraft.getInstance().getMainWindow().getFramebufferWidth(), Minecraft.getInstance().getMainWindow().getFramebufferHeight(), true);
-		
+
 		matrixStackIn.push();
-		if (struct.positions.get(0).getY() == struct.positions.get(1).getY()) matrixStackIn.rotate(new Quaternion(90, 0, 0, true));
+		if (struct.positions.get(0).getY() == struct.positions.get(1).getY())
+			matrixStackIn.rotate(new Quaternion(90, 0, 0, true));
 		else matrixStackIn.translate(0, 0, 1);
 		matrixStackIn.translate(0, 0, -0.01f);
 		Minecraft.getInstance().getFramebuffer().unbindFramebuffer();
@@ -78,7 +74,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 //		} else {
 //			stack.translate(0, -0.1f, 0);
 //		}
-		stack.translate(-0.5f, -0.25f,0);
+		stack.translate(-0.5f, -0.25f, 0);
 		for (int xOff = -16; xOff <= 16; xOff++) {
 			for (int yOff = -16; yOff <= 16; yOff++) {
 				for (int zOff = -16; zOff <= 16; zOff++) {
@@ -100,7 +96,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			}
 		}
 		stack.pop();
-		
+
 		for (RenderType blockRenderType : RenderType.getBlockRenderTypes()) {
 			BufferBuilder bufferBuilder = (BufferBuilder) buffersBlocks.getBufferSource().getBuffer(blockRenderType);
 			bufferBuilder.sortVertexData(tileEntityIn.getPos().getX(), tileEntityIn.getPos().getY(), tileEntityIn.getPos().getZ());
@@ -136,7 +132,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 //		RendererHelper.drawSquare(corner1, corner2, corner3, corner4, new Vector3f(1, 0, 0), builder, combinedLightIn, 0, 1, 0, 1);
 		RendererUtils.drawTexture(matrixStackIn, textureLocation, -sizeX / 2f + 0.5f, 0, sizeX, sizeY, 0);
 		matrixStackIn.pop();
-		
+
 		recursionDepth--;
 	}
 	

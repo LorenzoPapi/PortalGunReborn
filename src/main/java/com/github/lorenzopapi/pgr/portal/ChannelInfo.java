@@ -26,7 +26,7 @@ public class ChannelInfo {
 	}
 
 	public boolean equals(Object o) {
-		return (o instanceof ChannelInfo && ((ChannelInfo)o).uuid.equals(this.uuid) && ((ChannelInfo)o).channelName.equals(this.channelName));
+		return (o instanceof ChannelInfo && ((ChannelInfo) o).uuid.equals(this.uuid) && ((ChannelInfo) o).channelName.equals(this.channelName));
 	}
 
 	public ChannelInfo readFromNBT(CompoundNBT tag) {
@@ -48,11 +48,11 @@ public class ChannelInfo {
 	@Override
 	public String toString() {
 		return "ChannelInfo{" +
-				"uuid='" + uuid + '\'' +
-				", channelName='" + channelName + '\'' +
-				", colorA=" + colorA +
-				", colorB=" + colorB +
-				'}';
+				       "uuid='" + uuid + '\'' +
+				       ", channelName='" + channelName + '\'' +
+				       ", colorA=" + colorA +
+				       ", colorB=" + colorB +
+				       '}';
 	}
 
 
