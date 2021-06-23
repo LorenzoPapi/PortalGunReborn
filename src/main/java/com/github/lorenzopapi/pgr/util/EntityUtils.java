@@ -22,6 +22,7 @@ public class EntityUtils {
 		ent.getEntityWorld().playSound(ent.getEntityWorld().isRemote() ? Minecraft.getInstance().player : null, ent.getPosX(), ent.getPosY() + ent.getEyeHeight(), ent.getPosZ(), soundEvent, soundCategory, volume, pitch);
 	}
 
+	//TODO: wth does this mean why cannot I use wolrld ray trace smh sfsfhsfuishf
 	public static RayTraceResult rayTrace(World world, Vector3d origin, Vector3d dest, Entity exception, boolean checkEntityCollision, RayTraceContext.BlockMode blockMode, Predicate<BlockInfo> blockFilter, RayTraceContext.FluidMode fluidMode, Predicate<Entity> filter) {
 		RayTraceResult raytraceresult = IBlockReader.doRayTrace(new RayTraceContext(origin, dest, blockMode, fluidMode, exception), (context, pos) -> {
 			BlockState blockstate = world.getBlockState(pos);

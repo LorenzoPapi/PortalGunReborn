@@ -51,7 +51,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		recursionDepth++;
 		int sizeX = struct.width;
 //		int sizeY = struct.height;
-		int sizeY = 1;
+		int sizeY = struct.height;
 //		buffer.resize(Minecraft.getInstance().getMainWindow().getFramebufferWidth(), Minecraft.getInstance().getMainWindow().getFramebufferHeight(), true);
 		buffer.resize(256, 256, true);
 //		clipping.resize(Minecraft.getInstance().getMainWindow().getFramebufferWidth(), Minecraft.getInstance().getMainWindow().getFramebufferHeight(), true);
