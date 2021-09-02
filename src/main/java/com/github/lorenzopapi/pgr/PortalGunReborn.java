@@ -1,13 +1,18 @@
 package com.github.lorenzopapi.pgr;
 
+import com.github.lorenzopapi.pgr.assets.Shaders;
 import com.github.lorenzopapi.pgr.handler.PGRClientHandler;
 import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.handler.PGRServerHandler;
 import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
+import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -75,6 +80,7 @@ public class PortalGunReborn {
 
 	private void onClientSetup(FMLClientSetupEvent e) {
 		PGRConfig.KeyBinds.registerKeyBindings();
-		//TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
+		// TODO: figure out how to make renderer work with optifine, because holy lord it is broken right now
+		if (!ModList.get().isLoaded("optifine")) TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
 	}
 }

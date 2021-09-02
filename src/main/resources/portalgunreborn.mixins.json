@@ -7,7 +7,10 @@
     "ICollisionReaderMixin"
   ],
   "client": [
-    "ClientPlayerEntityMixin"
+    "ClientPlayerEntityMixin",
+    "WorldRendererAccessor",
+    "WorldRendererMixin",
+    "WorldRendererAccessor$RenderInformationContainerAccessor"
   ],
   "minVersion": "0.8"
 }
