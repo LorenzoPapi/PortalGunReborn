@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PGRServerHandler {
-	public HashMap<RegistryKey<World>, PGRSavedData> portalInfoByDimension = new HashMap<>();
-	public ArrayList<ChannelIndicator> indicators = new ArrayList<>();
+	public final HashMap<RegistryKey<World>, PGRSavedData> portalInfoByDimension = new HashMap<>();
+	public final ArrayList<ChannelIndicator> indicators = new ArrayList<>();
 
 	public void onRightClickItem(PlayerInteractEvent.RightClickItem e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);

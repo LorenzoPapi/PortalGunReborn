@@ -27,9 +27,9 @@ public class PGRConfig {
 	}
 
 	public static class KeyBinds {
-		public static KeyBinding keyGrab = new KeyBinding("key.grab", GLFW.GLFW_KEY_G, "key.categories.portalgun");
-		public static KeyBinding keyReset = new KeyBinding("key.resetPortals", GLFW.GLFW_KEY_R, "key.categories.portalgun");
-		public static KeyBinding keyZoom = new KeyBinding("key.zoom", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.portalgun");
+		public static final KeyBinding keyGrab = new KeyBinding("key.grab", GLFW.GLFW_KEY_G, "key.categories.portalgun");
+		public static final KeyBinding keyReset = new KeyBinding("key.resetPortals", GLFW.GLFW_KEY_R, "key.categories.portalgun");
+		public static final KeyBinding keyZoom = new KeyBinding("key.zoom", InputMappings.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.portalgun");
 
 		public static void registerKeyBindings() {
 			ClientRegistry.registerKeyBinding(keyGrab);

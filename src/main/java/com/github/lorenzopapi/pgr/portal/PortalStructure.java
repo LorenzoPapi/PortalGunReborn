@@ -3,7 +3,6 @@ package com.github.lorenzopapi.pgr.portal;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
 import com.github.lorenzopapi.pgr.portalgun.UpDirection;
-import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.DoubleNBT;
@@ -18,7 +17,7 @@ import java.util.List;
 public class PortalStructure {
 
 	public List<BlockPos> positions = new ArrayList<>();
-	public List<BlockPos> behinds = new ArrayList<>();
+	public final List<BlockPos> behinds = new ArrayList<>();
 	public PortalStructure pair;
 	public ChannelInfo info;
 	public int width = 1;

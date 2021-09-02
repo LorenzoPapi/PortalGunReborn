@@ -10,9 +10,9 @@ import net.minecraft.world.storage.WorldSavedData;
 import java.util.*;
 
 public class PGRSavedData extends WorldSavedData {
-	public HashMap<String, ArrayList<ChannelInfo>> channelList;
-	public List<PortalStructure> portals;
-	public HashMap<PortalStructure, HashSet<BlockPos>> behinds;
+	public final HashMap<String, ArrayList<ChannelInfo>> channelList;
+	public final List<PortalStructure> portals;
+	public final HashMap<PortalStructure, HashSet<BlockPos>> behinds;
 	public boolean initialized;
 
 	public PGRSavedData(String name) {

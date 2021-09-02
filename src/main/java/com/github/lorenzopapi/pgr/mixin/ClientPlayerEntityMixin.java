@@ -5,11 +5,9 @@ import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
 import com.github.lorenzopapi.pgr.portalgun.UpDirection;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
-import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,8 +26,7 @@ public class ClientPlayerEntityMixin {
 	@Final
 	protected Minecraft mc;
 
-	BlockPos.Mutable oldPos = new BlockPos.Mutable();
-	Direction oldDir;
+	final BlockPos.Mutable oldPos = new BlockPos.Mutable();
 	List<BlockPos> oldBehinds = new ArrayList<>();
 
 	@Inject(method = "shouldBlockPushPlayer", at = @At("HEAD"), cancellable = true)
@@ -38,7 +35,6 @@ public class ClientPlayerEntityMixin {
 		PortalStructure structure = PGRUtils.findPortalByPosition(mc.world, pos);
 		if (current.getBlock() == PGRRegistry.PORTAL_BLOCK && structure != null) {
 			oldPos.setPos(pos);
-			oldDir = current.get(PortalBlock.HORIZONTAL_FACING).getOpposite();
 			oldBehinds = structure.behinds;
 			cir.setReturnValue(false);
 		} else {

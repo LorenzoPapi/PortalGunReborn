@@ -24,11 +24,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PGRRegistry {
+	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
+	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
+	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
 	public static final PortalBlock PORTAL_BLOCK = new PortalBlock();
 	public static final EntityType<PortalProjectileEntity> PPE_TYPE = EntityType.Builder.<PortalProjectileEntity>create(PortalProjectileEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("portal_projectile");
-	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
-	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
-	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
 	public static final RegistryObject<TileEntityType<PortalBlockTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalBlockTileEntity::new, PORTAL_BLOCK).build(null));
 
 	public static void register(IEventBus modBus) {
@@ -49,7 +49,7 @@ public class PGRRegistry {
 
 	@SubscribeEvent
 	public static void onBlockRegistry(final RegistryEvent.Register<Block> e) {
-		registerBlock(e, PORTAL_BLOCK, "portal_block");
+		e.getRegistry().register(PORTAL_BLOCK.setRegistryName(new ResourceLocation(Reference.MOD_ID, "portal_block")));
 	}
 
 	@SubscribeEvent
@@ -64,9 +64,5 @@ public class PGRRegistry {
 
 	private static void registerItem(RegistryEvent.Register<Item> e, Item item, String name) {
 		e.getRegistry().register(item.setRegistryName(new ResourceLocation(Reference.MOD_ID, name)));
-	}
-
-	private static void registerBlock(RegistryEvent.Register<Block> e, Block block, String name) {
-		e.getRegistry().register(block.setRegistryName(new ResourceLocation(Reference.MOD_ID, name)));
 	}
 }
