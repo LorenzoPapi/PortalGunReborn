@@ -131,8 +131,8 @@ public class PortalProjectileEntity extends Entity {
 				}
 			}
 		}
-		RayTraceResult rtr = EntityUtils.rayTrace(this.world, this.getPositionVec(), this.getPositionVec().add(this.getMotion()), this, true, RayTraceContext.BlockMode.COLLIDER, info -> true, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.NONE : RayTraceContext.FluidMode.ANY, entity -> true);
-		if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
+		RayTraceResult rtr = EntityUtils.rayTrace(this.world, this.getPositionVec(), this.getPositionVec().add(this.getMotion()), this, RayTraceContext.BlockMode.COLLIDER, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.NONE : RayTraceContext.FluidMode.ANY, entity -> true);
+		if (rtr.getType() == RayTraceResult.Type.BLOCK) {
 			BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
 			BlockPos pos = brtr.getPos();
 			BlockState state = this.world.getBlockState(pos);
@@ -140,7 +140,7 @@ public class PortalProjectileEntity extends Entity {
 			if (state.getMaterial() != Material.AIR)
 				state.onEntityCollision(this.world, pos, this);
 
-			if (state.getMaterial() == Material.GLASS) {
+			if (PGRConfig.COMMON.canFireThroughGlass.get() && state.getMaterial() == Material.GLASS) {
 				this.setPosition(brtr.getHitVec().x - this.getMotion().x * 0.98D, brtr.getHitVec().y - this.getMotion().y * 0.98D, brtr.getHitVec().z - this.getMotion().z * 0.98D);
 			} else {
 				if (!this.world.isRemote) {

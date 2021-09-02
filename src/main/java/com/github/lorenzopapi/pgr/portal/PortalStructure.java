@@ -9,6 +9,7 @@ import net.minecraft.nbt.DoubleNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class PortalStructure {
 
-	public List<BlockPos> positions = new ArrayList<>();
+	public final List<BlockPos> positions = new ArrayList<>();
 	public final List<BlockPos> behinds = new ArrayList<>();
 	public PortalStructure pair;
 	public ChannelInfo info;
@@ -43,6 +44,7 @@ public class PortalStructure {
 				ListNBT list = tag.getList("pos_" + i, 6);
 				this.positions.add(new BlockPos(list.getDouble(0), list.getDouble(1), list.getDouble(2)).toImmutable());
 			}
+			positions.sort(Vector3i::compareTo);
 		}
 		return this;
 	}
@@ -109,9 +111,9 @@ public class PortalStructure {
 	}
 
 	public PortalStructure setPositionsAndDirection(List<BlockPos> newPos, Direction dir, UpDirection upDir) {
-		positions = new ArrayList<>(width * height);
-		for (int i = 0; i < width * height; i++)
-			positions.add(newPos.get(i));
+		this.positions.clear();
+		this.positions.addAll(newPos);
+		this.positions.sort(Vector3i::compareTo);
 		this.direction = dir;
 		this.upDirection = upDir;
 		return this;

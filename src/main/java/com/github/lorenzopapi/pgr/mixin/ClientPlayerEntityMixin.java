@@ -2,13 +2,13 @@ package com.github.lorenzopapi.pgr.mixin;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
 import com.github.lorenzopapi.pgr.portalgun.UpDirection;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,16 +41,26 @@ public class ClientPlayerEntityMixin {
 			if (oldBehinds.contains(pos)) {
 				PortalStructure struct = PGRUtils.findPortalByPosition(mc.world, oldPos.toImmutable());
 				if (struct != null && struct.hasPair()) {
-					BlockPos pairPos = struct.pair.positions.get(struct.positions.indexOf(oldPos));
-					UpDirection upDir = mc.world.getBlockState(pairPos).get(PortalBlock.UP_FACING);
+					Vector3d pairPos = averagePosOfList(struct.pair.positions);
 					double x = pairPos.getX() + getDecimals(mc.player.getPosX());
-					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (upDir != UpDirection.WALL ? upDir.toDirection().getYOffset() - mc.player.getHeight() : 0);
+					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (struct.pair.upDirection != UpDirection.WALL ? struct.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
 					double z = pairPos.getZ() + getDecimals(mc.player.getPosZ());
-					mc.player.setLocationAndAngles(x, y, z, mc.player.rotationYaw, mc.player.rotationPitch);
+					mc.player.setLocationAndAngles(x, y, z, (struct.pair.direction == struct.direction ? mc.player.rotationYaw + 180 : mc.player.rotationYaw), mc.player.rotationPitch);
 					cir.setReturnValue(false);
 				}
 			}
 		}
+	}
+
+	private Vector3d averagePosOfList(List<BlockPos> poses) {
+		double ax = 0, az = 0;
+		for (BlockPos p : poses) {
+			ax += p.getX();
+			az += p.getZ();
+		}
+		ax /= poses.size();
+		az /= poses.size();
+		return new Vector3d(ax, poses.get(0).getY(), az);
 	}
 
 	private double getDecimals(double d) {
