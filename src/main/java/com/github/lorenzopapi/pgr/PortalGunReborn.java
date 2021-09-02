@@ -1,6 +1,5 @@
 package com.github.lorenzopapi.pgr;
 
-import com.github.lorenzopapi.pgr.assets.Shaders;
 import com.github.lorenzopapi.pgr.handler.PGRClientHandler;
 import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
@@ -8,7 +7,6 @@ import com.github.lorenzopapi.pgr.handler.PGRServerHandler;
 import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

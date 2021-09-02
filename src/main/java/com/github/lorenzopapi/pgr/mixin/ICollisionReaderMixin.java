@@ -1,5 +1,6 @@
 package com.github.lorenzopapi.pgr.mixin;
 
+import com.github.lorenzopapi.pgr.handler.CollisionReaderMixinHandler;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
@@ -27,21 +28,8 @@ public interface ICollisionReaderMixin {
 	 * @author LorenzoPapi
 	 * @reason I cannot inject in interfaces because java bad
 	 */
-//	@Overwrite(remap = false)
-//	default Stream<VoxelShape> getCollisionShapes(Entity entity, AxisAlignedBB aabb) {
-//		if (entity != null && entity.world.isRemote) {
-//			AtomicReference<HashSet<BlockPos>> behinds = new AtomicReference<>(new HashSet<>());
-//			PGRSavedData data = Reference.serverEH.getWorldSaveData(entity.world);
-//			StreamSupport.stream(new VoxelShapeSpliterator(entity.world, entity, aabb, (s, p) -> {
-//				PortalStructure struct = PGRUtils.findPortalByPosition(entity.world, p.toImmutable());
-//				if (struct != null && struct.hasPair()) {
-//					behinds.get().addAll(struct.behinds);
-//					data.behinds.putIfAbsent(struct, behinds.get());
-//				}
-//				return s.getBlock() != Blocks.AIR;
-//			}), false).forEach(VoxelShape::getBoundingBox);
-//			return StreamSupport.stream(new VoxelShapeSpliterator(entity.world, entity, aabb, (s, p) -> s.getBlock() != PGRRegistry.PORTAL_BLOCK && !behinds.get().contains(p.toImmutable())), false);
-//		}
-//		return Stream.empty();
-//	}
+	@Overwrite(remap = false)
+	default Stream<VoxelShape> getCollisionShapes(Entity entity, AxisAlignedBB aabb) {
+		return CollisionReaderMixinHandler.getShapes(entity, aabb, (ICollisionReader)(Object)this);
+	}
 }
