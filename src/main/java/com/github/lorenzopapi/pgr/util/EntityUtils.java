@@ -23,40 +23,38 @@ public class EntityUtils {
 	}
 
 	//TODO: wth does this mean why cannot I use wolrld ray trace smh sfsfhsfuishf
-	public static RayTraceResult rayTrace(World world, Vector3d origin, Vector3d dest, Entity exception, boolean checkEntityCollision, RayTraceContext.BlockMode blockMode, Predicate<BlockInfo> blockFilter, RayTraceContext.FluidMode fluidMode, Predicate<Entity> filter) {
-		RayTraceResult raytraceresult = IBlockReader.doRayTrace(new RayTraceContext(origin, dest, blockMode, fluidMode, exception), (context, pos) -> {
+	public static RayTraceResult rayTrace(World world, Vector3d start, Vector3d end, Entity exception, boolean checkCollision, RayTraceContext.BlockMode blockMode, Predicate<BlockInfo> blockFilter, RayTraceContext.FluidMode fluidMode, Predicate<Entity> filter) {
+		RayTraceResult rtr = IBlockReader.doRayTrace(new RayTraceContext(start, end, blockMode, fluidMode, exception), (context, pos) -> {
 			BlockState blockstate = world.getBlockState(pos);
-			if (blockFilter.test(new BlockInfo(world, blockstate, pos))) //Taken from IBlockReader.rayTraceBlocks
-			{
-				FluidState ifluidstate = world.getFluidState(pos);
+			if (blockFilter.test(new BlockInfo(world, blockstate, pos))) {
+				FluidState fluid = world.getFluidState(pos);
 				Vector3d vec3d = context.getStartVec();
 				Vector3d vec3d1 = context.getEndVec();
-				VoxelShape voxelshape = context.getBlockShape(blockstate, world, pos);
-				BlockRayTraceResult blockraytraceresult = world.rayTraceBlocks(vec3d, vec3d1, pos, voxelshape, blockstate);
-				VoxelShape voxelshape1 = context.getFluidShape(ifluidstate, world, pos);
-				BlockRayTraceResult blockraytraceresult1 = voxelshape1.rayTrace(vec3d, vec3d1, pos);
-				double d0 = blockraytraceresult == null ? Double.MAX_VALUE : context.getStartVec().squareDistanceTo(blockraytraceresult.getHitVec());
-				double d1 = blockraytraceresult1 == null ? Double.MAX_VALUE : context.getStartVec().squareDistanceTo(blockraytraceresult1.getHitVec());
-				return d0 <= d1 ? blockraytraceresult : blockraytraceresult1;
+
+				BlockRayTraceResult brtr = world.rayTraceBlocks(vec3d, vec3d1, pos, context.getBlockShape(blockstate, world, pos), blockstate);
+				double d0 = brtr == null ? Double.MAX_VALUE : vec3d.squareDistanceTo(brtr.getHitVec());
+
+				BlockRayTraceResult brtr1 = context.getFluidShape(fluid, world, pos).rayTrace(vec3d, vec3d1, pos);
+				double d1 = brtr1 == null ? Double.MAX_VALUE : vec3d.squareDistanceTo(brtr1.getHitVec());
+
+				return d0 <= d1 ? brtr : brtr1;
 			}
 			return null;
 		}, (context) -> {
-			Vector3d vec3d = context.getStartVec().subtract(context.getEndVec()); //getStartVec, getEndVec
+			Vector3d vec3d = context.getStartVec().subtract(context.getEndVec());
 			return BlockRayTraceResult.createMiss(context.getEndVec(), Direction.getFacingFromVector(vec3d.x, vec3d.y, vec3d.z), new BlockPos(context.getEndVec()));
 		});
-		if (checkEntityCollision) {
-			if (raytraceresult.getType() != RayTraceResult.Type.MISS) {
-				dest = raytraceresult.getHitVec();
+		if (checkCollision) {
+			if (rtr.getType() != RayTraceResult.Type.MISS) {
+				end = rtr.getHitVec();
 			}
 
-			AxisAlignedBB aabb = new AxisAlignedBB(origin, dest).grow(1F);
-			RayTraceResult raytraceresult1 = ProjectileHelper.rayTraceEntities(world, exception, origin, dest, aabb, filter);
-			if (raytraceresult1 != null) {
-				raytraceresult = raytraceresult1;
+			RayTraceResult rtr1 = ProjectileHelper.rayTraceEntities(world, exception, start, end, new AxisAlignedBB(start, end).grow(1F), filter);
+			if (rtr1 != null) {
+				rtr = rtr1;
 			}
 		}
-
-		return raytraceresult;
+		return rtr;
 	}
 
 	public static class BlockInfo {

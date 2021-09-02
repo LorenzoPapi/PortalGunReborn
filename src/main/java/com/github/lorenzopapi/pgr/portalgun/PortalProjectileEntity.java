@@ -6,6 +6,7 @@ import com.github.lorenzopapi.pgr.handler.PGRSounds;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
+import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -126,15 +127,11 @@ public class PortalProjectileEntity extends Entity {
 				if (ent instanceof LivingEntity) {
 					this.shooter = (LivingEntity) ent;
 				} else {
-					getDataManager().set(SHOOTER, -1);
+					this.getDataManager().set(SHOOTER, -1);
 				}
 			}
 		}
-		Vector3d start = this.getPositionVec();
-		Vector3d end = this.getPositionVec().add(this.getMotion());
-		//TODO: check on glass and liquids
-		RayTraceResult rtr = EntityUtils.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> true, RayTraceContext.FluidMode.NONE, entity -> true);
-		//RayTraceResult rtr = EntityHelper.rayTrace(this.world, start, end, this, false, RayTraceContext.BlockMode.COLLIDER, blockInfo -> PGRConfig.COMMON.canFireThroughGlass.get() || blockInfo.state.getMaterial() != Material.GLASS, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.ANY : RayTraceContext.FluidMode.NONE, entity -> true);
+		RayTraceResult rtr = EntityUtils.rayTrace(this.world, this.getPositionVec(), this.getPositionVec().add(this.getMotion()), this, true, RayTraceContext.BlockMode.COLLIDER, info -> true, PGRConfig.COMMON.canFireThroughLiquid.get() ? RayTraceContext.FluidMode.NONE : RayTraceContext.FluidMode.ANY, entity -> true);
 		if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
 			BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
 			BlockPos pos = brtr.getPos();
@@ -144,12 +141,11 @@ public class PortalProjectileEntity extends Entity {
 				state.onEntityCollision(this.world, pos, this);
 
 			if (state.getMaterial() == Material.GLASS) {
-				setPosition(brtr.getHitVec().x - this.getMotion().x * 0.98D, brtr.getHitVec().y - this.getMotion().y * 0.98D, brtr.getHitVec().z - this.getMotion().z * 0.98D);
+				this.setPosition(brtr.getHitVec().x - this.getMotion().x * 0.98D, brtr.getHitVec().y - this.getMotion().y * 0.98D, brtr.getHitVec().z - this.getMotion().z * 0.98D);
 			} else {
 				if (!this.world.isRemote) {
 					Vector3d lookDir = Vector3d.copy(Direction.fromAngle(this.rotationYaw).getDirectionVec());
-					Direction look = Direction.getFacingFromVector(lookDir.x, 0, lookDir.z);
-					if (PGRUtils.spawnPortal(this.world, pos, brtr.getFace(), look, this.structure, this.pWidth, this.pHeight)) {
+					if (PGRUtils.spawnPortal(this.world, pos, brtr.getFace(), Direction.getFacingFromVector(lookDir.x, 0, lookDir.z), this.structure, this.pWidth, this.pHeight)) {
 						if (this.shooter != null) {
 							ItemStack is = this.shooter.getHeldItemMainhand();
 							if (is.getTag() != null) {
@@ -169,20 +165,26 @@ public class PortalProjectileEntity extends Entity {
 						EntityUtils.playSoundAtEntity(this, PGRSounds.p_portal_invalid_surface, SoundCategory.BLOCKS, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 					}
 				}
-				setDead();
+				this.setDead();
 				return;
 			}
 		}
 		Vector3d newPos = this.getPositionVec().add(this.getMotion());
 		this.setPosition(newPos.x, newPos.y, newPos.z);
-		if (isInWater())
-			for (int i1 = 0; i1 < 4; i1++) {
-				float f8 = 0.25F;
-				this.world.addParticle(ParticleTypes.BUBBLE, this.getPosX() - this.getMotion().x * f8, this.getPosY() - this.getMotion().y * f8, this.getPosZ() - this.getMotion().z * f8, this.getMotion().x, this.getMotion().y, this.getMotion().z);
+		if (this.isInWater())
+			for (int i = 0; i < 4; i++) {
+				float scale = 0.25F;
+				this.world.addParticle(ParticleTypes.BUBBLE, this.getPosX() - this.getMotion().x * scale, this.getPosY() - this.getMotion().y * scale, this.getPosZ() - this.getMotion().z * scale, this.getMotion().x, this.getMotion().y, this.getMotion().z);
 			}
 		this.recenterBoundingBox();
 		this.doBlockCollisions();
 		this.age++;
+	}
+
+	@Override
+	protected void setDead() {
+		Reference.LOGGER.info("DED");
+		super.setDead();
 	}
 
 	@Override

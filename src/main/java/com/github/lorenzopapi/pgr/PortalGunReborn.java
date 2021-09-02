@@ -32,6 +32,7 @@ public class PortalGunReborn {
 
 		// config
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PGRConfig.COMMON_SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PGRConfig.CLIENT_SPEC);
 
 		// client events
 		if (FMLEnvironment.dist.isClient()) {

@@ -15,15 +15,13 @@ public class PGRConfig {
 	public static final ForgeConfigSpec COMMON_SPEC;
 
 	static {
-		final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Client::new);
-		CLIENT_SPEC = specPair.getRight();
-		CLIENT = specPair.getLeft();
-	}
+		final Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
+		CLIENT_SPEC = clientPair.getRight();
+		CLIENT = clientPair.getLeft();
+		final Pair<Common, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Common::new);
+		COMMON_SPEC = commonPair.getRight();
+		COMMON = commonPair.getLeft();
 
-	static {
-		final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
-		COMMON_SPEC = specPair.getRight();
-		COMMON = specPair.getLeft();
 	}
 
 	public static class KeyBinds {
@@ -39,27 +37,33 @@ public class PGRConfig {
 	}
 
 	public static class Client {
-
 		public final ForgeConfigSpec.IntValue portalgunIndicatorSize;
 
 		public Client(ForgeConfigSpec.Builder builder) {
-			builder.push("client-only");
-			portalgunIndicatorSize = builder.comment("Portal Gun indicator size percentage").defineInRange("size", 30, 0, 100);
+			builder.comment("Rendering-related settings").push("client-only");
+			portalgunIndicatorSize = builder
+					.comment("Portal Gun indicator size percentage")
+					.defineInRange("size", 30, 0, 100);
 			builder.pop();
 		}
 	}
 
 	public static class Common {
-
 		public final ForgeConfigSpec.IntValue maxShootDistance;
 		public final ForgeConfigSpec.BooleanValue canFireThroughLiquid;
 		public final ForgeConfigSpec.BooleanValue canFireThroughGlass;
 
 		public Common(ForgeConfigSpec.Builder builder) {
-			builder.push("portalgun");
-			maxShootDistance = builder.comment("Maximum distance to fire portals from the Portal Gun.").defineInRange("distance", 10000, 1, 0x7fffffff);
-			canFireThroughLiquid = builder.comment("Can the projectile fired by the Portal Gun go through liquid?").define("canGoThroughLiquid", false);
-			canFireThroughGlass = builder.comment("Can the projectile fired by the Portal Gun go through glass?").define("canGoThroughGlass", false);
+			builder.comment("Portal Gun Settings").push("portalgun");
+			maxShootDistance = builder
+					.comment("Maximum distance to fire portals from the Portal Gun.")
+					.defineInRange("distance", 10000, 1, Integer.MAX_VALUE);
+			canFireThroughLiquid = builder
+					.comment("Can the projectile fired by the Portal Gun go through liquid?")
+					.define("canGoThroughLiquid", false);
+			canFireThroughGlass = builder
+					.comment("Can the projectile fired by the Portal Gun go through glass?")
+					.define("canGoThroughGlass", false);
 			builder.pop();
 		}
 	}
