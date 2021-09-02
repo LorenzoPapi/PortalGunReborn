@@ -8,6 +8,7 @@ import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
 import com.github.lorenzopapi.pgr.portalgun.PortalProjectileEntity;
+import com.github.lorenzopapi.pgr.portalgun.UpDirection;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,7 +81,7 @@ public class PGRUtils {
 				possiblePair.setPair(portal);
 			}
 
-			portal.setPositionsAndDirection(positions, sideHit.getAxis().isHorizontal() ? sideHit : upDir).initialize(world);
+			portal.setPositionsAndDirection(positions, sideHit.getAxis().isHorizontal() ? sideHit : upDir, UpDirection.fromDirection(sideHit)).initialize(world);
 
 			// Updates channel indicator
 			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());
@@ -98,15 +99,6 @@ public class PGRUtils {
 			return true;
 		}
 		return false;
-	}
-
-	public static void changeBehinds(World world, BlockPos pos, boolean remove) {
-		List<BlockPos> behinds = Reference.serverEH.getWorldSaveData(world).behinds;
-		if (remove)
-			behinds.remove(pos);
-		else
-			behinds.add(pos);
-		Reference.serverEH.getWorldSaveData(world).markDirty();
 	}
 
 	public static PortalStructure findPortalByPosition(World world, BlockPos pos) {

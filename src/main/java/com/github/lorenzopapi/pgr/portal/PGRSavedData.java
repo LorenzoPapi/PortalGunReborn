@@ -7,22 +7,25 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PGRSavedData extends WorldSavedData {
 	public HashMap<String, ArrayList<ChannelInfo>> channelList;
 	public List<PortalStructure> portals;
-	public ArrayList<BlockPos> behinds;
+	public HashMap<PortalStructure, HashSet<BlockPos>> behinds;
 	public boolean initialized;
 
 	public PGRSavedData(String name) {
 		super(name);
 		this.channelList = new HashMap<>();
 		this.portals = new ArrayList<>();
-		this.behinds = new ArrayList<>();
+		this.behinds = new HashMap<>();
+	}
+
+	public void reset() {
+		this.channelList.clear();
+		this.portals.clear();
+		this.behinds.clear();
 	}
 
 	public void initialize(World world) {
@@ -33,7 +36,7 @@ public class PGRSavedData extends WorldSavedData {
 		Reference.LOGGER.info("Portals: " + portals.size());
 		for (PortalStructure portal : portals) {
 			portal.initialize(world);
-			if (portal.pair == null) {
+			if (!portal.hasPair()) {
 				PortalStructure possiblePair = findPair(portal);
 				if (possiblePair != null) {
 					portal.setPair(possiblePair);
@@ -74,11 +77,8 @@ public class PGRSavedData extends WorldSavedData {
 		} else {
 			indicator.setPortalBPlaced(false);
 		}
-		if (struct.pair != null) {
-			struct.pair.setPair(null);
-			struct.setPair(null);
-		}
 		struct.removeStructure();
+		behinds.remove(struct);
 		portals.remove(struct);
 		markDirty();
 	}

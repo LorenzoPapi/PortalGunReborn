@@ -144,6 +144,9 @@ public class PGRServerHandler {
 	}
 
 	public void onServerStopping(FMLServerStoppingEvent e) {
+		for (PGRSavedData data : portalInfoByDimension.values()) {
+			data.reset();
+		}
 		this.portalInfoByDimension.clear();
 		this.indicators.clear();
 	}

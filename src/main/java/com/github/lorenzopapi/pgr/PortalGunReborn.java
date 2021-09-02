@@ -8,6 +8,7 @@ import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.SharedConstants;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -24,6 +25,10 @@ import static com.github.lorenzopapi.pgr.util.Reference.MOD_ID;
 public class PortalGunReborn {
 	public PortalGunReborn() {
 		LOGGER.info("Hello from PGR!");
+		// idk why but looks cool
+		//SharedConstants.developmentMode = true;
+		//SharedConstants.useDatafixers = false;
+		// NOTE: never try this again ever for any reasons
 		Reference.serverEH = new PGRServerHandler();
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -40,6 +45,7 @@ public class PortalGunReborn {
 			forgeBus.addListener(Reference.clientEH::onRenderTick);
 			forgeBus.addListener(Reference.clientEH::onKeyEvent);
 			forgeBus.addListener(Reference.clientEH::onClickEvent);
+			forgeBus.addListener(Reference.clientEH::onOverlayEvent);
 			//forgeBus.addListener(Reference.clientEH::onHandRender);
 			//forgeBus.addListener(Reference.clientEH::onFovModifierEvent);
 			forgeBus.addListener(Reference.clientEH::onMouseEvent);

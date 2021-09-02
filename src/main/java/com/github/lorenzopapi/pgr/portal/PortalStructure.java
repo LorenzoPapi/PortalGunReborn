@@ -2,8 +2,8 @@ package com.github.lorenzopapi.pgr.portal;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
+import com.github.lorenzopapi.pgr.portalgun.UpDirection;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
-import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.DoubleNBT;
@@ -18,6 +18,7 @@ import java.util.List;
 public class PortalStructure {
 
 	public List<BlockPos> positions = new ArrayList<>();
+	public List<BlockPos> behinds = new ArrayList<>();
 	public PortalStructure pair;
 	public ChannelInfo info;
 	public int width = 1;
@@ -27,15 +28,17 @@ public class PortalStructure {
 	public int portalColor = 0; // Black
 	public boolean initialized = false;
 	public Direction direction = Direction.NORTH;
+	public UpDirection upDirection = UpDirection.WALL;
+	public boolean beingRemoved = false;
 
-	public PortalStructure() {
-	}
+	public PortalStructure() {}
 
 	public PortalStructure readFromNBT(CompoundNBT tag) {
 		this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
 		this.isTypeA = tag.getBoolean("isTypeA");
 		this.portalColor = isTypeA ? info.colorA : info.colorB;
 		if (tag.contains("direction")) {
+			this.upDirection = UpDirection.valueOf(tag.getString("upDirection").toUpperCase());
 			this.direction = Direction.byHorizontalIndex(tag.getInt("direction"));
 			for (int i = 0; i < tag.getInt("posSize"); i++) {
 				ListNBT list = tag.getList("pos_" + i, 6);
@@ -49,7 +52,7 @@ public class PortalStructure {
 	public String toString() {
 		return "PortalStructure{" +
 				       "positions=" + positions +
-				       ", hasPair?=" + (pair != null) +
+				       ", hasPair?=" + hasPair() +
 				       ", info=" + info +
 				       ", width=" + width +
 				       ", height=" + height +
@@ -64,6 +67,7 @@ public class PortalStructure {
 		tag.putInt("height", height);
 		tag.putInt("width", width);
 		if (positions.size() > 0) {
+			tag.putString("upDirection", upDirection.toString());
 			tag.putInt("direction", direction.getHorizontalIndex());
 			tag.putInt("posSize", positions.size());
 			for (int i = 0; i < positions.size(); i++) {
@@ -89,9 +93,12 @@ public class PortalStructure {
 		this.initialized = true;
 		if (!world.isRemote) {
 			for (BlockPos pos : positions) {
-				BlockState state = PGRRegistry.PORTAL_BLOCK.getDefaultState().with(PortalBlock.HORIZONTAL_FACING, direction);
+				BlockState state = PGRRegistry.PORTAL_BLOCK.getDefaultState().with(PortalBlock.HORIZONTAL_FACING, direction).with(PortalBlock.UP_FACING, upDirection);
 				world.setBlockState(pos, state);
-				Reference.serverEH.getWorldSaveData(world).behinds.add(pos.offset(state.get(PortalBlock.HORIZONTAL_FACING).getOpposite()));
+				if (upDirection != UpDirection.WALL)
+					this.behinds.add(pos.offset(upDirection.toDirection().getOpposite()));
+				else
+					this.behinds.add(pos.offset(direction.getOpposite()));
 			}
 		}
 	}
@@ -102,11 +109,12 @@ public class PortalStructure {
 		return this;
 	}
 
-	public PortalStructure setPositionsAndDirection(List<BlockPos> newPos, Direction dir) {
+	public PortalStructure setPositionsAndDirection(List<BlockPos> newPos, Direction dir, UpDirection upDir) {
 		positions = new ArrayList<>(width * height);
 		for (int i = 0; i < width * height; i++)
 			positions.add(newPos.get(i));
 		this.direction = dir;
+		this.upDirection = upDir;
 		return this;
 	}
 
@@ -135,10 +143,23 @@ public class PortalStructure {
 		return this;
 	}
 
+	public boolean hasPair() {
+		return this.pair != null;
+	}
+
 	public void removeStructure() {
+		if (beingRemoved)
+			return;
+		this.beingRemoved = true;
+		if (this.hasPair()) {
+			this.pair.setPair(null);
+			this.setPair(null);
+		}
 		for (BlockPos pos : positions) {
-			BlockState state = PGRRegistry.PORTAL_BLOCK.getDefaultState().with(PortalBlock.HORIZONTAL_FACING, direction);
-			PGRUtils.changeBehinds(world, pos.offset(state.get(PortalBlock.HORIZONTAL_FACING).getOpposite()), true);
+			if (upDirection != UpDirection.WALL)
+				this.behinds.remove(pos.offset(upDirection.toDirection().getOpposite()));
+			else
+				this.behinds.remove(pos.offset(direction.getOpposite()));
 			world.removeBlock(pos, false);
 		}
 	}

@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -34,39 +35,61 @@ import java.util.List;
 public class PortalBlock extends Block {
 
 	public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final EnumProperty<UpDirection> UP_FACING = EnumProperty.create("up_facing", UpDirection.class);
 
 	public PortalBlock() {
 		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10));
-		this.setDefaultState(this.getDefaultState().with(HORIZONTAL_FACING, Direction.NORTH));
+		this.setDefaultState(this.getDefaultState().with(HORIZONTAL_FACING, Direction.NORTH).with(UP_FACING, UpDirection.WALL));
 	}
 
+//	@Override
+//	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+//		return VoxelShapes.empty();
+//	}
+
+	//FOR DEBUG ONLY, REMOVE ON RELEASE
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		switch (state.get(HORIZONTAL_FACING)) {
-			case EAST:
-				return Block.makeCuboidShape(0, 0, 0, 1, 16, 16);
-			case WEST:
-				return Block.makeCuboidShape(15, 0, 0, 16, 16, 16);
-			case SOUTH:
-				return Block.makeCuboidShape(0, 0, 0, 16, 16, 1);
-			case NORTH:
-				return Block.makeCuboidShape(0, 0, 15, 16, 16, 16);
+		switch (state.get(UP_FACING)) {
+			case WALL:
+				switch (state.get(HORIZONTAL_FACING)) {
+					case EAST:
+						return Block.makeCuboidShape(0, 0, 0, 1, 16, 16);
+					case WEST:
+						return Block.makeCuboidShape(15, 0, 0, 16, 16, 16);
+					case SOUTH:
+						return Block.makeCuboidShape(0, 0, 0, 16, 16, 1);
+					case NORTH:
+						return Block.makeCuboidShape(0, 0, 15, 16, 16, 16);
+				}
+			case UP:
+				return Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
+			case DOWN:
+				return Block.makeCuboidShape(0, 15, 0, 16, 16, 16);
 		}
 		return VoxelShapes.empty();
 	}
 
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
-		if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
-			if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
-				worldIn.removeBlock(currentPos, isMoving);
+		if (current.get(UP_FACING) == UpDirection.WALL) {
+			if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
+				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
+					worldIn.removeBlock(currentPos, isMoving);
+				}
+			}
+		} else {
+			if (changedPos.equals(currentPos.offset(current.get(UP_FACING).toDirection().getOpposite()))) {
+				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(UP_FACING).toDirection())) {
+					worldIn.removeBlock(currentPos, isMoving);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-		builder.add(HORIZONTAL_FACING);
+		builder.add(HORIZONTAL_FACING, UP_FACING);
 	}
 
 	@Override
@@ -121,7 +144,5 @@ public class PortalBlock extends Block {
 	@Override
 	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
 		return Items.DRAGON_EGG.getDefaultInstance();
-		// LUL
-		// yes.
 	}
 }

@@ -1,16 +1,25 @@
 package com.github.lorenzopapi.pgr.mixin;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
+import com.github.lorenzopapi.pgr.portal.PGRSavedData;
+import com.github.lorenzopapi.pgr.portal.PortalStructure;
+import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ReuseableStream;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapeSpliterator;
 import net.minecraft.world.ICollisionReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,12 +32,18 @@ public interface ICollisionReaderMixin {
 	 */
 	@Overwrite(remap = false)
 	default Stream<VoxelShape> getCollisionShapes(Entity entity, AxisAlignedBB aabb) {
-		if (entity != null) {
-			ReuseableStream<VoxelShape> stream = new ReuseableStream<>(StreamSupport.stream(new VoxelShapeSpliterator(entity.world, entity, aabb, (s, p) -> {
-				// TODO: pair thingy, collision related to the direction (egh), save behinds in saved data
-				return s.getBlock() != PGRRegistry.PORTAL_BLOCK && !Reference.serverEH.getWorldSaveData(entity.world.getDimensionKey()).behinds.contains(p);
-			}), false));
-			return stream.createStream();
+		if (entity != null && entity.world.isRemote) {
+			AtomicReference<HashSet<BlockPos>> behinds = new AtomicReference<>(new HashSet<>());
+			PGRSavedData data = Reference.serverEH.getWorldSaveData(entity.world);
+			StreamSupport.stream(new VoxelShapeSpliterator(entity.world, entity, aabb, (s, p) -> {
+				PortalStructure struct = PGRUtils.findPortalByPosition(entity.world, p.toImmutable());
+				if (struct != null && struct.hasPair()) {
+					behinds.get().addAll(struct.behinds);
+					data.behinds.putIfAbsent(struct, behinds.get());
+				}
+				return s.getBlock() != Blocks.AIR;
+			}), false).forEach(VoxelShape::getBoundingBox);
+			return StreamSupport.stream(new VoxelShapeSpliterator(entity.world, entity, aabb, (s, p) -> s.getBlock() != PGRRegistry.PORTAL_BLOCK && !behinds.get().contains(p.toImmutable())), false);
 		}
 		return Stream.empty();
 	}

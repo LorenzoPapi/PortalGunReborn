@@ -5,11 +5,8 @@ import net.minecraft.world.World;
 
 public class ChannelIndicator {
 	public final ChannelInfo info;
-
 	public final RegistryKey<World> dimension;
-
 	public boolean portalAPlaced;
-
 	public boolean portalBPlaced;
 
 	public ChannelIndicator(ChannelInfo info, RegistryKey<World> dimension) {

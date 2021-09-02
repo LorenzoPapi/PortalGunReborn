@@ -31,11 +31,6 @@ public class PGRRegistry {
 	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
 	public static final RegistryObject<TileEntityType<PortalBlockTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalBlockTileEntity::new, PORTAL_BLOCK).build(null));
 
-	//	@SubscribeEvent
-//	public void onModelBake(ModelBakeEvent event) {
-//		//event.getModelRegistry().putObject(new ModelResourceLocation("portalgun:item_portalgun", "inventory"), (new ModelBaseWrapper((IModelBase)new ItemRenderPortalGun())).setItemDualHanded());
-//	}
-
 	public static void register(IEventBus modBus) {
 		ITEMS.register(modBus);
 		TILE_ENTITIES.register(modBus);
@@ -50,7 +45,6 @@ public class PGRRegistry {
 				return true;
 			}
 		}, "miniature_black_hole");
-//		registerItem(e, PORTAL_GUN, "portal_gun");
 	}
 
 	@SubscribeEvent

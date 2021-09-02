@@ -3,6 +3,7 @@ package com.github.lorenzopapi.pgr.handler;
 import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
 import com.github.lorenzopapi.pgr.network.message.KeyEventMessage;
 import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.util.Reference;
 import com.github.lorenzopapi.pgr.util.RendererUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -12,10 +13,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.event.TickEvent;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class PGRClientHandler {
 	public final ResourceLocation texEmptyL = new ResourceLocation(Reference.MOD_ID, "textures/overlay/lempty.png");
@@ -30,49 +36,17 @@ public class PGRClientHandler {
 	public boolean holdingResetKey;
 	public boolean hasResetPortal;
 
-	private void commonKeyEvent(int action, int key, boolean isHoldingPortalGun, Minecraft mc) {
-		//Zoom code
-		if (action == 1) {
-			if (key == PGRConfig.KeyBinds.keyZoom.getKey().getKeyCode()) {
-				if (isHoldingPortalGun) {
-					this.zoom = !this.zoom;
-					if (this.zoom && this.zoomOriFov == -1.0F) {
-						this.zoomOriFov = mc.gameSettings.fov;
-						this.zoomOriMouse = mc.gameSettings.mouseSensitivity;
-					}
-				}
-				// Reset check
-			} else if (key == PGRConfig.KeyBinds.keyReset.getKey().getKeyCode()) {
-				this.holdingResetKey = isHoldingPortalGun;
-				//Grab check
-			} else if (key == PGRConfig.KeyBinds.keyGrab.getKey().getKeyCode()) {
-				PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(5));
-			} else if (isHoldingPortalGun) {
-				//Portal shooting
-				if (key == mc.gameSettings.keyBindAttack.getKey().getKeyCode()) {
-					if (this.holdingResetKey) {
-						this.hasResetPortal = true;
-						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(1));
-					} else {
-						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(3));
-					}
-				} else if (key == mc.gameSettings.keyBindUseItem.getKey().getKeyCode()) {
-					if (this.holdingResetKey) {
-						this.hasResetPortal = true;
-						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(2));
-					} else {
-						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(4));
-					}
+	public void onOverlayEvent(RenderBlockOverlayEvent e) {
+		if (e.getOverlayType() == RenderBlockOverlayEvent.OverlayType.BLOCK) {
+			HashMap<PortalStructure, HashSet<BlockPos>> map = Reference.serverEH.getWorldSaveData(e.getPlayer().world).behinds;
+			for (PortalStructure s : map.keySet()) {
+				if (map.get(s).contains(e.getBlockPos())) {
+					e.setCanceled(true);
 				}
 			}
-		} else if ((key == PGRConfig.KeyBinds.keyReset.getKey().getKeyCode()) && isHoldingPortalGun) {
-			if (this.holdingResetKey && !this.hasResetPortal) {
-				PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(0));
-			}
-			this.holdingResetKey = false;
-			this.hasResetPortal = false;
 		}
 	}
+
 
 	public void onKeyEvent(InputEvent.KeyInputEvent event) {
 		Minecraft mc = Minecraft.getInstance();
@@ -185,6 +159,50 @@ public class PGRClientHandler {
 			this.holdingResetKey = false;
 			this.hasResetPortal = false;
 		});
+	}
+
+	private void commonKeyEvent(int action, int key, boolean isHoldingPortalGun, Minecraft mc) {
+		//Zoom code
+		if (action == 1) {
+			if (key == PGRConfig.KeyBinds.keyZoom.getKey().getKeyCode()) {
+				if (isHoldingPortalGun) {
+					this.zoom = !this.zoom;
+					if (this.zoom && this.zoomOriFov == -1.0F) {
+						this.zoomOriFov = mc.gameSettings.fov;
+						this.zoomOriMouse = mc.gameSettings.mouseSensitivity;
+					}
+				}
+				// Reset check
+			} else if (key == PGRConfig.KeyBinds.keyReset.getKey().getKeyCode()) {
+				this.holdingResetKey = isHoldingPortalGun;
+				//Grab check
+			} else if (key == PGRConfig.KeyBinds.keyGrab.getKey().getKeyCode()) {
+				PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(5));
+			} else if (isHoldingPortalGun) {
+				//Portal shooting
+				if (key == mc.gameSettings.keyBindAttack.getKey().getKeyCode()) {
+					if (this.holdingResetKey) {
+						this.hasResetPortal = true;
+						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(1));
+					} else {
+						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(3));
+					}
+				} else if (key == mc.gameSettings.keyBindUseItem.getKey().getKeyCode()) {
+					if (this.holdingResetKey) {
+						this.hasResetPortal = true;
+						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(2));
+					} else {
+						PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(4));
+					}
+				}
+			}
+		} else if ((key == PGRConfig.KeyBinds.keyReset.getKey().getKeyCode()) && isHoldingPortalGun) {
+			if (this.holdingResetKey && !this.hasResetPortal) {
+				PGRMessageHandler.HANDLER.sendToServer(new KeyEventMessage(0));
+			}
+			this.holdingResetKey = false;
+			this.hasResetPortal = false;
+		}
 	}
 
 //	public void onHandRender(RenderHandEvent event) {
