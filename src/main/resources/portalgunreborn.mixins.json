@@ -4,13 +4,10 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "portalgunreborn.refmap.json",
   "mixins": [
-    "ICollisionReaderMixin"
+    "AbstractBlockstateMixin"
   ],
   "client": [
-    "ClientPlayerEntityMixin",
-    "WorldRendererAccessor",
-    "WorldRendererMixin",
-    "WorldRendererAccessor$RenderInformationContainerAccessor"
+    "ClientPlayerEntityMixin"
   ],
   "minVersion": "0.8"
 }

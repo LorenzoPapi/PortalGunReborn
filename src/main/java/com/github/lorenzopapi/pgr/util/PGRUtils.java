@@ -15,8 +15,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
@@ -108,6 +110,20 @@ public class PGRUtils {
 			}
 		}
 		return null;
+	}
+
+	public static List<PortalStructure> findPortalsInAABB(World world, AxisAlignedBB box) {
+		List<PortalStructure> structures = new ArrayList<>();
+		loopStructs:
+		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+			for (BlockPos position : struct.positions) {
+				if (box.intersects(new AxisAlignedBB(position))) {
+					structures.add(struct);
+					continue loopStructs;
+				}
+			}
+		}
+		return structures;
 	}
 
 	public static PortalStructure findPortalOfSameType(World world, PortalStructure toCheck) {
