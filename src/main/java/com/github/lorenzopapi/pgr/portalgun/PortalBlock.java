@@ -72,19 +72,19 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
-//		if (current.get(UP_FACING) == UpDirection.WALL) {
-//			if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
-//				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
-//					worldIn.removeBlock(currentPos, isMoving);
-//				}
-//			}
-//		} else {
-//			if (changedPos.equals(currentPos.offset(current.get(UP_FACING).toDirection().getOpposite()))) {
-//				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(UP_FACING).toDirection())) {
-//					worldIn.removeBlock(currentPos, isMoving);
-//				}
-//			}
-//		}
+		if (current.get(UP_FACING) == UpDirection.WALL) {
+			if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
+				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
+					worldIn.removeBlock(currentPos, isMoving);
+				}
+			}
+		} else {
+			if (changedPos.equals(currentPos.offset(current.get(UP_FACING).toDirection().getOpposite()))) {
+				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(UP_FACING).toDirection())) {
+					worldIn.removeBlock(currentPos, isMoving);
+				}
+			}
+		}
 	}
 
 	@Override
