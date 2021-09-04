@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "portalgunreborn.refmap.json",
   "mixins": [
-    "AbstractBlockstateMixin"
+    "AbstractBlockStateMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin"

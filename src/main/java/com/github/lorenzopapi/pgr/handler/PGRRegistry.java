@@ -1,9 +1,9 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
-import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
-import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
-import com.github.lorenzopapi.pgr.portalgun.PortalProjectileEntity;
+import com.github.lorenzopapi.pgr.portal.block.PortalBlock;
+import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
+import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
@@ -57,12 +57,55 @@ public class PGRRegistry {
 		e.getRegistry().register(PPE_TYPE.setRegistryName(new ResourceLocation(Reference.MOD_ID, "portal_projectile")));
 	}
 
-	@SubscribeEvent
-	public static void onSoundRegistry(final RegistryEvent.Register<SoundEvent> e) {
-		PGRSounds.init(e);
-	}
-
 	private static void registerItem(RegistryEvent.Register<Item> e, Item item, String name) {
 		e.getRegistry().register(item.setRegistryName(new ResourceLocation(Reference.MOD_ID, name)));
+	}
+
+	@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+	public static class PGRSounds {
+		//public static SoundEvent PORTAL_FIZZLE;
+//		public static SoundEvent pg_object_use_failure;
+//		public static SoundEvent pg_object_use_lp_loop;
+//		public static SoundEvent pg_object_use_lp_start;
+//		public static SoundEvent pg_object_use_stop;
+		public static SoundEvent PORTAL_AMBIENCE;
+		public static SoundEvent PORTAL_ENTER;
+		public static SoundEvent PORTAL_EXIT;
+		public static SoundEvent PORTAL_INVALID_SURFACE;
+		public static SoundEvent PORTAL_OPEN_BLUE;
+		public static SoundEvent PORTAL_OPEN_RED;
+		public static SoundEvent PORTAL_GUN_INVALID_SURFACE;
+		public static SoundEvent PORTAL_GUN_RESET_PORTALS;
+		public static SoundEvent PORTAL_GUN_FIRE_BLUE;
+		public static SoundEvent PORTAL_GUN_FIRE_RED;
+		public static SoundEvent PORTAL_GUN_EQUIP;
+
+		@SubscribeEvent
+		public static void onSoundRegistry(RegistryEvent.Register<SoundEvent> e) {
+//			PORTAL_FIZZLE = register(e, "portal.portal_fizzle");
+//			pg_object_use_failure = register(e, "portalgun.object_use_failure");
+//			pg_object_use_lp_loop = register(e, "portalgun.object_use_lp_loop");
+//			pg_object_use_lp_start = register(e, "portalgun.object_use_lp_start");
+//			pg_object_use_stop = register(e, "portalgun.object_use_stop");
+			PORTAL_ENTER = register(e, "portal.enter");
+			PORTAL_EXIT = register(e, "portal.exit");
+			PORTAL_INVALID_SURFACE = register(e, "portal.invalid_surface");
+			PORTAL_OPEN_BLUE = register(e, "portal.open_blue");
+			PORTAL_OPEN_RED = register(e, "portal.open_red");
+			PORTAL_AMBIENCE = register(e, "portal.ambience");
+			PORTAL_GUN_INVALID_SURFACE = register(e, "pg.invalid_surface");
+			PORTAL_GUN_RESET_PORTALS = register(e, "pg.reset_portals");
+			PORTAL_GUN_FIRE_BLUE = register(e, "pg.fire_blue");
+			PORTAL_GUN_FIRE_RED = register(e, "pg.fire_red");
+			PORTAL_GUN_EQUIP = register(e, "pg.equip");
+		}
+
+		private static SoundEvent register(RegistryEvent.Register<SoundEvent> e, String name) {
+			ResourceLocation rl = new ResourceLocation(Reference.MOD_ID, name);
+			SoundEvent event = new SoundEvent(rl).setRegistryName(rl);
+			e.getRegistry().register(event);
+			return event;
+		}
+
 	}
 }

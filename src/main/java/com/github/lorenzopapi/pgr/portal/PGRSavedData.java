@@ -1,5 +1,8 @@
 package com.github.lorenzopapi.pgr.portal;
 
+import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -12,20 +15,17 @@ import java.util.*;
 public class PGRSavedData extends WorldSavedData {
 	public final HashMap<String, ArrayList<ChannelInfo>> channelList;
 	public final List<PortalStructure> portals;
-	public final HashMap<PortalStructure, HashSet<BlockPos>> behinds;
 	public boolean initialized;
 
 	public PGRSavedData(String name) {
 		super(name);
 		this.channelList = new HashMap<>();
 		this.portals = new ArrayList<>();
-		this.behinds = new HashMap<>();
 	}
 
 	public void reset() {
 		this.channelList.clear();
 		this.portals.clear();
-		this.behinds.clear();
 	}
 
 	public void initialize(World world) {
@@ -78,7 +78,6 @@ public class PGRSavedData extends WorldSavedData {
 			indicator.setPortalBPlaced(false);
 		}
 		struct.removeStructure();
-		behinds.remove(struct);
 		portals.remove(struct);
 		markDirty();
 	}

@@ -3,7 +3,7 @@
 //import com.github.lorenzopapi.pgr.handler.CollisionReaderMixinHandler;
 //import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 //import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-//import com.github.lorenzopapi.pgr.portal.PortalStructure;
+//import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 //import com.github.lorenzopapi.pgr.util.PGRUtils;
 //import com.github.lorenzopapi.pgr.util.Reference;
 //import net.minecraft.block.Blocks;

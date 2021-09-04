@@ -1,8 +1,7 @@
 package com.github.lorenzopapi.pgr.rendering;
 
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
-import com.github.lorenzopapi.pgr.portalgun.UpDirection;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.RendererUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -57,7 +56,8 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		// TODO: check if the player is in a position where they could possibly see the portal
 		
 		PortalStructure struct = PGRUtils.findPortalByPosition(tileEntityIn.getWorld(), tileEntityIn.getPos());
-		if (struct == null || struct.positions == null || struct.positions.size() < 1) return;
+		// I removed a null check here, which was always false, because the positions cannot be null since it's defined as an empty list from the beginning
+		if (struct == null || struct.positions.isEmpty()) return;
 		
 		if (!struct.positions.get(0).equals(tileEntityIn.getPos())) return;
 		PortalStructure pairStruct = struct.pair;
@@ -66,17 +66,19 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			setupMatrix(matrixStackIn, struct);
 			RenderSystem.enableDepthTest();
 			RenderSystem.depthMask(true);
-			for (int i = 0; i < struct.height; i++) {
-				RenderSystem.color4f(
-						((struct.portalColor >> 16) & 0xFF) / 255f,
-						((struct.portalColor >> 8) & 0xFF) / 255f,
-						((struct.portalColor) & 0xFF) / 255f,
-						1
-				);
-				RendererUtils.drawTexture(
-						matrixStackIn, new ResourceLocation("minecraft:null"),
-						0, i, 1, 1, 0
-				);
+			for (int w = 0; w < struct.width; w++) {
+				for (int h = 0; h < struct.height; h++) {
+					RenderSystem.color4f(
+							((struct.portalColor >> 16) & 0xFF) / 255f,
+							((struct.portalColor >> 8) & 0xFF) / 255f,
+							(struct.portalColor & 0xFF) / 255f,
+							1
+					);
+					RendererUtils.drawTexture(
+							matrixStackIn, new ResourceLocation("minecraft:null"),
+							w, h, 1, 1, 0
+					);
+				}
 			}
 			matrixStackIn.pop();
 			return;
@@ -185,7 +187,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		}
 		
 		/* start adjusting for UP portals */
-		if (pairStruct.upDirection.equals(UpDirection.UP)) {
+		if (pairStruct.upDirection.equals(PortalStructure.UpDirection.UP)) {
 			switch (pairStruct.direction) {
 				case WEST:
 					matrixStackIn.rotate(new Quaternion(0, 0, 90, true));
@@ -207,7 +209,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		}
 		/* end adjusting for UP portals */
 		/* start adjusting for DOWN portals */
-		if (pairStruct.upDirection.equals(UpDirection.DOWN)) {
+		if (pairStruct.upDirection.equals(PortalStructure.UpDirection.DOWN)) {
 			switch (pairStruct.direction) {
 				case WEST:
 					matrixStackIn.rotate(new Quaternion(0, 180, 90, true));
@@ -551,24 +553,24 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		clearStencil(matrixStackIn, struct);
 		/* end cleanup */
 		
-//		matrixStackIn.push();
-//		matrixStackIn.translate(-tileEntityIn.getPos().getX(), -tileEntityIn.getPos().getY(), -tileEntityIn.getPos().getZ());
-//		WorldRenderer.drawBoundingBox(
-//				matrixStackIn, bufferIn.getBuffer(RenderType.getLines()),
-//				renderBox, 0.5f, 0, 1, 1
-//		);
-//		matrixStackIn.pop();
+		matrixStackIn.push();
+		matrixStackIn.translate(-tileEntityIn.getPos().getX(), -tileEntityIn.getPos().getY(), -tileEntityIn.getPos().getZ());
+		WorldRenderer.drawBoundingBox(
+				matrixStackIn, bufferIn.getBuffer(RenderType.getLines()),
+				renderBox, 0.5f, 0, 1, 1
+		);
+		matrixStackIn.pop();
 	}
 	
 	public void setupMatrix(MatrixStack stack, PortalStructure struct) {
 		stack.rotate(struct.direction.getRotation());
 		stack.rotate(new Quaternion(90, 0, 0, true));
 		if (struct.direction == Direction.WEST) stack.translate(0, -struct.height, 1);
-		else if (struct.direction == Direction.EAST) stack.translate(-1, -struct.height, 0);
-		else if (struct.direction == Direction.NORTH) stack.translate(-1, -struct.height, 1);
+		else if (struct.direction == Direction.EAST) stack.translate(-struct.width, -struct.height, 0);
+		else if (struct.direction == Direction.NORTH) stack.translate(-struct.width, -struct.height, 1);
 		else if (struct.direction == Direction.SOUTH) stack.translate(0, -struct.height, 0);
 		
-		if (struct.upDirection.equals(UpDirection.UP)) {
+		if (struct.upDirection.equals(PortalStructure.UpDirection.UP)) {
 			stack.rotate(new Quaternion(-90, 0, 0, true));
 			stack.translate(0, 0, 1);
 		}

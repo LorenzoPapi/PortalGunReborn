@@ -1,9 +1,9 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
-import com.github.lorenzopapi.pgr.portal.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.monster.ZombieEntity;

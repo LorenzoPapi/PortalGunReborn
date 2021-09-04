@@ -1,14 +1,12 @@
 package com.github.lorenzopapi.pgr.util;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.handler.PGRSounds;
-import com.github.lorenzopapi.pgr.portal.ChannelIndicator;
-import com.github.lorenzopapi.pgr.portal.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
-import com.github.lorenzopapi.pgr.portalgun.PortalProjectileEntity;
-import com.github.lorenzopapi.pgr.portalgun.UpDirection;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +16,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
@@ -45,7 +42,7 @@ public class PGRUtils {
 			}
 			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setPortalColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
 			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, structure));
-			EntityUtils.playSoundAtEntity(living, isTypeA ? PGRSounds.pg_wpn_portal_gun_fire_blue : PGRSounds.pg_wpn_portal_gun_fire_red, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
+			living.playSound(isTypeA ? PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_BLUE : PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_RED, 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
 		}
 	}
 
@@ -71,7 +68,7 @@ public class PGRUtils {
 		if (positions != null) {
 			PGRSavedData data = Reference.serverEH.getWorldSaveData(world.getDimensionKey());
 
-			// Check is portal is already placed: if true, delete it
+			// Check if portal is already placed: if true, delete it
 			PortalStructure struct = findPortalOfSameType(world, portal);
 			if (struct != null)
 				data.removePortal(struct);
@@ -83,7 +80,7 @@ public class PGRUtils {
 				possiblePair.setPair(portal);
 			}
 
-			portal.setPositionsAndDirection(positions, sideHit.getAxis().isHorizontal() ? sideHit : upDir, UpDirection.fromDirection(sideHit)).initialize(world);
+			portal.setPositionsAndDirection(positions, sideHit.getAxis().isHorizontal() ? sideHit : upDir, PortalStructure.UpDirection.fromDirection(sideHit)).initialize(world);
 
 			// Updates channel indicator
 			ChannelIndicator indicator = Reference.serverEH.getPortalChannelIndicator(portal.info.uuid, portal.info.channelName, world.getDimensionKey());

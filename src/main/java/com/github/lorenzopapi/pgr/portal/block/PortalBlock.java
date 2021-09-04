@@ -1,6 +1,6 @@
-package com.github.lorenzopapi.pgr.portalgun;
+package com.github.lorenzopapi.pgr.portal.block;
 
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import com.google.common.collect.Lists;
@@ -35,22 +35,18 @@ import java.util.List;
 public class PortalBlock extends Block {
 
 	public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-	public static final EnumProperty<UpDirection> UP_FACING = EnumProperty.create("up_facing", UpDirection.class);
+	public static final EnumProperty<PortalStructure.UpDirection> UP_FACING = EnumProperty.create("up_facing", PortalStructure.UpDirection.class);
 
 	public PortalBlock() {
 		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10));
-		this.setDefaultState(this.getDefaultState().with(HORIZONTAL_FACING, Direction.NORTH).with(UP_FACING, UpDirection.WALL));
+		this.setDefaultState(this.getDefaultState().with(HORIZONTAL_FACING, Direction.NORTH).with(UP_FACING, PortalStructure.UpDirection.WALL));
 	}
-
-//	@Override
-//	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-//		return VoxelShapes.empty();
-//	}
 
 	//FOR DEBUG ONLY, REMOVE ON RELEASE
 	// wait no, I need this
 	// I can use this to test if the player is selecting a portal, then if they are, raytrace the blocks on the other side
 	// and also, ontop of that, it allows me to easily get part of a render shape going
+	// huh ok, won't remove then
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		switch (state.get(UP_FACING)) {
@@ -75,7 +71,7 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
-		if (current.get(UP_FACING) == UpDirection.WALL) {
+		if (current.get(UP_FACING) == PortalStructure.UpDirection.WALL) {
 			if (changedPos.equals(currentPos.offset(current.get(HORIZONTAL_FACING).getOpposite()))) {
 				if (!PGRUtils.isDirectionSolid(worldIn, changedPos, current.get(HORIZONTAL_FACING))) {
 					worldIn.removeBlock(currentPos, isMoving);

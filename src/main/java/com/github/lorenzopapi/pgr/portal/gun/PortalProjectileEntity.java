@@ -1,9 +1,8 @@
-package com.github.lorenzopapi.pgr.portalgun;
+package com.github.lorenzopapi.pgr.portal.gun;
 
 import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.handler.PGRSounds;
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -23,7 +22,6 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -156,13 +154,13 @@ public class PortalProjectileEntity extends Entity {
 									this.shooter.setItemStackToSlot(EquipmentSlotType.MAINHAND, is);
 								}
 							}
-							EntityUtils.playSoundAtEntity(this.shooter, this.structure.isTypeA ? PGRSounds.p_portal_open_blue : PGRSounds.p_portal_open_red, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							this.shooter.playSound(this.structure.isTypeA ? PGRRegistry.PGRSounds.PORTAL_OPEN_BLUE : PGRRegistry.PGRSounds.PORTAL_OPEN_RED, 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
 					} else {
 						if (this.shooter != null) {
-							EntityUtils.playSoundAtEntity(this.shooter, PGRSounds.pg_portal_invalid_surface_swt, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							this.shooter.playSound(PGRRegistry.PGRSounds.PORTAL_GUN_INVALID_SURFACE, 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
-						EntityUtils.playSoundAtEntity(this, PGRSounds.p_portal_invalid_surface, SoundCategory.BLOCKS, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+						this.playSound(PGRRegistry.PGRSounds.PORTAL_INVALID_SURFACE, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 					}
 				}
 				this.setDead();

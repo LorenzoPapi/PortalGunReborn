@@ -2,11 +2,15 @@ package com.github.lorenzopapi.pgr.rendering;
 
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RegionRenderCacheBuilder;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Util;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class HoldingRenderTypeBuffers extends IRenderTypeBuffer.Impl {
 	private RegionRenderCacheBuilder fixedBuilder;

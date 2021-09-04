@@ -1,6 +1,6 @@
 package com.github.lorenzopapi.pgr.mixin;
 
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(AbstractBlock.AbstractBlockState.class)
-public class AbstractBlockstateMixin {
+public class AbstractBlockStateMixin {
 	@Inject(at = @At("HEAD"), method = "isSuffocating", cancellable = true)
 	public void preCheckSuffocating(IBlockReader blockReaderIn, BlockPos blockPosIn, CallbackInfoReturnable<Boolean> cir) {
 		if (blockReaderIn instanceof World) {

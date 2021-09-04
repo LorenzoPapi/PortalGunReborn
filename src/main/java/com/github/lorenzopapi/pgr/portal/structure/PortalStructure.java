@@ -1,13 +1,17 @@
-package com.github.lorenzopapi.pgr.portal;
+package com.github.lorenzopapi.pgr.portal.structure;
 
+import com.github.lorenzopapi.pgr.client.audio.PortalAmbienceSound;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.portalgun.PortalBlock;
-import com.github.lorenzopapi.pgr.portalgun.UpDirection;
+import com.github.lorenzopapi.pgr.portal.block.PortalBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.DoubleNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
@@ -37,6 +41,8 @@ public class PortalStructure {
 		this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
 		this.isTypeA = tag.getBoolean("isTypeA");
 		this.portalColor = isTypeA ? info.colorA : info.colorB;
+		this.width = tag.getInt("width");
+		this.height = tag.getInt("height");
 		if (tag.contains("direction")) {
 			this.upDirection = UpDirection.valueOf(tag.getString("upDirection").toUpperCase());
 			this.direction = Direction.byHorizontalIndex(tag.getInt("direction"));
@@ -44,22 +50,9 @@ public class PortalStructure {
 				ListNBT list = tag.getList("pos_" + i, 6);
 				this.positions.add(new BlockPos(list.getDouble(0), list.getDouble(1), list.getDouble(2)).toImmutable());
 			}
-			positions.sort(Vector3i::compareTo);
+			this.positions.sort(Vector3i::compareTo);
 		}
 		return this;
-	}
-
-	@Override
-	public String toString() {
-		return "PortalStructure{" +
-				       "positions=" + positions +
-				       ", hasPair?=" + hasPair() +
-				       ", info=" + info +
-				       ", width=" + width +
-				       ", height=" + height +
-				       ", isTypeA=" + isTypeA +
-				       ", direction=" + direction +
-				       '}';
 	}
 
 	public CompoundNBT writeToNBT(CompoundNBT tag) {
@@ -88,10 +81,10 @@ public class PortalStructure {
 	}
 
 	public void initialize(World world) {
-		this.world = world;
 		if (initialized)
 			return;
 		this.initialized = true;
+		this.world = world;
 		if (!world.isRemote) {
 			for (BlockPos pos : positions) {
 				BlockState state = PGRRegistry.PORTAL_BLOCK.getDefaultState().with(PortalBlock.HORIZONTAL_FACING, direction).with(PortalBlock.UP_FACING, upDirection);
@@ -101,6 +94,8 @@ public class PortalStructure {
 				else
 					this.behinds.add(pos.offset(direction.getOpposite()));
 			}
+		} else {
+			Minecraft.getInstance().getSoundHandler().play(new PortalAmbienceSound(this));
 		}
 	}
 
@@ -171,5 +166,54 @@ public class PortalStructure {
 
 	public boolean isPair(PortalStructure other) {
 		return other.isTypeA != this.isTypeA && other.info.uuid.equals(this.info.uuid) && other.info.channelName.equals(this.info.channelName);
+	}
+
+	@Override
+	public String toString() {
+		return "PortalStructure{" +
+				       "positions=" + positions +
+					   ", paired=" + hasPair() +
+				       ", info=" + info +
+				       ", width=" + width +
+				       ", height=" + height +
+				       ", isTypeA=" + isTypeA +
+				       ", direction=" + direction +
+				       ", upDirection=" + upDirection +
+				       '}';
+	}
+
+	public enum UpDirection implements IStringSerializable {
+		UP("up"),
+		DOWN("down"),
+		WALL("wall");
+
+		private final String name;
+
+		UpDirection(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
+
+		@Override
+		public String getString() {
+			return this.name;
+		}
+
+		public Direction toDirection() {
+			if (this == UP) return Direction.UP;
+			else if (this == DOWN) return Direction.DOWN;
+			else throw new RuntimeException("Error, this shouldn't be happening what the actual fuck");
+		}
+
+		public static UpDirection fromDirection(Direction direction) {
+			if (direction == Direction.UP) return UP;
+			else if (direction == Direction.DOWN) return DOWN;
+			else return WALL;
+		}
+
 	}
 }

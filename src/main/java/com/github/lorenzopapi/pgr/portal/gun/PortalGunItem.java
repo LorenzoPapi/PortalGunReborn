@@ -1,4 +1,4 @@
-package com.github.lorenzopapi.pgr.portalgun;
+package com.github.lorenzopapi.pgr.portal.gun;
 
 import com.mojang.util.UUIDTypeAdapter;
 import net.minecraft.client.Minecraft;

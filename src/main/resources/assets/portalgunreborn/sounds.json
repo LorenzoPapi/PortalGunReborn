@@ -1,107 +1,107 @@
 {
-  "portal.portal_enter": {
+  "portal.ambience": {
     "sounds": [
-      "portalgunreborn:portal/portal_enter_01",
-	  "portalgunreborn:portal/portal_enter_02",
-	  "portalgunreborn:portal/portal_enter_03"
+      "portalgunreborn:portal/ambience"
+    ]
+  },
+  "portal.enter": {
+    "sounds": [
+      "portalgunreborn:portal/enter_01",
+	  "portalgunreborn:portal/enter_02",
+	  "portalgunreborn:portal/enter_03"
     ],
     "subtitle": "subtitles.portalgun.portal.portalenter"
   },
-  "portal.portal_exit": {
+  "portal.exit": {
     "sounds": [
-      "portalgunreborn:portal/portal_exit_01",
-	  "portalgunreborn:portal/portal_exit_02"
+      "portalgunreborn:portal/exit_01",
+	  "portalgunreborn:portal/exit_02"
     ],
     "subtitle": "subtitles.portalgun.portal.portalexit"
   },
-  "portal.portal_fizzle": {
+  "portal.fizzle": {
     "sounds": [
-      "portalgunreborn:portal/portal_fizzle_01",
-	  "portalgunreborn:portal/portal_fizzle_02"
+      "portalgunreborn:portal/fizzle_01",
+	  "portalgunreborn:portal/fizzle_02"
     ],
     "subtitle": "subtitles.portalgun.portal.portalfizzle"
   },
-  "portal.portal_invalid_surface": {
+  "portal.invalid_surface": {
     "sounds": [
-      "portalgunreborn:portal/portal_invalid_surface_01",
-	  "portalgunreborn:portal/portal_invalid_surface_02",
-	  "portalgunreborn:portal/portal_invalid_surface_03",
-	  "portalgunreborn:portal/portal_invalid_surface_04"
+      "portalgunreborn:portal/invalid_surface_01",
+	  "portalgunreborn:portal/invalid_surface_02",
+	  "portalgunreborn:portal/invalid_surface_03",
+	  "portalgunreborn:portal/invalid_surface_04"
     ],
     "subtitle": "subtitles.portalgun.portal.portalinvalid"
   },
-  "portal.portal_open_blue": {
+  "portal.open_blue": {
     "sounds": [
-      "portalgunreborn:portal/portal_open_blue_01"
+      "portalgunreborn:portal/open_blue"
     ],
     "subtitle": "subtitles.portalgun.portal.portalopen"
   },
-  "portal.portal_open_red": {
+  "portal.open_red": {
     "sounds": [
-      "portalgunreborn:portal/portal_open_red_01"
+      "portalgunreborn:portal/open_red"
     ],
     "subtitle": "subtitles.portalgun.portal.portalopen"
   },
-  "portal.wpn_portal_ambient_lp": {
+  "pg.object_use_failure": {
     "sounds": [
-      "portalgunreborn:portal/wpn_portal_ambient_lp_01"
-    ]
-  },
-  "portalgun.object_use_failure": {
-    "sounds": [
-      "portalgunreborn:portalgun/object_use_failure_01"
+      "portalgunreborn:pg/object_use_failure_01"
     ],
     "subtitle": "subtitles.portalgun.portalgun.usefail"
   },
-  "portalgun.object_use_lp_loop": {
+  "pg.object_use_lp_loop": {
     "sounds": [
-      "portalgunreborn:portalgun/object_use_lp_loop"
+      "portalgunreborn:pg/object_use_lp_loop"
     ],
     "subtitle": "subtitles.portalgun.portalgun.useloop"
   },
-  "portalgun.object_use_lp_start": {
+  "pg.object_use_lp_start": {
     "sounds": [
-      "portalgunreborn:portalgun/object_use_lp_start"
+      "portalgunreborn:pg/object_use_lp_start"
     ],
     "subtitle": "subtitles.portalgun.portalgun.usestart"
   },
-  "portalgun.object_use_stop": {
+  "pg.object_use_stop": {
     "sounds": [
-      "portalgunreborn:portalgun/object_use_stop_01"
+      "portalgunreborn:pg/object_use_stop_01"
     ],
     "subtitle": "subtitles.portalgun.portalgun.usestop"
   },
-  "portalgun.portal_invalid_surface_swt": {
+  "pg.invalid_surface": {
     "sounds": [
-      "portalgunreborn:portalgun/portal_invalid_surface_swt_01"
+      "portalgunreborn:pg/invalid_surface"
     ],
     "subtitle": "subtitles.portalgun.portalgun.invalidsurface"
   },
-  "portalgun.wpn_portal_fizzler_shimmy": {
+  "pg.reset_portals": {
     "sounds": [
-      "portalgunreborn:portalgun/wpn_portal_fizzler_shimmy_01"
+      "portalgunreborn:pg/reset_portals"
     ],
     "subtitle": "subtitles.portalgun.portalgun.reset"
   },
-  "portalgun.wpn_portal_gun_fire_blue": {
+  "pg.fire_blue": {
     "sounds": [
-      "portalgunreborn:portalgun/wpn_portal_gun_fire_blue_01",
-	  "portalgunreborn:portalgun/wpn_portal_gun_fire_blue_02",
-	  "portalgunreborn:portalgun/wpn_portal_gun_fire_blue_03"
+      "portalgunreborn:pg/fire_blue_01",
+	  "portalgunreborn:pg/fire_blue_02",
+	  "portalgunreborn:pg/fire_blue_03"
     ],
     "subtitle": "subtitles.portalgun.portalgun.fire"
   },
-  "portalgun.wpn_portal_gun_fire_red": {
+  "pg.fire_red": {
     "sounds": [
-      "portalgunreborn:portalgun/wpn_portal_gun_fire_red_01",
-	  "portalgunreborn:portalgun/wpn_portal_gun_fire_red_02",
-	  "portalgunreborn:portalgun/wpn_portal_gun_fire_red_03"
+      "portalgunreborn:pg/fire_red_01",
+	  "portalgunreborn:pg/fire_red_02",
+	  "portalgunreborn:pg/fire_red_03"
     ],
     "subtitle": "subtitles.portalgun.portalgun.fire"
   },
-  "portalgun.wpn_portalgun_activation": {
+  "pg.activation": {
     "sounds": [
-      "portalgunreborn:portalgun/wpn_portalgun_activation_01"
+      "portalgunreborn:pg/equip"
     ],
     "subtitle": "subtitles.portalgun.portalgun.equip"
   }

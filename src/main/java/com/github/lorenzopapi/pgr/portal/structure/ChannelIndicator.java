@@ -1,4 +1,4 @@
-package com.github.lorenzopapi.pgr.portal;
+package com.github.lorenzopapi.pgr.portal.structure;
 
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.World;

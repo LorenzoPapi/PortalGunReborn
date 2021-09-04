@@ -1,21 +1,16 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
-import com.github.lorenzopapi.pgr.util.Reference;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapeSpliterator;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +45,7 @@ public class CollisionReaderMixinHandler {
 			loopPortals:
 			for (PortalStructure structure : intersecting) {
 				TileEntity te = entity.getEntityWorld().getTileEntity(structure.positions.get(0));
-				if (te instanceof PortalBlockTileEntity) {
+				if (te instanceof PortalBlockTileEntity && structure.hasPair()) {
 					AxisAlignedBB boundingBox = te.getRenderBoundingBox();
 //					boundingBox = boundingBox.offset(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
 //					boundingBox = boundingBox.offset(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());

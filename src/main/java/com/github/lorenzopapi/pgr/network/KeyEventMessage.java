@@ -1,10 +1,9 @@
-package com.github.lorenzopapi.pgr.network.message;
+package com.github.lorenzopapi.pgr.network;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.handler.PGRSounds;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
 import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -66,7 +65,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 								data.removePortal(struct);
 							}
 							toRemove.clear();
-							EntityUtils.playSoundAtEntity(player, PGRSounds.pg_wpn_portal_fizzler_shimmy, player.getSoundCategory(), 0.2F, 1.0F);
+							player.playSound(PGRRegistry.PGRSounds.PORTAL_GUN_RESET_PORTALS, player.getSoundCategory(), 0.2F, 1.0F);
 						}
 					}
 					break;

@@ -1,8 +1,8 @@
 package com.github.lorenzopapi.pgr.mixin;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.portal.PortalStructure;
-import com.github.lorenzopapi.pgr.portalgun.UpDirection;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -43,9 +43,11 @@ public class ClientPlayerEntityMixin {
 				if (struct != null && struct.hasPair()) {
 					Vector3d pairPos = averagePosOfList(struct.pair.positions);
 					double x = pairPos.getX() + getDecimals(mc.player.getPosX());
-					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (struct.pair.upDirection != UpDirection.WALL ? struct.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
+					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (struct.pair.upDirection != PortalStructure.UpDirection.WALL ? struct.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
 					double z = pairPos.getZ() + getDecimals(mc.player.getPosZ());
 					mc.player.setLocationAndAngles(x, y, z, (struct.pair.direction == struct.direction ? mc.player.rotationYaw + 180 : mc.player.rotationYaw), mc.player.rotationPitch);
+					mc.player.playSound(PGRRegistry.PGRSounds.PORTAL_ENTER, mc.player.getSoundCategory(), 0.01F, 1.0F + mc.player.getEntityWorld().rand.nextFloat() * 0.1F);
+					mc.player.playSound(PGRRegistry.PGRSounds.PORTAL_EXIT, mc.player.getSoundCategory(), 0.01F, 1.0F + mc.player.getEntityWorld().rand.nextFloat() * 0.1F);
 					cir.setReturnValue(false);
 				}
 			}

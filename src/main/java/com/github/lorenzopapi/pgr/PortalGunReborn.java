@@ -4,7 +4,7 @@ import com.github.lorenzopapi.pgr.handler.PGRClientHandler;
 import com.github.lorenzopapi.pgr.handler.PGRConfig;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.handler.PGRServerHandler;
-import com.github.lorenzopapi.pgr.network.PGRMessageHandler;
+import com.github.lorenzopapi.pgr.handler.PGRNetworkHandler;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -53,7 +53,7 @@ public class PortalGunReborn {
 		}
 		// networking (I'd assume)
 		// Your assumption is correct, 4 points for you!
-		PGRMessageHandler.register();
+		PGRNetworkHandler.register();
 		// setup handling
 		modBus.addListener(this::onClientSetup);
 		// registries
