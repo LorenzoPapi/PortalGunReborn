@@ -48,6 +48,9 @@ public class PortalBlock extends Block {
 //	}
 
 	//FOR DEBUG ONLY, REMOVE ON RELEASE
+	// wait no, I need this
+	// I can use this to test if the player is selecting a portal, then if they are, raytrace the blocks on the other side
+	// and also, ontop of that, it allows me to easily get part of a render shape going
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		switch (state.get(UP_FACING)) {

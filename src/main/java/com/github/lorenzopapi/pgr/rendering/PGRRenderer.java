@@ -2,6 +2,7 @@ package com.github.lorenzopapi.pgr.rendering;
 
 import com.github.lorenzopapi.pgr.portal.PortalStructure;
 import com.github.lorenzopapi.pgr.portalgun.PortalBlockTileEntity;
+import com.github.lorenzopapi.pgr.portalgun.UpDirection;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.RendererUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.IChunk;
@@ -61,7 +61,26 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		
 		if (!struct.positions.get(0).equals(tileEntityIn.getPos())) return;
 		PortalStructure pairStruct = struct.pair;
-		if (pairStruct == null) return;
+		if (pairStruct == null) {
+			matrixStackIn.push();
+			setupMatrix(matrixStackIn, struct);
+			RenderSystem.enableDepthTest();
+			RenderSystem.depthMask(true);
+			for (int i = 0; i < struct.height; i++) {
+				RenderSystem.color4f(
+						((struct.portalColor >> 16) & 0xFF) / 255f,
+						((struct.portalColor >> 8) & 0xFF) / 255f,
+						((struct.portalColor) & 0xFF) / 255f,
+						1
+				);
+				RendererUtils.drawTexture(
+						matrixStackIn, new ResourceLocation("minecraft:null"),
+						0, i, 1, 1, 0
+				);
+			}
+			matrixStackIn.pop();
+			return;
+		}
 		BlockPos pairPos = pairStruct.positions.get(0);
 
 //		matrixStackIn.push();
@@ -164,6 +183,51 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			matrixStackIn.translate(-1, 0, 0);
 			matrixStackIn.rotate(new Quaternion(0, 180, 0, true));
 		}
+		
+		/* start adjusting for UP portals */
+		if (pairStruct.upDirection.equals(UpDirection.UP)) {
+			switch (pairStruct.direction) {
+				case WEST:
+					matrixStackIn.rotate(new Quaternion(0, 0, 90, true));
+					matrixStackIn.translate(1, 0, 0);
+					break;
+				case SOUTH:
+					matrixStackIn.rotate(new Quaternion(90, 0, 0, true));
+					matrixStackIn.translate(0, 0, -1);
+					break;
+				case NORTH:
+					matrixStackIn.rotate(new Quaternion(-90, 0, 0, true));
+					matrixStackIn.translate(0, -1, 0);
+					break;
+				case EAST:
+					matrixStackIn.rotate(new Quaternion(0, 0, -90, true));
+					matrixStackIn.translate(0, -1, 0);
+					break;
+			}
+		}
+		/* end adjusting for UP portals */
+		/* start adjusting for DOWN portals */
+		if (pairStruct.upDirection.equals(UpDirection.DOWN)) {
+			switch (pairStruct.direction) {
+				case WEST:
+					matrixStackIn.rotate(new Quaternion(0, 180, 90, true));
+					matrixStackIn.translate(1, -1, -1);
+					break;
+				case SOUTH:
+					matrixStackIn.rotate(new Quaternion(90, 0, 180, true));
+					matrixStackIn.translate(1, -1, -1);
+					break;
+				case NORTH:
+					matrixStackIn.rotate(new Quaternion(-90, 0, 180, true));
+					matrixStackIn.translate(1, 0, 0);
+					break;
+				case EAST:
+					matrixStackIn.rotate(new Quaternion(0, 180, -90, true));
+					matrixStackIn.translate(0, 0, -1);
+					break;
+			}
+		}
+		/* end adjusting for DOWN portals */
 		/* end setup matrix */
 		
 		/* start render clouds */
@@ -182,7 +246,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 				infos.add(winfo.renderChunk);
 			}
 		}
-
+		
 //		{
 //			ActiveRenderInfo info = Minecraft.getInstance().getRenderManager().info;
 //			Vector3d vector3d = info.getProjectedView();
@@ -293,50 +357,50 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 				for (TileEntity tileEntity : render.compiledChunk.get().getTileEntities()) {
 					for (BlockPos position : pairStruct.positions) {
 						if (tileEntity.getPos().equals(position)) {
-//							IChunk chunk = tileEntity.getWorld().getChunk(render.getPosition());
-//							/* start render chunk */
-//							BlockPos relPos = render.getPosition().subtract(pairPos);
-//							matrixStackIn.push();
-//							matrixStackIn.translate(relPos.getX(), relPos.getY(), relPos.getZ());
-//
-//							BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-//
-//							IVertexBuilder builder = vboTool.getBuffer(blockRenderType);
-//
-//							for (int x = 0; x < 16; x++) {
-//								for (int y = 0; y < 16; y++) {
-//									for (int z = 0; z < 16; z++) {
-//										if (xOff < 0) {
-//											if (render.getPosition().getX() + (x + xOff) >= pairPos.getX()) continue;
-//										} else if (xOff > 0) {
-//											if (render.getPosition().getX() + (x + xOff) <= pairPos.getX()) continue;
-//										} else if (zOff < 0) {
-//											if (render.getPosition().getZ() + (z - zOff) <= pairPos.getZ()) continue;
-//										} else if (zOff > 0) {
-//											if (render.getPosition().getZ() + (z - zOff) >= pairPos.getZ()) continue;
-//										}
-//										BlockPos pos = render.getPosition().add(x, y, z);
-//										BlockState state = chunk.getBlockState(pos);
-//										if (RenderTypeLookup.canRenderInLayer(state, blockRenderType)) {
-//											matrixStackIn.push();
-//											matrixStackIn.translate(x - 1, y, z);
-//											dispatcher.renderModel(
-//													state, pos, tileEntityIn.getWorld(),
-//													matrixStackIn, builder,
-////													matrixStackIn, bufferIn.getBuffer(RenderType.getSolid()),
-//													true, new Random(pos.toLong())
-//											);
-//											matrixStackIn.pop();
-//										}
-//									}
-//								}
-//							}
-//
-//
-//							vboTool.finish();
-//
-//							matrixStackIn.pop();
-//							/* end render chunk */
+							IChunk chunk = tileEntity.getWorld().getChunk(render.getPosition());
+							/* start render chunk */
+							BlockPos relPos = render.getPosition().subtract(pairPos);
+							matrixStackIn.push();
+							matrixStackIn.translate(relPos.getX(), relPos.getY(), relPos.getZ());
+
+							BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
+
+							IVertexBuilder builder = vboTool.getBuffer(blockRenderType);
+
+							for (int x = 0; x < 16; x++) {
+								for (int y = 0; y < 16; y++) {
+									for (int z = 0; z < 16; z++) {
+										if (xOff < 0) {
+											if (render.getPosition().getX() + (x + xOff) >= pairPos.getX()) continue;
+										} else if (xOff > 0) {
+											if (render.getPosition().getX() + (x + xOff) <= pairPos.getX()) continue;
+										} else if (zOff < 0) {
+											if (render.getPosition().getZ() + (z - zOff) <= pairPos.getZ()) continue;
+										} else if (zOff > 0) {
+											if (render.getPosition().getZ() + (z - zOff) >= pairPos.getZ()) continue;
+										}
+										BlockPos pos = render.getPosition().add(x, y, z);
+										BlockState state = chunk.getBlockState(pos);
+										if (RenderTypeLookup.canRenderInLayer(state, blockRenderType)) {
+											matrixStackIn.push();
+											matrixStackIn.translate(x - 1, y, z);
+											dispatcher.renderModel(
+													state, pos, tileEntityIn.getWorld(),
+													matrixStackIn, builder,
+//													matrixStackIn, bufferIn.getBuffer(RenderType.getSolid()),
+													true, new Random(pos.toLong())
+											);
+											matrixStackIn.pop();
+										}
+									}
+								}
+							}
+
+
+							vboTool.finish();
+
+							matrixStackIn.pop();
+							/* end render chunk */
 //
 							continue loopInfos;
 						}
@@ -503,6 +567,11 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		else if (struct.direction == Direction.EAST) stack.translate(-1, -struct.height, 0);
 		else if (struct.direction == Direction.NORTH) stack.translate(-1, -struct.height, 1);
 		else if (struct.direction == Direction.SOUTH) stack.translate(0, -struct.height, 0);
+		
+		if (struct.upDirection.equals(UpDirection.UP)) {
+			stack.rotate(new Quaternion(-90, 0, 0, true));
+			stack.translate(0, 0, 1);
+		}
 	}
 	
 	// https://gitlab.com/Spectre0987/TardisMod-1-14/-/blob/1.16/src/main/java/net/tardis/mod/client/renderers/boti/BOTIRenderer.java
