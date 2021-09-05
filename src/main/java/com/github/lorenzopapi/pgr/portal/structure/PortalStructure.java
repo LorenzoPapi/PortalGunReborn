@@ -5,7 +5,6 @@ import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.block.PortalBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.DoubleNBT;
 import net.minecraft.nbt.ListNBT;
@@ -94,9 +93,11 @@ public class PortalStructure {
 				else
 					this.behinds.add(pos.offset(direction.getOpposite()));
 			}
-		} else {
-			Minecraft.getInstance().getSoundHandler().play(new PortalAmbienceSound(this));
 		}
+		//TODO: ok so world will ALWAYS be a server world, and I'm calling a client class
+		//It'll probably crash a dedicated server
+		//But hey at least the client works!
+		Minecraft.getInstance().getSoundHandler().play(new PortalAmbienceSound(this));
 	}
 
 	public PortalStructure setWidthAndHeight(int w, int h) {
@@ -158,6 +159,7 @@ public class PortalStructure {
 				this.behinds.remove(pos.offset(direction.getOpposite()));
 			world.removeBlock(pos, false);
 		}
+		this.world.playSound(null, this.positions.get(0), PGRRegistry.PGRSounds.PORTAL_CLOSE, SoundCategory.BLOCKS, 0.4F, 1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.1F);
 	}
 
 	public boolean isSameStruct(PortalStructure other) {

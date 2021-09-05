@@ -63,7 +63,6 @@ public class PGRRegistry {
 
 	@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 	public static class PGRSounds {
-		//public static SoundEvent PORTAL_FIZZLE;
 //		public static SoundEvent pg_object_use_failure;
 //		public static SoundEvent pg_object_use_lp_loop;
 //		public static SoundEvent pg_object_use_lp_start;
@@ -74,6 +73,7 @@ public class PGRRegistry {
 		public static SoundEvent PORTAL_INVALID_SURFACE;
 		public static SoundEvent PORTAL_OPEN_BLUE;
 		public static SoundEvent PORTAL_OPEN_RED;
+		public static SoundEvent PORTAL_CLOSE;
 		public static SoundEvent PORTAL_GUN_INVALID_SURFACE;
 		public static SoundEvent PORTAL_GUN_RESET_PORTALS;
 		public static SoundEvent PORTAL_GUN_FIRE_BLUE;
@@ -82,7 +82,6 @@ public class PGRRegistry {
 
 		@SubscribeEvent
 		public static void onSoundRegistry(RegistryEvent.Register<SoundEvent> e) {
-//			PORTAL_FIZZLE = register(e, "portal.portal_fizzle");
 //			pg_object_use_failure = register(e, "portalgun.object_use_failure");
 //			pg_object_use_lp_loop = register(e, "portalgun.object_use_lp_loop");
 //			pg_object_use_lp_start = register(e, "portalgun.object_use_lp_start");
@@ -92,9 +91,10 @@ public class PGRRegistry {
 			PORTAL_INVALID_SURFACE = register(e, "portal.invalid_surface");
 			PORTAL_OPEN_BLUE = register(e, "portal.open_blue");
 			PORTAL_OPEN_RED = register(e, "portal.open_red");
+			PORTAL_CLOSE = register(e, "portal.close");
 			PORTAL_AMBIENCE = register(e, "portal.ambience");
 			PORTAL_GUN_INVALID_SURFACE = register(e, "pg.invalid_surface");
-			PORTAL_GUN_RESET_PORTALS = register(e, "pg.reset_portals");
+			PORTAL_GUN_RESET_PORTALS = register(e, "pg.reset");
 			PORTAL_GUN_FIRE_BLUE = register(e, "pg.fire_blue");
 			PORTAL_GUN_FIRE_RED = register(e, "pg.fire_red");
 			PORTAL_GUN_EQUIP = register(e, "pg.equip");

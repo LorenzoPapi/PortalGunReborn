@@ -138,18 +138,12 @@ public class PortalGunItem extends Item {
 			tooltip.add(new TranslationTextComponent("pgr.info.size", tag.getInt("width"), tag.getInt("height")));
 			tooltip.add(new TranslationTextComponent("pgr.info.grabStrength" + tag.getInt("grabStrength")));
 		} else {
-			tooltip.add(new TranslationTextComponent("pgr.info.newPortalGun"));
+			tooltip.add(new TranslationTextComponent("pgr.info.new"));
 		}
 	}
 
 	@Override
 	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-		return (slotChanged ||
-				        !oldStack.isItemEqual(newStack) ||
-				        oldStack.getTag() == null ||
-				        newStack.getTag() == null ||
-				        !oldStack.getTag().getString("uuid").equals(newStack.getTag().getString("uuid")) ||
-				        !oldStack.getTag().getString("channelName").equals(newStack.getTag().getString("channelName")) ||
-				        oldStack.getTag().getBoolean("lastFired") != newStack.getTag().getBoolean("lastFired"));
+		return slotChanged && (!oldStack.isItemEqual(newStack) || oldStack.getTag() == null || !oldStack.getTag().equals(newStack.getTag()));
 	}
 }

@@ -5,68 +5,25 @@
 
     "block.portalgunreborn.block.portal": "Portal Block",
 
+    "entity.portalgunreborn.portal_projectile": "Portal Projectile",
+
+    "pgr.info.new": "Newly Crafted Portal Gun",
     "pgr.info.global": "Global Portal Gun",
     "pgr.info.owner": "%s's Portal Gun",
     "pgr.info.channel": "Channel: %s",
     "pgr.info.size": "Size: %1$s x %2$s",
-    "pgr.info.grabStrength0": "Grab Strength: wegotaproblemhere",
+    "pgr.info.grabStrength0": "Grab Strength: Non-existent",
     "pgr.info.grabStrength1": "Grab Strength: Small Entities",
     "pgr.info.grabStrength2": "Grab Strength: Blocks + Entities",
     "pgr.info.grabStrength3": "Grab Strength: Tile Entities + Large Entities",
     "pgr.info.grabStrength4": "Grab Strength: Tile Entities + Very Large Entities",
-    "pgr.info.newPortalGun": "Newly Crafted Portal Gun",
 
-    "portalgun.config.cat.portalgun": "Portal Gun Settings",
-
-    "portalgun.config.cat.pgr.comment": "Config options relating to the use of the Portal Gun",
-
-    "portalgun.config.prop.portalgunIndicatorSize": "Portal Gun Indicator Size",
-    "portalgun.config.prop.seeThroughPortals": "See Through Portals",
-    "portalgun.config.prop.fancyPortals": "Fancy Portals",
-
-    "portalgun.config.prop.keyGrab": "Grab Key",
-    "portalgun.config.prop.keyReset": "Reset Portal Key",
-    "portalgun.config.prop.keyZoom": "Zoom Key",
-
-    "portalgun.config.prop.equipItemSound": "Enable Portal Gun equip sound",
-
-    "portalgun.config.prop.entityGrabWeightBase": "Entity Grab Weight Base",
-    "portalgun.config.prop.maxShootDistance": "Maximum Portal Firing Distance",
-    "portalgun.config.prop.canFireThroughGlass": "Portals Can Go Through Glass",
-    "portalgun.config.prop.canFireThroughLiquid": "Portals Can Go Through Liquid",
-    "portalgun.config.prop.canPortalsResizeWhenCreated": "Portals Can Be Resized When Created",
-    "portalgun.config.prop.canPortalProjectilesChunkload": "Portal Projectiles Can Chunk Load",
-
-    "portalgun.config.prop.portalgunIndicatorSize.comment": "The size of the indicator around the crosshairs when you hold the Portal Gun.\nValue is in percentage\n0 to disable.",
-    "portalgun.config.prop.seeThroughPortals.comment": "Enable rendering to see through portals?\n\nIf your PC does not support this, you will not be able to see through portals even if this was enabled.",
-    "portalgun.config.prop.fancyPortals.comment": "Enable rendering portals with shaders?\n\nIf your PC does not support this, shaders will not be used even if this was enabled.",
-
-    "portalgun.config.prop.keyGrab.comment": "Key to grab blocks/entities with the Portal Gun",
-    "portalgun.config.prop.keyReset.comment": "Key to reset portals of your Portal Gun",
-    "portalgun.config.prop.keyZoom.comment": "Key to zoom and unzoom the Portal Gun",
-
-    "portalgun.config.prop.equipItemSound.comment": "Play a sound when the Portal Gun is equipped?",
-
-    "portalgun.config.prop.entityGrabWeightBase.comment": "Base Weight that the Portal Gun is allowed to carry, in percentile (%)\nSet this to 0 to disable grabbing of blocks and entities which are not part of this mod.",
-    "portalgun.config.prop.maxShootDistance.comment": "Maximum distance to fire portals from the Portal Gun.",
-    "portalgun.config.prop.canFireThroughGlass.comment": "Can the projectile fired by the Portal Gun go through glass?",
-    "portalgun.config.prop.canFireThroughLiquid.comment": "Can the projectile fired by the Portal Gun go through liquid?",
-    "portalgun.config.prop.canPortalsResizeWhenCreated.comment": "Can the portal that spawns from the projectile be resized downwards if the full size won't fit?",
-    "portalgun.config.prop.canPortalProjectilesChunkload.comment": "Can the portal projectile (that you fire from the portal gun) chunk load?\nDisabling this might cause issues.",
-
-    "entity.EntityPortalProjectile": "Portal Projectile",
-
-    "subtitles.pgr.portal.portalenter": "Entering portal",
-    "subtitles.pgr.portal.portalexit": "Exiting portal",
-    "subtitles.pgr.portal.portalfizzle": "Portal closing",
-    "subtitles.pgr.portal.portalinvalid": "Portal failing to place",
-    "subtitles.pgr.portal.portalopen": "Portal opening",
-    "subtitles.pgr.portalgun.usefail": "Portal gun unable to lift",
-    "subtitles.pgr.portalgun.useloop": "Portal gun humming",
-    "subtitles.pgr.portalgun.usestart": "Portal gun grabbing",
-    "subtitles.pgr.portalgun.usestop": "Portal gun releasing",
-    "subtitles.pgr.portalgun.invalidsurface": "Portal failing to place",
-    "subtitles.pgr.portalgun.reset": "Portal gun resetting",
-    "subtitles.pgr.portalgun.fire": "Portal gun firing",
-    "subtitles.pgr.portalgun.equip": "Portal gun equipping"
+    "subtitles.pgr.portal.enter": "Entering portal",
+    "subtitles.pgr.portal.exit": "Exiting portal",
+    "subtitles.pgr.portal.close": "Portal closing",
+    "subtitles.pgr.portal.invalid": "Portal failing to place",
+    "subtitles.pgr.portal.open": "Portal opening",
+    "subtitles.pgr.pg.reset": "Portal gun resetting",
+    "subtitles.pgr.pg.fire": "Portal gun firing",
+    "subtitles.pgr.pg.equip": "Portal gun equipping"
 }

@@ -154,11 +154,11 @@ public class PortalProjectileEntity extends Entity {
 									this.shooter.setItemStackToSlot(EquipmentSlotType.MAINHAND, is);
 								}
 							}
-							this.shooter.playSound(this.structure.isTypeA ? PGRRegistry.PGRSounds.PORTAL_OPEN_BLUE : PGRRegistry.PGRSounds.PORTAL_OPEN_RED, 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							this.shooter.getEntityWorld().playSound(null, shooter.getPosition(), this.structure.isTypeA ? PGRRegistry.PGRSounds.PORTAL_OPEN_BLUE : PGRRegistry.PGRSounds.PORTAL_OPEN_RED, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
 					} else {
 						if (this.shooter != null) {
-							this.shooter.playSound(PGRRegistry.PGRSounds.PORTAL_GUN_INVALID_SURFACE, 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
+							this.shooter.getEntityWorld().playSound(null, shooter.getPosition(), PGRRegistry.PGRSounds.PORTAL_GUN_INVALID_SURFACE, this.shooter.getSoundCategory(), 0.2F, 1.0F + (this.shooter.getRNG().nextFloat() - this.shooter.getRNG().nextFloat()) * 0.1F);
 						}
 						this.playSound(PGRRegistry.PGRSounds.PORTAL_INVALID_SURFACE, 0.4F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 					}

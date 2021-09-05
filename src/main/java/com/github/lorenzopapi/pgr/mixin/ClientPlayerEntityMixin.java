@@ -2,8 +2,8 @@ package com.github.lorenzopapi.pgr.mixin;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
-import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
+import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -25,27 +25,28 @@ public class ClientPlayerEntityMixin {
 	@Shadow
 	@Final
 	protected Minecraft mc;
-	
+
 	final BlockPos.Mutable oldPos = new BlockPos.Mutable();
 	List<BlockPos> oldBehinds = new ArrayList<>();
 
 	@Inject(method = "shouldBlockPushPlayer", at = @At("HEAD"), cancellable = true)
 	public void teleportTrough(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-		BlockState current = mc.world.getBlockState(pos);
-		PortalStructure structure = PGRUtils.findPortalByPosition(mc.world, pos);
-		if (current.getBlock() == PGRRegistry.PORTAL_BLOCK && structure != null) {
+		PortalStructure possible = PGRUtils.findPortalByPosition(mc.world, pos);
+		if (mc.world.getBlockState(pos).getBlock() == PGRRegistry.PORTAL_BLOCK && possible != null) {
 			oldPos.setPos(pos);
-			oldBehinds = structure.behinds;
+			oldBehinds = possible.behinds;
 			cir.setReturnValue(false);
 		} else {
 			if (oldBehinds.contains(pos)) {
-				PortalStructure struct = PGRUtils.findPortalByPosition(mc.world, oldPos.toImmutable());
-				if (struct != null && struct.hasPair()) {
-					Vector3d pairPos = averagePosOfList(struct.pair.positions);
+				PortalStructure current = PGRUtils.findPortalByPosition(mc.world, oldPos.toImmutable());
+				if (current != null && current.hasPair()) {
+					Vector3d pairPos = averagePosOfList(current.pair.positions);
 					double x = pairPos.getX() + getDecimals(mc.player.getPosX());
-					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (struct.pair.upDirection != PortalStructure.UpDirection.WALL ? struct.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
+					double y = pairPos.getY() + getDecimals(mc.player.getPosY()) + (current.pair.upDirection != PortalStructure.UpDirection.WALL ? current.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
 					double z = pairPos.getZ() + getDecimals(mc.player.getPosZ());
-					mc.player.setLocationAndAngles(x, y, z, (struct.pair.direction == struct.direction ? mc.player.rotationYaw + 180 : mc.player.rotationYaw), mc.player.rotationPitch);
+					float yaw = current.pair.direction.getHorizontalAngle();
+					Reference.LOGGER.info("Current: {}, Portal: {}, Pair: {}", mc.player.rotationYaw, current.direction.getHorizontalAngle(), yaw);
+					mc.player.setLocationAndAngles(x, y, z, yaw % 360, mc.player.rotationPitch);
 					mc.player.playSound(PGRRegistry.PGRSounds.PORTAL_ENTER, mc.player.getSoundCategory(), 0.01F, 1.0F + mc.player.getEntityWorld().rand.nextFloat() * 0.1F);
 					mc.player.playSound(PGRRegistry.PGRSounds.PORTAL_EXIT, mc.player.getSoundCategory(), 0.01F, 1.0F + mc.player.getEntityWorld().rand.nextFloat() * 0.1F);
 					cir.setReturnValue(false);

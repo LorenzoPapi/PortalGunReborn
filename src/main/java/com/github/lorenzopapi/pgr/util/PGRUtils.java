@@ -1,18 +1,19 @@
 package com.github.lorenzopapi.pgr.util;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
-import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
-import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
 import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -42,7 +43,7 @@ public class PGRUtils {
 			}
 			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setPortalColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
 			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, structure));
-			living.playSound(isTypeA ? PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_BLUE : PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_RED, 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
+			living.getEntityWorld().playSound(null, living.getPosition(), isTypeA ? PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_BLUE : PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_RED, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
 		}
 	}
 
@@ -70,8 +71,10 @@ public class PGRUtils {
 
 			// Check if portal is already placed: if true, delete it
 			PortalStructure struct = findPortalOfSameType(world, portal);
-			if (struct != null)
+			if (struct != null) {
 				data.removePortal(struct);
+				world.playSound(null, struct.positions.get(0), PGRRegistry.PGRSounds.PORTAL_CLOSE, SoundCategory.BLOCKS, 0.4F, 1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.1F);
+			}
 
 			// Searches pair and links it
 			PortalStructure possiblePair = data.findPair(portal);

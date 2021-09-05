@@ -12,16 +12,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.event.TickEvent;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 public class PGRClientHandler {
 	public final ResourceLocation texEmptyL = new ResourceLocation(Reference.MOD_ID, "textures/overlay/lempty.png");

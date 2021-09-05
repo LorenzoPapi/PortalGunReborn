@@ -1,7 +1,7 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;

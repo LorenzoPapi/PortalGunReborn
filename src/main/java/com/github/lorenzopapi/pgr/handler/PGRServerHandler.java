@@ -1,17 +1,21 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
-import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -26,6 +30,12 @@ import java.util.HashMap;
 public class PGRServerHandler {
 	public final HashMap<RegistryKey<World>, PGRSavedData> portalInfoByDimension = new HashMap<>();
 	public final ArrayList<ChannelIndicator> indicators = new ArrayList<>();
+
+	public void onLivingEquip(LivingEquipmentChangeEvent e) {
+		LivingEntity ent = e.getEntityLiving();
+		if (ent instanceof PlayerEntity && e.getTo().isItemEqual(PGRRegistry.PORTAL_GUN.get().getDefaultInstance()))
+			ent.world.playSound(null, ent.getPosition(), PGRRegistry.PGRSounds.PORTAL_GUN_EQUIP, SoundCategory.PLAYERS, 0.2F, 1.0F);
+	}
 
 	public void onRightClickItem(PlayerInteractEvent.RightClickItem e) {
 		ItemStack is = e.getPlayer().getHeldItem(Hand.MAIN_HAND);

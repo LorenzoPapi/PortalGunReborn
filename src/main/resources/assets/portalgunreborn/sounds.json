@@ -10,21 +10,21 @@
 	  "portalgunreborn:portal/enter_02",
 	  "portalgunreborn:portal/enter_03"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalenter"
+    "subtitle": "subtitles.pgr.portal.enter"
   },
   "portal.exit": {
     "sounds": [
       "portalgunreborn:portal/exit_01",
 	  "portalgunreborn:portal/exit_02"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalexit"
+    "subtitle": "subtitles.pgr.portal.exit"
   },
-  "portal.fizzle": {
+  "portal.close": {
     "sounds": [
-      "portalgunreborn:portal/fizzle_01",
-	  "portalgunreborn:portal/fizzle_02"
+      "portalgunreborn:portal/close_01",
+	  "portalgunreborn:portal/close_02"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalfizzle"
+    "subtitle": "subtitles.pgr.portal.close"
   },
   "portal.invalid_surface": {
     "sounds": [
@@ -33,55 +33,55 @@
 	  "portalgunreborn:portal/invalid_surface_03",
 	  "portalgunreborn:portal/invalid_surface_04"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalinvalid"
+    "subtitle": "subtitles.pgr.portal.invalid"
   },
   "portal.open_blue": {
     "sounds": [
       "portalgunreborn:portal/open_blue"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalopen"
+    "subtitle": "subtitles.pgr.portal.open"
   },
   "portal.open_red": {
     "sounds": [
       "portalgunreborn:portal/open_red"
     ],
-    "subtitle": "subtitles.portalgun.portal.portalopen"
+    "subtitle": "subtitles.pgr.portal.open"
   },
   "pg.object_use_failure": {
     "sounds": [
       "portalgunreborn:pg/object_use_failure_01"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.usefail"
+    "subtitle": "subtitles.pgr.portalgun.usefail"
   },
   "pg.object_use_lp_loop": {
     "sounds": [
       "portalgunreborn:pg/object_use_lp_loop"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.useloop"
+    "subtitle": "subtitles.pgr.portalgun.useloop"
   },
   "pg.object_use_lp_start": {
     "sounds": [
       "portalgunreborn:pg/object_use_lp_start"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.usestart"
+    "subtitle": "subtitles.pgr.portalgun.usestart"
   },
   "pg.object_use_stop": {
     "sounds": [
       "portalgunreborn:pg/object_use_stop_01"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.usestop"
+    "subtitle": "subtitles.pgr.portalgun.usestop"
   },
   "pg.invalid_surface": {
     "sounds": [
       "portalgunreborn:pg/invalid_surface"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.invalidsurface"
+    "subtitle": "subtitles.pgr.portal.invalid"
   },
-  "pg.reset_portals": {
+  "pg.reset": {
     "sounds": [
-      "portalgunreborn:pg/reset_portals"
+      "portalgunreborn:pg/reset"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.reset"
+    "subtitle": "subtitles.pgr.pg.reset"
   },
   "pg.fire_blue": {
     "sounds": [
@@ -89,7 +89,7 @@
 	  "portalgunreborn:pg/fire_blue_02",
 	  "portalgunreborn:pg/fire_blue_03"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.fire"
+    "subtitle": "subtitles.pgr.pg.fire"
   },
   "pg.fire_red": {
     "sounds": [
@@ -97,12 +97,12 @@
 	  "portalgunreborn:pg/fire_red_02",
 	  "portalgunreborn:pg/fire_red_03"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.fire"
+    "subtitle": "subtitles.pgr.pg.fire"
   },
-  "pg.activation": {
+  "pg.equip": {
     "sounds": [
       "portalgunreborn:pg/equip"
     ],
-    "subtitle": "subtitles.portalgun.portalgun.equip"
+    "subtitle": "subtitles.pgr.pg.equip"
   }
 }
