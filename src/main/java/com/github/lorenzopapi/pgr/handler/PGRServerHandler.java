@@ -76,16 +76,14 @@ public class PGRServerHandler {
 	}
 
 	public void onHurtEvent(LivingHurtEvent e) {
-		if (e.getSource().damageType.equals("inWall")) {
+		if ("inWall".equals(e.getSource().damageType))
 			e.setCanceled(true);
-		}
 	}
 
 	public void onWorldLoad(WorldEvent.Load e) {
 		//I hate my life
-		if (e.getWorld() instanceof World) {
+		if (e.getWorld() instanceof World)
 			getWorldSaveData((World) e.getWorld());
-		}
 	}
 
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
@@ -97,29 +95,21 @@ public class PGRServerHandler {
 	}
 
 	public PGRSavedData getWorldSaveData(World world) {
-		RegistryKey<World> dimension = world.getDimensionKey();
-		PGRSavedData data = this.portalInfoByDimension.get(dimension);
-		if (data == null) {
-			ServerWorld serverWorld = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
-			data = (serverWorld != null) ? PGRUtils.getSaveDataForWorld(serverWorld) : new PGRSavedData("PortalGunPortalData_somethingBroke");
-		}
-		return data;
+		return getWorldSaveData(world.getDimensionKey());
 	}
 
 	public PGRSavedData getWorldSaveData(RegistryKey<World> dimension) {
 		PGRSavedData data = this.portalInfoByDimension.get(dimension);
 		if (data == null) {
 			ServerWorld world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
-			data = (world != null) ? PGRUtils.getSaveDataForWorld(world) : new PGRSavedData("PortalGunPortalData_somethingBroke");
+			data = (world != null) ? PGRUtils.getSaveDataForWorld(world) : new PGRSavedData("PGRPortalData_broken");
 		}
 		return data;
 	}
 
 	public ChannelInfo lookupChannel(String uuid, String channelName) {
-		PGRSavedData data = getWorldSaveData(World.OVERWORLD);
-		return data.getChannel(uuid, channelName);
+		return getWorldSaveData(World.OVERWORLD).getChannel(uuid, channelName);
 	}
-
 
 	public void onWorldUnload(WorldEvent.Unload e) {
 		if (!e.getWorld().isRemote()) {

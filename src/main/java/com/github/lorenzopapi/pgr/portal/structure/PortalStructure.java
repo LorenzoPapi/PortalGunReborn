@@ -28,7 +28,7 @@ public class PortalStructure {
 	public int height = 2;
 	public World world;
 	public boolean isTypeA = true;
-	public int portalColor = 0; // Black
+	public int color = 0; // Black
 	public boolean initialized = false;
 	public Direction direction = Direction.NORTH;
 	public UpDirection upDirection = UpDirection.WALL;
@@ -39,7 +39,7 @@ public class PortalStructure {
 	public PortalStructure readFromNBT(CompoundNBT tag) {
 		this.info = new ChannelInfo().readFromNBT(tag.getCompound("channelInfo"));
 		this.isTypeA = tag.getBoolean("isTypeA");
-		this.portalColor = isTypeA ? info.colorA : info.colorB;
+		this.color = isTypeA ? info.colorA : info.colorB;
 		this.width = tag.getInt("width");
 		this.height = tag.getInt("height");
 		if (tag.contains("direction")) {
@@ -125,8 +125,8 @@ public class PortalStructure {
 		return this;
 	}
 
-	public PortalStructure setPortalColor(int portalColor) {
-		this.portalColor = portalColor;
+	public PortalStructure setColor(int color) {
+		this.color = color;
 		return this;
 	}
 

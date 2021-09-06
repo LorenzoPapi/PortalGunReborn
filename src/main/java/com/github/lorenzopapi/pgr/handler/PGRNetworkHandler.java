@@ -15,14 +15,14 @@ public class PGRNetworkHandler {
 			                                            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
 			                                            .networkProtocolVersion(() -> PROTOCOL_VERSION)
 			                                            .simpleChannel();
-	private static int counter = 0;
+	private static int id = 0;
 
 	public static void register() {
 		registerMessage(KeyEventMessage.class, new KeyEventMessage());
 	}
 
 	public static <T> void registerMessage(Class<T> clazz, IMessage<T> message) {
-		HANDLER.registerMessage(counter, clazz, message::encode, message::decode, message::handle);
-		counter++;
+		HANDLER.registerMessage(id, clazz, message::encode, message::decode, message::handle);
+		id++;
 	}
 }

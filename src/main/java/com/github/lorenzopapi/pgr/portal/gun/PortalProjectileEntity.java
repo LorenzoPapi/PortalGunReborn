@@ -61,7 +61,7 @@ public class PortalProjectileEntity extends Entity {
 		this.pWidth = info.width;
 		this.pHeight = info.height;
 		this.structure = info;
-		setColor(this.structure.portalColor);
+		setColor(this.structure.color);
 		getDataManager().set(MAX_DISTANCE, PGRConfig.COMMON.maxShootDistance.get());
 		Vector3d location = shooter.getEyePosition(1.0F);
 		Vector3d look = shooter.getLook(1.0F).normalize();

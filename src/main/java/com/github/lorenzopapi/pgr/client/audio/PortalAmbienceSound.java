@@ -11,7 +11,7 @@ public class PortalAmbienceSound extends TickableSound {
 	public PortalAmbienceSound(PortalStructure struct) {
 		super(PGRRegistry.PGRSounds.PORTAL_AMBIENCE, SoundCategory.BLOCKS);
 		this.repeat = true;
-		this.volume = 0.1F;
+		this.volume = 0.03F;
 		this.struct = struct;
 		this.x = struct.positions.get(0).getX();
 		this.y = struct.positions.get(0).getY();

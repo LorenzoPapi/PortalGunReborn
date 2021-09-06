@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.settings.CloudOption;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -32,6 +33,7 @@ import net.minecraft.world.chunk.IChunk;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -40,7 +42,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 	private static PGRFrameBuffer buffer;
 	private static PGRFrameBuffer clipping;
 	private static DynamicTexture texture;
-	private static ResourceLocation textureLocation = null;
+	private static final ResourceLocation textureLocation = null;
 	private static int recursionDepth = 0;
 	
 	public PGRRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -52,59 +54,59 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 	private static final HoldingRenderTypeBuffers vboTool = new HoldingRenderTypeBuffers(new BufferBuilder(16));
 	
 	@Override
-	public void render(PortalBlockTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+	public void render(PortalBlockTileEntity portalTE, float partialTicks, MatrixStack stacks, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 		// TODO: check if the player is in a position where they could possibly see the portal
 		
-		PortalStructure struct = PGRUtils.findPortalByPosition(tileEntityIn.getWorld(), tileEntityIn.getPos());
+		PortalStructure portal = PGRUtils.findPortalByPosition(portalTE.getWorld(), portalTE.getPos());
 		// I removed a null check here, which was always false, because the positions cannot be null since it's defined as an empty list from the beginning
-		if (struct == null || struct.positions.isEmpty()) return;
+		if (portal == null || portal.positions.isEmpty()) return;
 		
-		if (!struct.positions.get(0).equals(tileEntityIn.getPos())) return;
-		PortalStructure pairStruct = struct.pair;
+		if (!portal.positions.get(0).equals(portalTE.getPos())) return;
+		PortalStructure pairStruct = portal.pair;
 		if (pairStruct == null) {
-			matrixStackIn.push();
-			setupMatrix(matrixStackIn, struct);
+			stacks.push();
+			setupMatrix(stacks, portal);
 			RenderSystem.enableDepthTest();
 			RenderSystem.depthMask(true);
-			for (int w = 0; w < struct.width; w++) {
-				for (int h = 0; h < struct.height; h++) {
+			for (int w = 0; w < portal.width; w++) {
+				for (int h = 0; h < portal.height; h++) {
 					RenderSystem.color4f(
-							((struct.portalColor >> 16) & 0xFF) / 255f,
-							((struct.portalColor >> 8) & 0xFF) / 255f,
-							(struct.portalColor & 0xFF) / 255f,
+							((portal.color >> 16) & 0xFF) / 255f,
+							((portal.color >> 8) & 0xFF) / 255f,
+							(portal.color & 0xFF) / 255f,
 							1
 					);
 					RendererUtils.drawTexture(
-							matrixStackIn, new ResourceLocation("minecraft:null"),
+							stacks, new ResourceLocation("minecraft:null"),
 							w, h, 1, 1, 0
 					);
 				}
 			}
-			matrixStackIn.pop();
+			stacks.pop();
 			return;
 		}
 		BlockPos pairPos = pairStruct.positions.get(0);
 
-//		matrixStackIn.push();
-//		if (struct.positions.get(0).getY() == struct.positions.get(1).getY())
-//			matrixStackIn.rotate(new Quaternion(90, 0, 0, true));
-//		else matrixStackIn.translate(0, 0, 1);
+//		stacks.push();
+//		if (portal.positions.get(0).getY() == portal.positions.get(1).getY())
+//			stacks.rotate(new Quaternion(90, 0, 0, true));
+//		else stacks.translate(0, 0, 1);
 
-//		setupMatrix(matrixStackIn, struct);
+//		setupMatrix(stacks, portal);
 
 //		RenderSystem.disableTexture();
 //		RenderSystem.depthFunc(GL11.GL_ALWAYS);
-//		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 0);
+//		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 0);
 //		RenderSystem.enableTexture();
-//		matrixStackIn.pop();
+//		stacks.pop();
 		
 		/* start active stencils */
 		if (!Minecraft.getInstance().getFramebuffer().isStencilEnabled())
 			Minecraft.getInstance().getFramebuffer().enableStencil();
-		setupStencil(matrixStackIn, struct);
+		setupStencil(stacks, portal);
 		/* end active stencils */
 
-//		else if (struct.direction == Direction.EAST) matrixStackIn.translate(-1, -struct.height, 0);
+//		else if (portal.direction == Direction.EAST) stacks.translate(-1, -portal.height, 0);
 
 //		infos.sort((i1, i2) -> {
 //			return Double.compare(
@@ -114,14 +116,14 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 //		});
 		
 		/* start sky background */
-		matrixStackIn.push();
+		stacks.push();
 		// TODO: make this be one draw call instead of 5
 		// this code is massive due to also needing to fill the depth buffer, due to which depth sorting method I'm using
-		setupMatrix(matrixStackIn, struct);
-		matrixStackIn.translate(-(struct.width * 2000) / 2f, -(struct.height * 2000) / 2f, 10);
-		matrixStackIn.scale(struct.width * 2000, struct.height * 2000, 1);
+		setupMatrix(stacks, portal);
+		stacks.translate(-(portal.width * 2000) / 2f, -(portal.height * 2000) / 2f, 10);
+		stacks.scale(portal.width * 2000, portal.height * 2000, 1);
 		RenderSystem.depthFunc(GL11.GL_ALWAYS);
-		int skyColor = tileEntityIn.getWorld().getBiome(tileEntityIn.getPos()).getFogColor();
+		int skyColor = portalTE.getWorld().getBiome(portalTE.getPos()).getFogColor();
 		RenderSystem.disableTexture();
 		{
 			int ci = (skyColor >> 16) & 0xFF;
@@ -130,17 +132,17 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			RenderSystem.enableFog();
 			RenderSystem.color4f(ci / 255f, cb / 255f, cg / 255f, 1);
 		}
-		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 0);
-		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 20);
-		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 90);
-		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 190);
-		RendererUtils.draw(matrixStackIn, 0, 0, struct.width, struct.height, 250);
+		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 0);
+		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 20);
+		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 90);
+		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 190);
+		RendererUtils.draw(stacks, 0, 0, portal.width, portal.height, 250);
 		RenderSystem.enableTexture();
-		matrixStackIn.pop();
+		stacks.pop();
 		/* end sky background */
 		
 		/* start render sky */
-		matrixStackIn.push();
+		stacks.push();
 		{
 			ActiveRenderInfo info = Minecraft.getInstance().getRenderManager().info;
 			double d0 = info.getProjectedView().x;
@@ -148,25 +150,25 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			boolean flag1 = Minecraft.getInstance().world.func_239132_a_().func_230493_a_(MathHelper.floor(d0), MathHelper.floor(d1)) || Minecraft.getInstance().ingameGUI.getBossOverlay().shouldCreateFog();
 			RenderSystem.color4f(1, 1, 1, 1);
 			FogRenderer.setupFog(info, FogRenderer.FogType.FOG_SKY, Minecraft.getInstance().gameRenderer.getFarPlaneDistance() - 20, flag1, partialTicks);
-			Minecraft.getInstance().worldRenderer.renderSky(matrixStackIn, partialTicks);
+			Minecraft.getInstance().worldRenderer.renderSky(stacks, partialTicks);
 		}
-		matrixStackIn.pop();
+		stacks.pop();
 		/* end render sky */
 		
 		/* start fix matrix */
-		matrixStackIn.push();
-		switch (struct.direction) {
+		stacks.push();
+		switch (portal.direction) {
 			case NORTH:
-				matrixStackIn.rotate(new Quaternion(0, 90, 0, true));
-				matrixStackIn.translate(-1, 0, 0);
+				stacks.rotate(new Quaternion(0, 90, 0, true));
+				stacks.translate(-1, 0, 0);
 				break;
 			case SOUTH:
-				matrixStackIn.rotate(new Quaternion(0, -90, 0, true));
-				matrixStackIn.translate(0, 0, -1);
+				stacks.rotate(new Quaternion(0, -90, 0, true));
+				stacks.translate(0, 0, -1);
 				break;
 			case WEST:
-				matrixStackIn.rotate(new Quaternion(0, 180, 0, true));
-				matrixStackIn.translate(-1, 0, -1);
+				stacks.rotate(new Quaternion(0, 180, 0, true));
+				stacks.translate(-1, 0, -1);
 				break;
 			default:
 				break;
@@ -174,36 +176,36 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		/* end fix matrix */
 		
 		/* start setup matrix */
-		matrixStackIn.rotate(pairStruct.direction.getRotation());
-		matrixStackIn.rotate(new Quaternion(-90, 90, 0, true));
+		stacks.rotate(pairStruct.direction.getRotation());
+		stacks.rotate(new Quaternion(-90, 90, 0, true));
 		if (pairStruct.direction == Direction.EAST) {
-			matrixStackIn.translate(1, 0, -1);
+			stacks.translate(1, 0, -1);
 		} else if (pairStruct.direction == Direction.NORTH) {
-			matrixStackIn.translate(0, 0, 1);
-			matrixStackIn.rotate(new Quaternion(0, 180, 0, true));
+			stacks.translate(0, 0, 1);
+			stacks.rotate(new Quaternion(0, 180, 0, true));
 		} else if (pairStruct.direction == Direction.SOUTH) {
-			matrixStackIn.translate(-1, 0, 0);
-			matrixStackIn.rotate(new Quaternion(0, 180, 0, true));
+			stacks.translate(-1, 0, 0);
+			stacks.rotate(new Quaternion(0, 180, 0, true));
 		}
 		
 		/* start adjusting for UP portals */
 		if (pairStruct.upDirection.equals(PortalStructure.UpDirection.UP)) {
 			switch (pairStruct.direction) {
 				case WEST:
-					matrixStackIn.rotate(new Quaternion(0, 0, 90, true));
-					matrixStackIn.translate(1, 0, 0);
+					stacks.rotate(new Quaternion(0, 0, 90, true));
+					stacks.translate(1, 0, 0);
 					break;
 				case SOUTH:
-					matrixStackIn.rotate(new Quaternion(90, 0, 0, true));
-					matrixStackIn.translate(0, 0, -1);
+					stacks.rotate(new Quaternion(90, 0, 0, true));
+					stacks.translate(0, 0, -1);
 					break;
 				case NORTH:
-					matrixStackIn.rotate(new Quaternion(-90, 0, 0, true));
-					matrixStackIn.translate(0, -1, 0);
+					stacks.rotate(new Quaternion(-90, 0, 0, true));
+					stacks.translate(0, -1, 0);
 					break;
 				case EAST:
-					matrixStackIn.rotate(new Quaternion(0, 0, -90, true));
-					matrixStackIn.translate(0, -1, 0);
+					stacks.rotate(new Quaternion(0, 0, -90, true));
+					stacks.translate(0, -1, 0);
 					break;
 			}
 		}
@@ -212,20 +214,20 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		if (pairStruct.upDirection.equals(PortalStructure.UpDirection.DOWN)) {
 			switch (pairStruct.direction) {
 				case WEST:
-					matrixStackIn.rotate(new Quaternion(0, 180, 90, true));
-					matrixStackIn.translate(1, -1, -1);
+					stacks.rotate(new Quaternion(0, 180, 90, true));
+					stacks.translate(1, -1, -1);
 					break;
 				case SOUTH:
-					matrixStackIn.rotate(new Quaternion(90, 0, 180, true));
-					matrixStackIn.translate(1, -1, -1);
+					stacks.rotate(new Quaternion(90, 0, 180, true));
+					stacks.translate(1, -1, -1);
 					break;
 				case NORTH:
-					matrixStackIn.rotate(new Quaternion(-90, 0, 180, true));
-					matrixStackIn.translate(1, 0, 0);
+					stacks.rotate(new Quaternion(-90, 0, 180, true));
+					stacks.translate(1, 0, 0);
 					break;
 				case EAST:
-					matrixStackIn.rotate(new Quaternion(0, 180, -90, true));
-					matrixStackIn.translate(0, 0, -1);
+					stacks.rotate(new Quaternion(0, 180, -90, true));
+					stacks.translate(0, 0, -1);
 					break;
 			}
 		}
@@ -233,11 +235,13 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		/* end setup matrix */
 		
 		/* start render clouds */
-		RenderSystem.enableDepthTest();
-		Minecraft.getInstance().worldRenderer.renderClouds(matrixStackIn, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
-		RenderSystem.depthFunc(GL20.GL_LEQUAL);
-		Minecraft.getInstance().worldRenderer.renderClouds(matrixStackIn, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
-		Minecraft.getInstance().worldRenderer.renderClouds(matrixStackIn, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
+		if (Minecraft.getInstance().gameSettings.cloudOption != CloudOption.OFF) {
+			RenderSystem.enableDepthTest();
+			Minecraft.getInstance().worldRenderer.renderClouds(stacks, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
+			RenderSystem.depthFunc(GL20.GL_LEQUAL);
+			Minecraft.getInstance().worldRenderer.renderClouds(stacks, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
+			Minecraft.getInstance().worldRenderer.renderClouds(stacks, partialTicks, pairPos.getX() + 0.5, pairPos.getY() + 0.5, pairPos.getZ() + 0.5);
+		}
 		/* end render clouds */
 		
 		/* start render blocks */
@@ -301,8 +305,8 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 							IChunk chunk = tileEntity.getWorld().getChunk(render.getPosition());
 							/* start render chunk */
 							BlockPos relPos = render.getPosition().subtract(pairPos);
-							matrixStackIn.push();
-							matrixStackIn.translate(relPos.getX(), relPos.getY(), relPos.getZ());
+							stacks.push();
+							stacks.translate(relPos.getX(), relPos.getY(), relPos.getZ());
 							
 							BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 							
@@ -323,15 +327,15 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 										BlockPos pos = render.getPosition().add(x, y, z);
 										BlockState state = chunk.getBlockState(pos);
 										if (RenderTypeLookup.canRenderInLayer(state, blockRenderType)) {
-											matrixStackIn.push();
-											matrixStackIn.translate(x - 1, y, z);
+											stacks.push();
+											stacks.translate(x - 1, y, z);
 											dispatcher.renderModel(
-													state, pos, tileEntityIn.getWorld(),
-													matrixStackIn, builder,
-//													matrixStackIn, bufferIn.getBuffer(RenderType.getSolid()),
+													state, pos, portalTE.getWorld(),
+													stacks, builder,
+//													stacks, bufferIn.getBuffer(RenderType.getSolid()),
 													true, new Random(pos.toLong())
 											);
-											matrixStackIn.pop();
+											stacks.pop();
 										}
 									}
 								}
@@ -340,7 +344,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 							
 							vboTool.finish();
 							
-							matrixStackIn.pop();
+							stacks.pop();
 							/* end render chunk */
 							
 							break loopInfos;
@@ -362,8 +366,8 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 							IChunk chunk = tileEntity.getWorld().getChunk(render.getPosition());
 							/* start render chunk */
 							BlockPos relPos = render.getPosition().subtract(pairPos);
-							matrixStackIn.push();
-							matrixStackIn.translate(relPos.getX(), relPos.getY(), relPos.getZ());
+							stacks.push();
+							stacks.translate(relPos.getX(), relPos.getY(), relPos.getZ());
 
 							BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 
@@ -384,15 +388,15 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 										BlockPos pos = render.getPosition().add(x, y, z);
 										BlockState state = chunk.getBlockState(pos);
 										if (RenderTypeLookup.canRenderInLayer(state, blockRenderType)) {
-											matrixStackIn.push();
-											matrixStackIn.translate(x - 1, y, z);
+											stacks.push();
+											stacks.translate(x - 1, y, z);
 											dispatcher.renderModel(
-													state, pos, tileEntityIn.getWorld(),
-													matrixStackIn, builder,
-//													matrixStackIn, bufferIn.getBuffer(RenderType.getSolid()),
+													state, pos, portalTE.getWorld(),
+													stacks, builder,
+//													stacks, bufferIn.getBuffer(RenderType.getSolid()),
 													true, new Random(pos.toLong())
 											);
-											matrixStackIn.pop();
+											stacks.pop();
 										}
 									}
 								}
@@ -401,7 +405,7 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 
 							vboTool.finish();
 
-							matrixStackIn.pop();
+							stacks.pop();
 							/* end render chunk */
 //
 							continue loopInfos;
@@ -421,16 +425,16 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 				VertexBuffer buffer = render.getVertexBuffer(blockRenderType);
 				BlockPos relPos = render.getPosition().subtract(pairPos);
 				
-				matrixStackIn.push();
-				matrixStackIn.translate(relPos.getX(), relPos.getY(), relPos.getZ());
+				stacks.push();
+				stacks.translate(relPos.getX(), relPos.getY(), relPos.getZ());
 				
 				/* start matrix corrections */
 				{
 					Vector3i vec = pairStruct.direction.getDirectionVec();
-					int scl = struct.width - 1;
-					matrixStackIn.translate(vec.getZ() * -scl, vec.getY() * -scl, vec.getX() * -scl);
+					int scl = portal.width - 1;
+					stacks.translate(vec.getZ() * -scl, vec.getY() * -scl, vec.getX() * -scl);
 				}
-				matrixStackIn.translate(-1, 0, 0);
+				stacks.translate(-1, 0, 0);
 				/* end matrix corrections */
 				
 				/* start draw */
@@ -439,8 +443,8 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 				DefaultVertexFormats.BLOCK.setupBufferState(0L); // TODO: reference blockVertexFormat on WorldRenderer class for sake of better compatibility
 //				RenderSystem.enableDepthTest();
 //				RenderSystem.depthFunc(GL11.GL_LESS);
-				buffer.draw(matrixStackIn.getLast().getMatrix(), 7);
-				matrixStackIn.pop();
+				buffer.draw(stacks.getLast().getMatrix(), 7);
+				stacks.pop();
 				/* end draw */
 			}
 			
@@ -468,15 +472,15 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 				} else if (zOff < 0) {
 					if (render.boundingBox.minZ < pairPos.getZ() - zOff) continue;
 				}
-				matrixStackIn.push();
+				stacks.push();
 				
 				/* start matrix corrections */
 				{
 					Vector3i vec = pairStruct.direction.getDirectionVec();
-					int scl = struct.width - 1;
-					matrixStackIn.translate(vec.getZ() * -scl, vec.getY() * -scl, vec.getX() * -scl);
+					int scl = portal.width - 1;
+					stacks.translate(vec.getZ() * -scl, vec.getY() * -scl, vec.getX() * -scl);
 				}
-				matrixStackIn.translate(-1, 0, 0);
+				stacks.translate(-1, 0, 0);
 				/* end matrix corrections */
 				
 //				for (TileEntity te : info.renderChunk.compiledChunk.get().getTileEntities()) {
@@ -485,30 +489,30 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 					if (te != null) {
 						TileEntityRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance.getRenderer(te);
 						if (renderer != null) {
-							matrixStackIn.push();
-							matrixStackIn.translate(te.getPos().getX() - pairPos.getX(), te.getPos().getY() - pairPos.getY(), te.getPos().getZ() - pairPos.getZ());
-							renderer.render(te, partialTicks, matrixStackIn, buffers.getBufferSource(),
+							stacks.push();
+							stacks.translate(te.getPos().getX() - pairPos.getX(), te.getPos().getY() - pairPos.getY(), te.getPos().getZ() - pairPos.getZ());
+							renderer.render(te, partialTicks, stacks, buffers.getBufferSource(),
 									LightTexture.packLight(
-											tileEntityIn.getWorld().getLightFor(LightType.BLOCK, tileEntityIn.getPos()),
-											tileEntityIn.getWorld().getLightFor(LightType.SKY, tileEntityIn.getPos())
+											portalTE.getWorld().getLightFor(LightType.BLOCK, portalTE.getPos()),
+											portalTE.getWorld().getLightFor(LightType.SKY, portalTE.getPos())
 									), combinedOverlayIn
 							);
-							matrixStackIn.pop();
+							stacks.pop();
 						}
 					}
 				}
 				
-				matrixStackIn.pop();
+				stacks.pop();
 			}
 			recursionDepth--;
 		}
 		/* end render tile entities */
 		
-		List<Entity> entities = tileEntityIn.getWorld().getEntitiesWithinAABBExcludingEntity(
+		List<Entity> entities = portalTE.getWorld().getEntitiesWithinAABBExcludingEntity(
 				null, new AxisAlignedBB(pairPos.add(-30, -30, -30), pairPos.add(30, 30, 30))
 		);
 		
-		AxisAlignedBB renderBox = tileEntityIn.getRenderBoundingBox();
+		AxisAlignedBB renderBox = portalTE.getRenderBoundingBox();
 		
 		for (Entity entity : entities) {
 			AxisAlignedBB boundingBox = entity.getRenderBoundingBox();
@@ -525,20 +529,20 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 			if (entity.getRenderBoundingBox().intersects(renderBox)) {
 				// TODO: render the entity through the portal on the other side
 			}
-			matrixStackIn.push();
-			matrixStackIn.translate(
+			stacks.push();
+			stacks.translate(
 					MathHelper.lerp(partialTicks, entity.lastTickPosX, entity.getPosX()) - pairPos.getX() - 1f,
 					MathHelper.lerp(partialTicks, entity.lastTickPosY, entity.getPosY()) - pairPos.getY(),
 					MathHelper.lerp(partialTicks, entity.lastTickPosZ, entity.getPosZ()) - pairPos.getZ()
 			);
 			Minecraft.getInstance().getRenderManager().renderEntityStatic(
 					entity, 0, 0, 0,
-					entity.getYaw(partialTicks), partialTicks, matrixStackIn,
+					entity.getYaw(partialTicks), partialTicks, stacks,
 					buffers.getBufferSource(), renderer.getPackedLight(entity, partialTicks)
 			);
-			matrixStackIn.pop();
+			stacks.pop();
 //			renderer.render(
-//					entity, entity.getYaw(partialTicks), partialTicks, matrixStackIn,
+//					entity, entity.getYaw(partialTicks), partialTicks, stacks,
 //					buffers.getBufferSource(), renderer.getPackedLight(entity, partialTicks)
 //			);
 		}
@@ -548,18 +552,23 @@ public class PGRRenderer extends TileEntityRenderer<PortalBlockTileEntity> {
 		/* start cleanup */
 		RenderSystem.enableDepthTest();
 		
-		matrixStackIn.pop();
+		stacks.pop();
 		
-		clearStencil(matrixStackIn, struct);
+		clearStencil(stacks, portal);
 		/* end cleanup */
 		
-		matrixStackIn.push();
-		matrixStackIn.translate(-tileEntityIn.getPos().getX(), -tileEntityIn.getPos().getY(), -tileEntityIn.getPos().getZ());
+		stacks.push();
+		stacks.translate(-portalTE.getPos().getX(), -portalTE.getPos().getY(), -portalTE.getPos().getZ());
+		//Made by me (Lorenzo)
+		//since I have to yet even THINK about how to do the overlay, I decided to use the render box of the portal
+		//and color it
+		//I now am an epic renderer boy
+		float[] f = new Color(portal.color).getRGBColorComponents(null);
 		WorldRenderer.drawBoundingBox(
-				matrixStackIn, bufferIn.getBuffer(RenderType.getLines()),
-				renderBox, 0.5f, 0, 1, 1
+				stacks, bufferIn.getBuffer(RenderType.getLines()),
+				renderBox, f[0], f[1], f[2], 1
 		);
-		matrixStackIn.pop();
+		stacks.pop();
 	}
 	
 	public void setupMatrix(MatrixStack stack, PortalStructure struct) {

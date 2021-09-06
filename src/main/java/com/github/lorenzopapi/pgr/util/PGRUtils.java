@@ -41,7 +41,7 @@ public class PGRUtils {
 				int[] colors = generateChannelColor(channel.uuid, channel.channelName);
 				channel.setColor(colors[0], colors[1]);
 			}
-			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setPortalColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
+			PortalStructure structure = new PortalStructure().setWorld(living.getEntityWorld()).setChannelInfo(channel).setType(isTypeA).setColor(isTypeA ? channel.colorA : channel.colorB).setWidthAndHeight(tag.getInt("width"), tag.getInt("height"));
 			living.getEntityWorld().addEntity(new PortalProjectileEntity(living.getEntityWorld(), living, structure));
 			living.getEntityWorld().playSound(null, living.getPosition(), isTypeA ? PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_BLUE : PGRRegistry.PGRSounds.PORTAL_GUN_FIRE_RED, living.getSoundCategory(), 0.2F, 1.0F + (living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
 		}
