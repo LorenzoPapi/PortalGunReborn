@@ -67,7 +67,7 @@ public class PGRUtils {
 	public static boolean spawnPortal(World world, BlockPos blockHitPos, Direction sideHit, Direction upDir, PortalStructure portal, int width, int height) {
 		List<BlockPos> positions = canPlacePortal(world, blockHitPos, sideHit, upDir, width, height);
 		if (positions != null) {
-			PGRSavedData data = Reference.serverEH.getWorldSaveData(world.getDimensionKey());
+			PGRSavedData data = Reference.serverEH.getPGRDataForDimension(world.getDimensionKey());
 
 			// Check if portal is already placed: if true, delete it
 			PortalStructure struct = findPortalOfSameType(world, portal);
@@ -104,7 +104,7 @@ public class PGRUtils {
 	}
 
 	public static PortalStructure findPortalByPosition(World world, BlockPos pos) {
-		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
 			if (struct.positions.contains(pos)) {
 				return struct;
 			}
@@ -115,7 +115,7 @@ public class PGRUtils {
 	public static List<PortalStructure> findPortalsInAABB(World world, AxisAlignedBB box) {
 		List<PortalStructure> structures = new ArrayList<>();
 		loopStructs:
-		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
 			for (BlockPos position : struct.positions) {
 				if (box.intersects(new AxisAlignedBB(position))) {
 					structures.add(struct);
@@ -127,7 +127,7 @@ public class PGRUtils {
 	}
 
 	public static PortalStructure findPortalOfSameType(World world, PortalStructure toCheck) {
-		for (PortalStructure struct : Reference.serverEH.getWorldSaveData(world).portals) {
+		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
 			if (struct.isSameStruct(toCheck)) {
 				return struct;
 			}

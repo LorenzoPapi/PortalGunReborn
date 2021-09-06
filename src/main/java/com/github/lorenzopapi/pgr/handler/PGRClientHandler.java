@@ -34,7 +34,7 @@ public class PGRClientHandler {
 
 	public void onOverlayEvent(RenderBlockOverlayEvent e) {
 		if (e.getOverlayType() == RenderBlockOverlayEvent.OverlayType.BLOCK) {
-			for (PortalStructure s : Reference.serverEH.getWorldSaveData(e.getPlayer().world).portals) {
+			for (PortalStructure s : Reference.serverEH.getPGRDataForWorld(e.getPlayer().world).portals) {
 				if (s.behinds.contains(e.getBlockPos())) {
 					e.setCanceled(true);
 					break;
@@ -93,11 +93,9 @@ public class PGRClientHandler {
 					double size = Math.min(width, height) * PGRConfig.CLIENT.portalgunIndicatorSize.get() / 100.0D;
 					double posX = (width + (PGRConfig.CLIENT.portalgunIndicatorSize.get() / 20.) - size) / 2.0D;
 					double posY = (height + (PGRConfig.CLIENT.portalgunIndicatorSize.get() / 20.) - size) / 2.0D;
-					RendererUtils.setColorFromInt(indicator.info.colorA);
-					RendererUtils.drawTexture(new MatrixStack(), indicator.portalAPlaced ? this.FULL_L : this.EMPTY_L, posX, posY, size, size, 0.0D);
-					RendererUtils.setColorFromInt(indicator.info.colorB);
-					RendererUtils.drawTexture(new MatrixStack(), indicator.portalBPlaced ? this.FULL_R : this.EMPTY_R, posX, posY, size, size, 0.0D);
-					RendererUtils.setColorFromInt(16777215);
+					RendererUtils.drawTexture(new MatrixStack(), indicator.portalAPlaced ? this.FULL_L : this.EMPTY_L, posX, posY, size, size, 0, indicator.info.colorA);
+					RendererUtils.drawTexture(new MatrixStack(), indicator.portalBPlaced ? this.FULL_R : this.EMPTY_R, posX, posY, size, size, 0, indicator.info.colorB);
+					RendererUtils.setColorFromInt(0xFFFFFF);
 					GlStateManager.alphaFunc(516, 0.1F);
 					GlStateManager.disableBlend();
 				}

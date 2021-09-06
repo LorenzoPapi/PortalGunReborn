@@ -126,7 +126,7 @@ public class PortalBlock extends Block {
 		worldIn.removeTileEntity(pos);
 		PortalStructure struct = PGRUtils.findPortalByPosition(worldIn, pos);
 		if (struct != null)
-			Reference.serverEH.getWorldSaveData(worldIn.getDimensionKey()).removePortal(struct);
+			Reference.serverEH.getPGRDataForDimension(worldIn.getDimensionKey()).removePortal(struct);
 		super.onReplaced(state, worldIn, pos, newState, isMoving);
 	}
 

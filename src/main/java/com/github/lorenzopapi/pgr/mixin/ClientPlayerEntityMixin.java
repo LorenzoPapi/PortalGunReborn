@@ -2,8 +2,8 @@ package com.github.lorenzopapi.pgr.mixin;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
-import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.SoundCategory;
@@ -44,7 +44,7 @@ public class ClientPlayerEntityMixin {
 		} else if (oldBehinds.contains(pos)) {
 			PortalStructure current = PGRUtils.findPortalByPosition(mc.world, oldPos.toImmutable());
 			if (current != null && current.hasPair()) {
-				Vector3d pairPos = averagePosOfList(current.pair.positions, mc.player.getPositionVec());
+				Vector3d pairPos = EntityUtils.averagePairPosition(current.pair.positions, mc.player.getPositionVec());
 				double x = pairPos.getX() + current.pair.direction.getXOffset() * 0.05;
 				double y = pairPos.getY() + (current.pair.upDirection != PortalStructure.UpDirection.WALL ? current.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
 				double z = pairPos.getZ() + current.pair.direction.getZOffset() * 0.05;
@@ -55,19 +55,5 @@ public class ClientPlayerEntityMixin {
 				cir.setReturnValue(false);
 			}
 		}
-	}
-	
-	private Vector3d averagePosOfList(List<BlockPos> poses, Vector3d player) {
-		double ax = 0, az = 0;
-		for (BlockPos p : poses) {
-			ax += p.getX();
-			az += p.getZ();
-		}
-		return new Vector3d(ax / poses.size(), player.y, az / poses.size()).add(new Vector3d(getDecimals(player.x), 0, getDecimals(player.z)));
-	}
-
-	private double getDecimals(double d) {
-		String s = String.valueOf(d);
-		return Double.parseDouble(s.substring(s.indexOf(".")));
 	}
 }

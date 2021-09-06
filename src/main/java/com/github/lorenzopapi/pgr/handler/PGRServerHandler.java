@@ -4,6 +4,8 @@ import com.github.lorenzopapi.pgr.portal.PGRSavedData;
 import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
+import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
+import com.github.lorenzopapi.pgr.util.EntityUtils;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -65,7 +68,7 @@ public class PGRServerHandler {
 		ItemStack is = e.getCrafting();
 		if (is.isItemEqual(PGRRegistry.PORTAL_GUN.get().getDefaultInstance())) {
 			PortalGunItem.setRandomNBTTags(is, e.getPlayer());
-			PGRSavedData data = getWorldSaveData(e.getPlayer().world);
+			PGRSavedData data = getPGRDataForWorld(e.getPlayer().world);
 			String uuid = is.getTag().getString("uuid");
 			String name = is.getTag().getString("channelName");
 			int[] colors = PGRUtils.generateChannelColor(uuid, name);
@@ -83,32 +86,47 @@ public class PGRServerHandler {
 	public void onWorldLoad(WorldEvent.Load e) {
 		//I hate my life
 		if (e.getWorld() instanceof World)
-			getWorldSaveData((World) e.getWorld());
+			getPGRDataForWorld((World) e.getWorld());
 	}
 
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
-		if (!(e.getEntityLiving().getEntityWorld()).isRemote && e.getEntityLiving() instanceof ZombieEntity) {
-			ZombieEntity zombie = (ZombieEntity) e.getEntityLiving();
-			if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
-				PGRUtils.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
+		LivingEntity entity = e.getEntityLiving();
+		if (entity.world.isRemote) {
+			if (e.getEntityLiving() instanceof ZombieEntity) {
+				ZombieEntity zombie = (ZombieEntity) entity;
+				if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
+					PGRUtils.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
+			}
+			for (PortalStructure portal : PGRUtils.findPortalsInAABB(entity.world, entity.getBoundingBox())) {
+				if (portal.hasPair() && portal.behinds.contains(entity.getPosition())) {
+					Vector3d pairPos = EntityUtils.averagePairPosition(portal.pair.positions, entity.getPositionVec());
+					double x = pairPos.getX() + portal.pair.direction.getXOffset();
+					double y = pairPos.getY() + (portal.pair.upDirection != PortalStructure.UpDirection.WALL ? portal.pair.upDirection.toDirection().getYOffset() - entity.getHeight() : 0);
+					double z = pairPos.getZ() + portal.pair.direction.getZOffset();
+					float yaw = (portal.direction.getOpposite() == portal.pair.direction) ? 0 : (portal.direction == portal.pair.direction) ? 180 : portal.direction.getHorizontalAngle() - portal.pair.direction.getHorizontalAngle();
+					entity.setPositionAndRotation(x, y, z, yaw + entity.rotationYaw, entity.rotationPitch);
+					entity.playSound(PGRRegistry.PGRSounds.PORTAL_ENTER, 0.01F, 1.0F + entity.getRNG().nextFloat() * 0.1F);
+					entity.playSound(PGRRegistry.PGRSounds.PORTAL_EXIT, 0.01F, 1.0F + entity.getRNG().nextFloat() * 0.1F);
+				}
+			}
 		}
 	}
 
-	public PGRSavedData getWorldSaveData(World world) {
-		return getWorldSaveData(world.getDimensionKey());
+	public ChannelInfo lookupChannel(String uuid, String channelName) {
+		return getPGRDataForDimension(World.OVERWORLD).getChannel(uuid, channelName);
 	}
 
-	public PGRSavedData getWorldSaveData(RegistryKey<World> dimension) {
+	public PGRSavedData getPGRDataForWorld(World world) {
+		return getPGRDataForDimension(world.getDimensionKey());
+	}
+
+	public PGRSavedData getPGRDataForDimension(RegistryKey<World> dimension) {
 		PGRSavedData data = this.portalInfoByDimension.get(dimension);
 		if (data == null) {
 			ServerWorld world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
 			data = (world != null) ? PGRUtils.getSaveDataForWorld(world) : new PGRSavedData("PGRPortalData_broken");
 		}
 		return data;
-	}
-
-	public ChannelInfo lookupChannel(String uuid, String channelName) {
-		return getWorldSaveData(World.OVERWORLD).getChannel(uuid, channelName);
 	}
 
 	public void onWorldUnload(WorldEvent.Unload e) {
@@ -132,7 +150,7 @@ public class PGRServerHandler {
 				}
 			}
 		}
-		PGRSavedData data = Reference.serverEH.getWorldSaveData(dimension);
+		PGRSavedData data = Reference.serverEH.getPGRDataForDimension(dimension);
 		for (ChannelInfo info : data.channelList.getOrDefault(uuid, new ArrayList<>())) {
 			if (info.uuid.equals(uuid) && info.channelName.equals(channel)) {
 				ChannelIndicator indicator = new ChannelIndicator(info, dimension);

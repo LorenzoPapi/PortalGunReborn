@@ -54,7 +54,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 							tag = is.getTag();
 						}
 						if (tag != null) {
-							PGRSavedData data = Reference.serverEH.getWorldSaveData(player.getServerWorld().getDimensionKey());
+							PGRSavedData data = Reference.serverEH.getPGRDataForDimension(player.getServerWorld().getDimensionKey());
 							List<PortalStructure> toRemove = new ArrayList<>();
 							for (PortalStructure struct : data.portals) {
 								if (struct.info.uuid.equals(tag.getString("uuid")) && struct.info.channelName.equals(tag.getString("channelName")) && (message.event == 0 || (message.event == 1 && struct.isTypeA) || (message.event == 2 && !struct.isTypeA)))

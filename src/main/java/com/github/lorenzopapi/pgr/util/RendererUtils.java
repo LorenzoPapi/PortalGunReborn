@@ -1,6 +1,7 @@
 package com.github.lorenzopapi.pgr.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,6 +25,11 @@ public class RendererUtils {
 		float g = (color >> 8 & 255) / 255.0F;
 		float b = (color & 255) / 255.0F;
 		GL11.glColor4f(r, g, b, alpha);
+	}
+
+	public static void drawTexture(MatrixStack stack, ResourceLocation resource, double posX, double posY, double width, double height, double zLevel, int color) {
+		setColorFromInt(color);
+		drawTexture(stack, resource, posX, posY, width, height, zLevel);
 	}
 
 	public static void drawTexture(MatrixStack stack, ResourceLocation resource, double posX, double posY, double width, double height, double zLevel) {
