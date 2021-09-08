@@ -3,13 +3,20 @@ package com.github.lorenzopapi.pgr.portal.customizer;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public class PGCustomizerContainer extends Container {
 	private final IWorldPosCallable worldPosCallable;
@@ -27,7 +34,7 @@ public class PGCustomizerContainer extends Container {
 	public PGCustomizerContainer(int id, PlayerInventory playerInventory, IWorldPosCallable callable) {
 		super(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), id);
 		this.worldPosCallable = callable;
-		this.inputSlot = this.addSlot(new Slot(input, 0, 7, 64) {
+		this.inputSlot = this.addSlot(new Slot(input, 0, 7, 62) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
 				return stack.hasTag() && stack.getItem() == PGRRegistry.PORTAL_GUN.get();
@@ -35,12 +42,12 @@ public class PGCustomizerContainer extends Container {
 		});
 		for (int row = 0; row < 3; ++row) {
 			for (int column = 0; column < 9; ++column) {
-				this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 7 + column * 18, 98 + row * 18));
+				this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 7 + column * 18, 96 + row * 18));
 			}
 		}
 
 		for (int column = 0; column < 9; ++column) {
-			this.addSlot(new Slot(playerInventory, column, 7 + column * 18, 156));
+			this.addSlot(new Slot(playerInventory, column, 7 + column * 18, 154));
 		}
 	}
 

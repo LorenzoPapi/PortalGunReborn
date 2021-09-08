@@ -1,6 +1,6 @@
 package com.github.lorenzopapi.pgr.handler;
 
-import com.github.lorenzopapi.pgr.network.KeyEventMessage;
+import com.github.lorenzopapi.pgr.network.SKeyEventPacket;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -161,28 +161,28 @@ public class PGRClientHandler {
 					this.holdingResetKey = holdingPG;
 					//Grab check
 				} else if (key == PGRConfig.KeyBinds.keyGrab.getKey().getKeyCode()) {
-					PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(5));
+					PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(5));
 				} else if (holdingPG) {
 					//Portal shooting
 					if (key == mc.gameSettings.keyBindAttack.getKey().getKeyCode()) {
 						if (this.holdingResetKey) {
 							this.hasResetPortal = true;
-							PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(1));
+							PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(1));
 						} else {
-							PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(3));
+							PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(3));
 						}
 					} else if (key == mc.gameSettings.keyBindUseItem.getKey().getKeyCode()) {
 						if (this.holdingResetKey) {
 							this.hasResetPortal = true;
-							PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(2));
+							PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(2));
 						} else {
-							PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(4));
+							PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(4));
 						}
 					}
 				}
 			} else if ((key == PGRConfig.KeyBinds.keyReset.getKey().getKeyCode()) && holdingPG) {
 				if (this.holdingResetKey && !this.hasResetPortal) {
-					PGRNetworkHandler.HANDLER.sendToServer(new KeyEventMessage(0));
+					PGRNetworkHandler.HANDLER.sendToServer(new SKeyEventPacket(0));
 				}
 				this.holdingResetKey = false;
 				this.hasResetPortal = false;
