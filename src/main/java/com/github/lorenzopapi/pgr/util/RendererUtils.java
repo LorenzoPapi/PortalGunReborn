@@ -21,11 +21,11 @@ public class RendererUtils {
 		setColorFromInt(color, 1.0F);
 	}
 
-	public static void setColorFromInt(int color, float alpha) {
+	public static void setColorFromInt(int color, float a) {
 		float r = (color >> 16 & 255) / 255.0F;
 		float g = (color >> 8 & 255) / 255.0F;
 		float b = (color & 255) / 255.0F;
-		GL11.glColor4f(r, g, b, alpha);
+		RenderSystem.color4f(r, g, b, a);
 	}
 
 	public static void drawTexture(MatrixStack stack, ResourceLocation resource, double posX, double posY, double width, double height, double zLevel, int color) {

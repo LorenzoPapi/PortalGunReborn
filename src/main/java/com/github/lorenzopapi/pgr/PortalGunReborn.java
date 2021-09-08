@@ -1,10 +1,12 @@
 package com.github.lorenzopapi.pgr;
 
 import com.github.lorenzopapi.pgr.handler.*;
+import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerScreen;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.PGRAssets;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,17 +51,17 @@ public class PortalGunReborn {
 			//forgeBus.addListener(Reference.clientEH::onHandRender);
 			//forgeBus.addListener(Reference.clientEH::onFovModifierEvent);
 			forgeBus.addListener(Reference.clientEH::onMouseEvent);
-			
+
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getInstance().getResourceManager();
 			manager.addReloadListener(PGRAssets.INSTANCE);
 		}
 		// networking (I'd assume)
 		// Your assumption is correct, 4 points for you!
 		PGRNetworkHandler.register();
-		// setup handling
-		modBus.addListener(this::onClientSetup);
 		// registries
 		PGRRegistry.register(modBus);
+		// setup handling
+		modBus.addListener(this::onClientSetup);
 
 		// left and right click handling
 		forgeBus.addListener(Reference.serverEH::onBlockBreak);
@@ -81,6 +83,7 @@ public class PortalGunReborn {
 
 	private void onClientSetup(FMLClientSetupEvent e) {
 		PGRConfig.KeyBinds.registerKeyBindings();
+		ScreenManager.registerFactory(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), PGCustomizerScreen::new);
 		// TODO: figure out how to make renderer work with optifine, because holy lord it is broken right now
 		// optifine be like optigarbage
 		if (!ModList.get().isLoaded("optifine")) TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));

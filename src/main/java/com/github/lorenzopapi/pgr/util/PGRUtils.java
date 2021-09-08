@@ -2,7 +2,7 @@ package com.github.lorenzopapi.pgr.util;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PGItem;
 import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
@@ -32,7 +32,7 @@ public class PGRUtils {
 	public static void shootPortal(LivingEntity living, ItemStack is, boolean isTypeA) {
 		CompoundNBT tag = is.getTag();
 		if (tag == null && living instanceof PlayerEntity) {
-			PortalGunItem.setRandomNBTTags(is, (PlayerEntity) living);
+			PGItem.setRandomNBTTags(is, (PlayerEntity) living);
 			tag = is.getTag();
 		}
 		if (tag != null) {

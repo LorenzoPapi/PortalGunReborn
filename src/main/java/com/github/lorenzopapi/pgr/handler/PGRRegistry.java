@@ -2,12 +2,15 @@ package com.github.lorenzopapi.pgr.handler;
 
 import com.github.lorenzopapi.pgr.portal.block.PortalBlock;
 import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
-import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerBlock;
+import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerContainer;
+import com.github.lorenzopapi.pgr.portal.gun.PGItem;
 import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -26,14 +29,18 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class PGRRegistry {
 	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
 	private static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
-	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PortalGunItem::new);
+	private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Reference.MOD_ID);
+	public static final RegistryObject<Item> PORTAL_GUN = ITEMS.register("portal_gun", PGItem::new);
 	public static final PortalBlock PORTAL_BLOCK = new PortalBlock();
+	public static final PGCustomizerBlock PG_CUSTOMIZER = new PGCustomizerBlock();
 	public static final EntityType<PortalProjectileEntity> PPE_TYPE = EntityType.Builder.<PortalProjectileEntity>create(PortalProjectileEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("portal_projectile");
 	public static final RegistryObject<TileEntityType<PortalBlockTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalBlockTileEntity::new, PORTAL_BLOCK).build(null));
+	public static final RegistryObject<ContainerType<PGCustomizerContainer>> PG_CUSTOMIZER_CONTAINER = CONTAINERS.register("pg_customizer_container", () -> new ContainerType<>(PGCustomizerContainer::new));
 
 	public static void register(IEventBus modBus) {
 		ITEMS.register(modBus);
 		TILE_ENTITIES.register(modBus);
+		CONTAINERS.register(modBus);
 	}
 
 	@SubscribeEvent
@@ -50,6 +57,7 @@ public class PGRRegistry {
 	@SubscribeEvent
 	public static void onBlockRegistry(final RegistryEvent.Register<Block> e) {
 		e.getRegistry().register(PORTAL_BLOCK.setRegistryName(new ResourceLocation(Reference.MOD_ID, "portal_block")));
+		e.getRegistry().register(PG_CUSTOMIZER.setRegistryName(new ResourceLocation(Reference.MOD_ID, "pg_customizer")));
 	}
 
 	@SubscribeEvent

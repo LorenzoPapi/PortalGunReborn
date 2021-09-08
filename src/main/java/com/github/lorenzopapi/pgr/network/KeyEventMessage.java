@@ -2,7 +2,7 @@ package com.github.lorenzopapi.pgr.network;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PGItem;
 import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
 import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -50,7 +50,7 @@ public class KeyEventMessage implements IMessage<KeyEventMessage> {
 					if (isHoldingPortalGun) {
 						CompoundNBT tag = is.getTag();
 						if (tag == null) {
-							PortalGunItem.setRandomNBTTags(is, player);
+							PGItem.setRandomNBTTags(is, player);
 							tag = is.getTag();
 						}
 						if (tag != null) {

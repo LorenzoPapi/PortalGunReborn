@@ -1,7 +1,7 @@
 package com.github.lorenzopapi.pgr.handler;
 
 import com.github.lorenzopapi.pgr.portal.PGRSavedData;
-import com.github.lorenzopapi.pgr.portal.gun.PortalGunItem;
+import com.github.lorenzopapi.pgr.portal.gun.PGItem;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelIndicator;
 import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
 import com.github.lorenzopapi.pgr.portal.structure.PortalStructure;
@@ -10,6 +10,7 @@ import com.github.lorenzopapi.pgr.util.PGRUtils;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -67,7 +68,7 @@ public class PGRServerHandler {
 	public void onItemCrafted(PlayerEvent.ItemCraftedEvent e) {
 		ItemStack is = e.getCrafting();
 		if (is.isItemEqual(PGRRegistry.PORTAL_GUN.get().getDefaultInstance())) {
-			PortalGunItem.setRandomNBTTags(is, e.getPlayer());
+			PGItem.setRandomNBTTags(is, e.getPlayer());
 			PGRSavedData data = getPGRDataForWorld(e.getPlayer().world);
 			String uuid = is.getTag().getString("uuid");
 			String name = is.getTag().getString("channelName");
@@ -92,22 +93,14 @@ public class PGRServerHandler {
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
 		LivingEntity entity = e.getEntityLiving();
 		if (entity.world.isRemote) {
-			if (e.getEntityLiving() instanceof ZombieEntity) {
+			if (entity instanceof ZombieEntity) {
 				ZombieEntity zombie = (ZombieEntity) entity;
 				if (zombie.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && zombie.getRNG().nextFloat() < 0.008F)
 					PGRUtils.shootPortal(zombie, zombie.getHeldItemMainhand(), zombie.getRNG().nextBoolean());
-			}
-			for (PortalStructure portal : PGRUtils.findPortalsInAABB(entity.world, entity.getBoundingBox())) {
-				if (portal.hasPair() && portal.behinds.contains(entity.getPosition())) {
-					Vector3d pairPos = EntityUtils.averagePairPosition(portal.pair.positions, entity.getPositionVec());
-					double x = pairPos.getX() + portal.pair.direction.getXOffset();
-					double y = pairPos.getY() + (portal.pair.upDirection != PortalStructure.UpDirection.WALL ? portal.pair.upDirection.toDirection().getYOffset() - entity.getHeight() : 0);
-					double z = pairPos.getZ() + portal.pair.direction.getZOffset();
-					float yaw = (portal.direction.getOpposite() == portal.pair.direction) ? 0 : (portal.direction == portal.pair.direction) ? 180 : portal.direction.getHorizontalAngle() - portal.pair.direction.getHorizontalAngle();
-					entity.setPositionAndRotation(x, y, z, yaw + entity.rotationYaw, entity.rotationPitch);
-					entity.playSound(PGRRegistry.PGRSounds.PORTAL_ENTER, 0.01F, 1.0F + entity.getRNG().nextFloat() * 0.1F);
-					entity.playSound(PGRRegistry.PGRSounds.PORTAL_EXIT, 0.01F, 1.0F + entity.getRNG().nextFloat() * 0.1F);
-				}
+			} else if (entity instanceof FoxEntity) {
+				FoxEntity fox = (FoxEntity) entity;
+				if (fox.getHeldItemMainhand().getItem() == PGRRegistry.PORTAL_GUN.get() && fox.getRNG().nextFloat() < 0.008F)
+					PGRUtils.shootPortal(fox, fox.getHeldItemMainhand(), fox.getRNG().nextBoolean());
 			}
 		}
 	}

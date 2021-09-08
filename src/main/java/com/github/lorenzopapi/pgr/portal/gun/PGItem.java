@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class PortalGunItem extends Item {
-	public PortalGunItem() {
+public class PGItem extends Item {
+	public PGItem() {
 		super(new Properties().maxStackSize(1).maxDamage(0).group(ItemGroup.TOOLS));
 	}
 

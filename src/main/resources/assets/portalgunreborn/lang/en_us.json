@@ -7,6 +7,8 @@
 
     "entity.portalgunreborn.portal_projectile": "Portal Projectile",
 
+    "pgr.container.customizer": "Portal Gun Customizer",
+
     "pgr.info.new": "Newly Crafted Portal Gun",
     "pgr.info.global": "Global Portal Gun",
     "pgr.info.owner": "%s's Portal Gun",
