@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
@@ -85,5 +86,83 @@ public class RendererUtils {
 				OverlayTexture.NO_OVERLAY, packedLightIn,
 				normal.getX(), normal.getY(), normal.getZ()
 		);
+	}
+	
+	public static void drawCircle(MatrixStack stack, double posX, double posY, double width, double height, double zLevel) {
+		drawCircle(stack, posX, posY, width, height, zLevel, 0D, 1D, 0D, 1D);
+	}
+	
+	
+	public static void drawCircle(MatrixStack stack, double posX, double posY, double width, double height, double zLevel, double u1, double u2, double v1, double v2) {
+		Matrix4f matrix = stack.getLast().getMatrix();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		for (int i = 0; i < 11; i++) {
+			float x = (float) Math.cos(Math.toRadians((i - 11.5) * 7));
+			float y = (float) Math.sin(Math.toRadians((i - 11.5) * 7));
+			
+			x *= width;
+			
+			x *= 8;
+			x = Math.round(x);
+			x /= 16;
+			
+			y *= height;
+			
+			y *= 8;
+			y = Math.round(y);
+			y /= 16;
+			
+			bufferbuilder.pos(matrix, (x) + (float) (width / 2f) + (float) posX, (y) + (float) (height / 2f) + (float) posY, (float) zLevel).tex((float) u2, (float) v2).endVertex();
+			bufferbuilder.pos(matrix, (x - x - x) + (float) (width / 2f) + (float) posX, (y) + (float) (height / 2f) + (float) posY, (float) zLevel).tex((float) u2, (float) v2).endVertex();
+			bufferbuilder.pos(matrix, (x - x - x) + (float) (width / 2f) + (float) posX, (y - y - y) + (float) (height / 2f) + (float) posY, (float) zLevel).tex((float) u2, (float) v2).endVertex();
+			bufferbuilder.pos(matrix, (x) + (float) (width / 2f) + (float) posX, (y - y - y) + (float) (height / 2f) + (float) posY, (float) zLevel).tex((float) u2, (float) v2).endVertex();
+		}
+//		for (int y = 0; y < height * 16; y++) {
+//			float yPos = y / 16f;
+//			double x = (Math.cos(Math.toRadians(((yPos / height) * 90) - 45))) * width - 0.75f;
+//			bufferbuilder.pos(matrix, (float) (1-x), (float) (yPos + yHeight), (float) zLevel).tex((float) u2, (float) v2).endVertex();
+////			bufferbuilder.pos(matrix, (float) (posX + (width)), (float) (yPos + yHeight), (float) zLevel).tex((float) u1, (float) v2).endVertex();
+//			bufferbuilder.pos(matrix, (float) (posX + x), (float) (yPos + yHeight), (float) zLevel).tex((float) u1, (float) v2).endVertex();
+////			bufferbuilder.pos(matrix, (float) (posX + width), (float) yPos, (float) zLevel).tex((float) u1, (float) v1).endVertex();
+//			bufferbuilder.pos(matrix, (float) (posX + x), (float) yPos, (float) zLevel).tex((float) u1, (float) v1).endVertex();
+//			bufferbuilder.pos(matrix, (float) (1-x), (float) yPos, (float) zLevel).tex((float) u2, (float) v1).endVertex();
+//		}
+//		bufferbuilder.pos(matrix, (float) posX, (float) (posY + height), (float) zLevel).tex((float) u2, (float) v2).endVertex();
+//		bufferbuilder.pos(matrix, (float) (posX + width), (float) (posY + height), (float) zLevel).tex((float) u1, (float) v2).endVertex();
+//		bufferbuilder.pos(matrix, (float) (posX + width), (float) posY, (float) zLevel).tex((float) u1, (float) v1).endVertex();
+//		bufferbuilder.pos(matrix, (float) posX, (float) posY, (float) zLevel).tex((float) u2, (float) v1).endVertex();
+		tessellator.draw();
+	}
+	
+	public static void drawCircleColor(MatrixStack stack, double posX, double posY, double width, double height, double zLevel, double r, double g, double b, double a) {
+		Matrix4f matrix = stack.getLast().getMatrix();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		RenderSystem.color4f(1, 1, 1, 1);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		for (int i = 0; i < 11; i++) {
+			float x = (float) Math.cos(Math.toRadians((i - 11.5) * 7));
+			float y = (float) Math.sin(Math.toRadians((i - 11.5) * 7));
+			
+			x *= width;
+			
+			x *= 8;
+			x = Math.round(x);
+			x /= 16;
+			
+			y *= height;
+			
+			y *= 8;
+			y = Math.round(y);
+			y /= 16;
+			
+			bufferbuilder.pos(matrix, (x) + (float) (width / 2f) + (float) posX, (y) + (float) (height / 2f) + (float) posY, (float) zLevel).color((float) r, (float) b, (float) g, (float) a).endVertex();
+			bufferbuilder.pos(matrix, (x - x - x) + (float) (width / 2f) + (float) posX, (y) + (float) (height / 2f) + (float) posY, (float) zLevel).color((float) r, (float) b, (float) g, (float) a).endVertex();
+			bufferbuilder.pos(matrix, (x - x - x) + (float) (width / 2f) + (float) posX, (y - y - y) + (float) (height / 2f) + (float) posY, (float) zLevel).color((float) r, (float) b, (float) g, (float) a).endVertex();
+			bufferbuilder.pos(matrix, (x) + (float) (width / 2f) + (float) posX, (y - y - y) + (float) (height / 2f) + (float) posY, (float) zLevel).color((float) r, (float) b, (float) g, (float) a).endVertex();
+		}
+		tessellator.draw();
 	}
 }

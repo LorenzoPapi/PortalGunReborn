@@ -41,17 +41,33 @@ public class PortalBlock extends Block {
 		super(Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F, 10000.0F).setLightLevel(value -> 10));
 		this.setDefaultState(this.getDefaultState().with(HORIZONTAL_FACING, Direction.NORTH).with(UP_FACING, PortalStructure.UpDirection.WALL));
 	}
+	
+	private static final VoxelShape[] shapes = new VoxelShape[6];
 
-	//FOR DEBUG ONLY, REMOVE ON RELEASE
-	// wait no, I need this
-	// I can use this to test if the player is selecting a portal, then if they are, raytrace the blocks on the other side
-	// and also, ontop of that, it allows me to easily get part of a render shape going
-	// huh ok, won't remove then
-	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		switch (state.get(UP_FACING)) {
+	// cache all possible shapes to a single array for sake of increasing performance slightly
+	static {
+		for (Direction value : Direction.values()) {
+			switch (value) {
+				case WEST: shapes[0] = makeShape(PortalStructure.UpDirection.WALL, value);
+				case EAST: shapes[1] = makeShape(PortalStructure.UpDirection.WALL, value);
+				case NORTH: shapes[2] = makeShape(PortalStructure.UpDirection.WALL, value);
+				case SOUTH: shapes[3] = makeShape(PortalStructure.UpDirection.WALL, value);
+				case UP: shapes[4] = makeShape(PortalStructure.UpDirection.UP, value);
+				case DOWN: shapes[5] = makeShape(PortalStructure.UpDirection.DOWN, value);
+			}
+		}
+		for (Direction value : Direction.values()) {
+			switch (value) {
+				case NORTH: shapes[2] = makeShape(PortalStructure.UpDirection.WALL, value);
+				case SOUTH: shapes[3] = makeShape(PortalStructure.UpDirection.WALL, value);
+			}
+		}
+	}
+	
+	private static VoxelShape makeShape(PortalStructure.UpDirection value, Direction dir) {
+		switch (value) {
 			case WALL:
-				switch (state.get(HORIZONTAL_FACING)) {
+				switch (dir) {
 					case EAST:
 						return Block.makeCuboidShape(0, 0, 0, 1, 16, 16);
 					case WEST:
@@ -66,9 +82,38 @@ public class PortalBlock extends Block {
 			case DOWN:
 				return Block.makeCuboidShape(0, 15, 0, 16, 16, 16);
 		}
+		return null;
+	}
+	
+	//FOR DEBUG ONLY, REMOVE ON RELEASE
+	// wait no, I need this
+	// I can use this to test if the player is selecting a portal, then if they are, raytrace the blocks on the other side
+	// and also, ontop of that, it allows me to easily get part of a render shape going
+	// huh ok, won't remove then
+	@Override
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		switch (state.get(UP_FACING)) {
+			case UP: return shapes[4];
+			case DOWN: return shapes[5];
+			case WALL:
+				switch (state.get(HORIZONTAL_FACING)) {
+					case WEST: return shapes[0];
+					case EAST: return shapes[1];
+					case SOUTH: return shapes[3];
+					case NORTH: return shapes[2];
+					default:
+						return Block.makeCuboidShape(0, 0, 15, 16, 16, 16);
+				}
+		}
 		return VoxelShapes.empty();
 	}
-
+	
+	@Override
+	public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+//		return super.getRenderShape(state, worldIn, pos);
+		return VoxelShapes.empty();
+	}
+	
 	@Override
 	public void neighborChanged(BlockState current, World worldIn, BlockPos currentPos, Block changed, BlockPos changedPos, boolean isMoving) {
 		if (current.get(UP_FACING) == PortalStructure.UpDirection.WALL) {

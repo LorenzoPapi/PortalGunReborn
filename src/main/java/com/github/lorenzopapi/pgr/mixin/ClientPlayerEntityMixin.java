@@ -45,9 +45,11 @@ public class ClientPlayerEntityMixin {
 			PortalStructure current = PGRUtils.findPortalByPosition(mc.world, oldPos.toImmutable());
 			if (current != null && current.hasPair()) {
 				Vector3d pairPos = EntityUtils.averagePairPosition(current.pair.positions, mc.player.getPositionVec());
-				double x = pairPos.getX() + current.pair.direction.getXOffset() * 0.05;
+				double x = pairPos.getX() + current.pair.direction.getXOffset() * 0.01;
 				double y = pairPos.getY() + (current.pair.upDirection != PortalStructure.UpDirection.WALL ? current.pair.upDirection.toDirection().getYOffset() - mc.player.getHeight() : 0);
-				double z = pairPos.getZ() + current.pair.direction.getZOffset() * 0.05;
+				double z = pairPos.getZ() + current.pair.direction.getZOffset() * 0.01;
+				if (current.direction.getXOffset() == 1) x += 0.5;
+				else if (current.direction.getZOffset() == 1) z += 0.5;
 				float yaw = (current.direction.getOpposite() == current.pair.direction) ? 0 : (current.direction == current.pair.direction) ? 180 : current.direction.getHorizontalAngle() - current.pair.direction.getHorizontalAngle();
 				mc.player.setPositionAndRotation(x, y, z, yaw + mc.player.rotationYaw, mc.player.rotationPitch);
 				mc.player.playSound(PGRRegistry.PGRSounds.PORTAL_ENTER, SoundCategory.PLAYERS, 0.01F, 1.0F + mc.player.getEntityWorld().rand.nextFloat() * 0.1F);

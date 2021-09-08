@@ -112,10 +112,14 @@ public class PGRUtils {
 		return null;
 	}
 
+	@SuppressWarnings("ForLoopReplaceableByWhile")
 	public static List<PortalStructure> findPortalsInAABB(World world, AxisAlignedBB box) {
 		List<PortalStructure> structures = new ArrayList<>();
+		List<PortalStructure> portals = Reference.serverEH.getPGRDataForWorld(world).portals;
 		loopStructs:
-		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
+		// Reversed to try to help reduce AIOOBEs, via dealing with what may be removed quickly after starting iteration first and then continuing onto the rest
+		for (int i = portals.size() - 1; i >= 0; i--) {
+			PortalStructure struct = portals.get(i);
 			for (BlockPos position : struct.positions) {
 				if (box.intersects(new AxisAlignedBB(position))) {
 					structures.add(struct);

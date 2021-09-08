@@ -1,12 +1,8 @@
-#version 330
+#version 120
 
-in vec4 pos;
-in vec4 col;
-varying vec4 color;
-
-out vec4 gl_Position;
+varying out vec4 color;
 
 void main() {
-	gl_Position = pos;
-	color = col;
+	gl_Position = vec4(gl_Vertex.xyz, 1);
+	color = gl_Color;
 }

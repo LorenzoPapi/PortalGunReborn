@@ -2,8 +2,11 @@ package com.github.lorenzopapi.pgr;
 
 import com.github.lorenzopapi.pgr.handler.*;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
+import com.github.lorenzopapi.pgr.util.PGRAssets;
 import com.github.lorenzopapi.pgr.util.Reference;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
@@ -46,6 +49,9 @@ public class PortalGunReborn {
 			//forgeBus.addListener(Reference.clientEH::onHandRender);
 			//forgeBus.addListener(Reference.clientEH::onFovModifierEvent);
 			forgeBus.addListener(Reference.clientEH::onMouseEvent);
+			
+			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getInstance().getResourceManager();
+			manager.addReloadListener(PGRAssets.INSTANCE);
 		}
 		// networking (I'd assume)
 		// Your assumption is correct, 4 points for you!
