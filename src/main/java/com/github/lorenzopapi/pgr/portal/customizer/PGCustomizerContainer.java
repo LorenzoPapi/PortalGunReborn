@@ -20,7 +20,6 @@ import java.util.Optional;
 
 public class PGCustomizerContainer extends Container {
 	private final IWorldPosCallable worldPosCallable;
-	public final Slot inputSlot;
 	public final IInventory input = new Inventory(1) {
 		public void markDirty() {
 			super.markDirty();
@@ -34,7 +33,7 @@ public class PGCustomizerContainer extends Container {
 	public PGCustomizerContainer(int id, PlayerInventory playerInventory, IWorldPosCallable callable) {
 		super(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), id);
 		this.worldPosCallable = callable;
-		this.inputSlot = this.addSlot(new Slot(input, 0, 7, 62) {
+		this.addSlot(new Slot(input, 0, 7, 62) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
 				return stack.hasTag() && stack.getItem() == PGRRegistry.PORTAL_GUN.get();

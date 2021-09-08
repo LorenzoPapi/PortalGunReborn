@@ -1,6 +1,7 @@
 package com.github.lorenzopapi.pgr.handler;
 
 import com.github.lorenzopapi.pgr.network.SKeyEventPacket;
+import com.github.lorenzopapi.pgr.network.SUpdatePGData;
 import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -13,6 +14,14 @@ public class PGRNetworkHandler {
 		HANDLER.registerMessage(0, SKeyEventPacket.class,
 				SKeyEventPacket::writePacketData,
 				SKeyEventPacket::new,
+				(packet, ctx) -> {
+					ctx.get().setPacketHandled(true);
+					packet.handle(ctx);
+				}
+		);
+		HANDLER.registerMessage(1, SUpdatePGData.class,
+				SUpdatePGData::writePacketData,
+				SUpdatePGData::new,
 				(packet, ctx) -> {
 					ctx.get().setPacketHandled(true);
 					packet.handle(ctx);
