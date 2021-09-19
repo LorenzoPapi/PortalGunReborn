@@ -3,7 +3,7 @@ package com.github.lorenzopapi.pgr.handler;
 import com.github.lorenzopapi.pgr.portal.block.PortalBlock;
 import com.github.lorenzopapi.pgr.portal.block.PortalBlockTileEntity;
 import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerBlock;
-import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerContainer;
+import com.github.lorenzopapi.pgr.portal.customizer.PGCContainer;
 import com.github.lorenzopapi.pgr.portal.gun.PGItem;
 import com.github.lorenzopapi.pgr.portal.gun.PortalProjectileEntity;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -35,7 +35,7 @@ public class PGRRegistry {
 	public static final PGCustomizerBlock PG_CUSTOMIZER = new PGCustomizerBlock();
 	public static final EntityType<PortalProjectileEntity> PPE_TYPE = EntityType.Builder.<PortalProjectileEntity>create(PortalProjectileEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("portal_projectile");
 	public static final RegistryObject<TileEntityType<PortalBlockTileEntity>> PORTAL_TILE_ENTITY = TILE_ENTITIES.register("portal_tile_entity", () -> TileEntityType.Builder.create(PortalBlockTileEntity::new, PORTAL_BLOCK).build(null));
-	public static final RegistryObject<ContainerType<PGCustomizerContainer>> PG_CUSTOMIZER_CONTAINER = CONTAINERS.register("pg_customizer_container", () -> new ContainerType<>(PGCustomizerContainer::new));
+	public static final RegistryObject<ContainerType<PGCContainer>> PG_CUSTOMIZER_CONTAINER = CONTAINERS.register("pg_customizer_container", () -> new ContainerType<>(PGCContainer::new));
 
 	public static void register(IEventBus modBus) {
 		ITEMS.register(modBus);

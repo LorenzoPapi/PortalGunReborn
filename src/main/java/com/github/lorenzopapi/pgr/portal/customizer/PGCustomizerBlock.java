@@ -21,7 +21,7 @@ public class PGCustomizerBlock extends Block {
 
 	@Override
 	public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
-		return new SimpleNamedContainerProvider((id, inventory, player) -> new PGCustomizerContainer(id, inventory, IWorldPosCallable.of(worldIn, pos)), new TranslationTextComponent("pgr.container.customizer"));
+		return new SimpleNamedContainerProvider((id, inventory, player) -> new PGCContainer(id, inventory, IWorldPosCallable.of(worldIn, pos)), new TranslationTextComponent("pgr.container.customizer"));
 	}
 
 	@Override

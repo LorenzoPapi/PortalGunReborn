@@ -3,34 +3,27 @@ package com.github.lorenzopapi.pgr.portal.customizer;
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.world.World;
 
-import java.util.Optional;
-
-public class PGCustomizerContainer extends Container {
+public class PGCContainer extends Container {
 	private final IWorldPosCallable worldPosCallable;
 	public final IInventory input = new Inventory(1) {
 		public void markDirty() {
 			super.markDirty();
-			PGCustomizerContainer.this.onCraftMatrixChanged(this);
+			PGCContainer.this.onCraftMatrixChanged(this);
 		}
 	};
-	public PGCustomizerContainer(int id, PlayerInventory inventory) {
+	public PGCContainer(int id, PlayerInventory inventory) {
 		this(id, inventory, IWorldPosCallable.DUMMY);
 	}
 
-	public PGCustomizerContainer(int id, PlayerInventory playerInventory, IWorldPosCallable callable) {
+	public PGCContainer(int id, PlayerInventory playerInventory, IWorldPosCallable callable) {
 		super(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), id);
 		this.worldPosCallable = callable;
 		this.addSlot(new Slot(input, 0, 7, 62) {

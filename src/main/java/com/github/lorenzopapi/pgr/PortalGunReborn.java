@@ -1,7 +1,7 @@
 package com.github.lorenzopapi.pgr;
 
 import com.github.lorenzopapi.pgr.handler.*;
-import com.github.lorenzopapi.pgr.portal.customizer.PGCustomizerScreen;
+import com.github.lorenzopapi.pgr.portal.customizer.PGCScreen;
 import com.github.lorenzopapi.pgr.rendering.PGRRenderer;
 import com.github.lorenzopapi.pgr.util.PGRAssets;
 import com.github.lorenzopapi.pgr.util.Reference;
@@ -83,7 +83,7 @@ public class PortalGunReborn {
 
 	private void onClientSetup(FMLClientSetupEvent e) {
 		PGRConfig.KeyBinds.registerKeyBindings();
-		ScreenManager.registerFactory(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), PGCustomizerScreen::new);
+		ScreenManager.registerFactory(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), PGCScreen::new);
 		// TODO: figure out how to make renderer work with optifine, because holy lord it is broken right now
 		// optifine be like optigarbage
 		if (!ModList.get().isLoaded("optifine")) TileEntityRendererDispatcher.instance.setSpecialRendererInternal(PGRRegistry.PORTAL_TILE_ENTITY.get(), new PGRRenderer(TileEntityRendererDispatcher.instance));
