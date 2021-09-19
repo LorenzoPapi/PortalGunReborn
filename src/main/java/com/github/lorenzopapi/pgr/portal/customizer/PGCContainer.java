@@ -1,6 +1,8 @@
 package com.github.lorenzopapi.pgr.portal.customizer;
 
 import com.github.lorenzopapi.pgr.handler.PGRRegistry;
+import com.github.lorenzopapi.pgr.portal.structure.ChannelInfo;
+import com.github.lorenzopapi.pgr.util.Reference;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -9,10 +11,17 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IWorldPosCallable;
 
+/**
+ * THIS WHOLE CLASS WAS HIGHLY IF NOT ALMOST COMPLETELY COPIED FROM STONE CUTTER
+ **/
 public class PGCContainer extends Container {
 	private final IWorldPosCallable worldPosCallable;
+	public ChannelInfo currentInfo = new ChannelInfo();
+	public CompoundNBT currentTag = null;
+	public boolean updated = false;
 	public final IInventory input = new Inventory(1) {
 		public void markDirty() {
 			super.markDirty();
@@ -26,7 +35,7 @@ public class PGCContainer extends Container {
 	public PGCContainer(int id, PlayerInventory playerInventory, IWorldPosCallable callable) {
 		super(PGRRegistry.PG_CUSTOMIZER_CONTAINER.get(), id);
 		this.worldPosCallable = callable;
-		this.addSlot(new Slot(input, 0, 7, 62) {
+		this.addSlot(new Slot(input, 0, 7, 66) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
 				return stack.hasTag() && stack.getItem() == PGRRegistry.PORTAL_GUN.get();
@@ -44,6 +53,22 @@ public class PGCContainer extends Container {
 	}
 
 	@Override
+	public void onCraftMatrixChanged(IInventory inventoryIn) {
+		super.onCraftMatrixChanged(inventoryIn);
+		if (inventoryIn == input) {
+			ItemStack stack = inventoryIn.getStackInSlot(0);
+			this.updated = true;
+			if (stack.isEmpty()) {
+				currentInfo = new ChannelInfo();
+				currentTag = null;
+			} else {
+				currentTag = stack.getTag();
+				currentInfo = Reference.serverEH.lookupChannel(currentTag.getString("uuid"), currentTag.getString("channelName"));
+			}
+		}
+	}
+
+	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
 		return isWithinUsableDistance(worldPosCallable, playerIn, PGRRegistry.PG_CUSTOMIZER);
 	}
@@ -52,10 +77,6 @@ public class PGCContainer extends Container {
 	public ContainerType<?> getType() {
 		return PGRRegistry.PG_CUSTOMIZER_CONTAINER.get();
 	}
-
-	/**
-	* ALL THE NEXT METHODS WERE HIGHLY IF NOT COMPLETELY COPIED FROM STONE CUTTER
-	* */
 
 	@Override
 	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
