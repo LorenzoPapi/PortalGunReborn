@@ -19,17 +19,19 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-import static com.github.lorenzopapi.pgr.util.Reference.LOGGER;
 import static com.github.lorenzopapi.pgr.util.Reference.MOD_ID;
 
 @Mod(MOD_ID)
 public class PortalGunReborn {
 	public PortalGunReborn() {
-		LOGGER.info("Hello from PGR!");
+		Reference.LOGGER.info("Hello from PGR!");
 		// idk why but looks cool
 		//SharedConstants.developmentMode = true;
 		//SharedConstants.useDatafixers = false;
 		// NOTE: never try this again ever for any reasons
+		// yeah I was dumb in the past and still am ngl :kek:
+
+		// registering of server handler
 		Reference.serverEH = new PGRServerHandler();
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

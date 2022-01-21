@@ -181,7 +181,7 @@ public class PortalProjectileEntity extends Entity {
 
 	@Override
 	protected void setDead() {
-		Reference.LOGGER.info("DED");
+		Reference.LOGGER.info("Yeah looks pretty dead ngl.");
 		super.setDead();
 	}
 

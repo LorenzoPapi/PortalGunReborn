@@ -31,9 +31,16 @@ public class PGRSavedData extends WorldSavedData {
 	}
 
 	public void initialize(World world) {
-		if (this.initialized)
+		if (this.initialized) {
+			markDirty();
 			return;
+		}
 		this.initialized = true;
+		if (world.getDimensionKey() == World.OVERWORLD) {
+			addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
+			addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
+			addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
+		}
 		Reference.LOGGER.info("Channels: " + channelList);
 		Reference.LOGGER.info("Portals: " + portals.size());
 		for (PortalStructure portal : portals) {
@@ -52,11 +59,16 @@ public class PGRSavedData extends WorldSavedData {
 				indicator.setPortalBPlaced(true);
 			}
 		}
+		markDirty();
 	}
 
 	//Adds channel and maps it to uuid
 	public void addChannel(String uuid, ChannelInfo info) {
 		ArrayList<ChannelInfo> channels = this.channelList.computeIfAbsent(uuid, k -> new ArrayList<>());
+		for (ChannelInfo c : channels) {
+			if (c.channelName.equals(info.channelName))
+				return;
+		}
 		if (!channels.contains(info))
 			channels.add(info);
 	}

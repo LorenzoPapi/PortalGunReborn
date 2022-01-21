@@ -63,6 +63,8 @@ public class PortalStructure {
 			tag.putString("upDirection", upDirection.toString());
 			tag.putInt("direction", direction.getHorizontalIndex());
 			tag.putInt("posSize", positions.size());
+			//TODO: why isn't it an array of positions.....?
+			//Like what the actual fuck old me what was on your stupid mind?????
 			for (int i = 0; i < positions.size(); i++) {
 				BlockPos pos = positions.get(i).toImmutable();
 				tag.put("pos_" + i, newDoubleNBTList(pos.getX(), pos.getY(), pos.getZ()));
@@ -97,6 +99,8 @@ public class PortalStructure {
 		//TODO: ok so world will ALWAYS be a server world, and I'm calling a client class
 		//It'll probably crash a dedicated server
 		//But hey at least the client works!
+
+		//Ok younger me what the fuck was wrong with you (like I know but still WTH)
 		Minecraft.getInstance().getSoundHandler().play(new PortalAmbienceSound(this));
 	}
 

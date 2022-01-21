@@ -49,17 +49,8 @@ public class PGRUtils {
 
 	public static PGRSavedData getSaveDataForWorld(ServerWorld world) {
 		String dataId = "PGRPortalData_" + world.getDimensionKey().getLocation().getPath();
-		PGRSavedData data = world.getSavedData().getOrCreate(() -> {
-			PGRSavedData ret = new PGRSavedData(dataId);
-			if (world.getDimensionKey() == World.OVERWORLD) {
-				ret.addChannel("Global", new ChannelInfo("Global", "Chell").setColor(361215, 16756742));
-				ret.addChannel("Global", new ChannelInfo("Global", "Atlas").setColor(5482192, 4064209));
-				ret.addChannel("Global", new ChannelInfo("Global", "P-body").setColor(16373344, 8394260));
-			}
-			return ret;
-		}, dataId);
+		PGRSavedData data = world.getSavedData().getOrCreate(() -> new PGRSavedData(dataId), dataId);
 		data.initialize(world);
-		data.markDirty();
 		Reference.serverEH.portalInfoByDimension.put(world.getDimensionKey(), data);
 		return data;
 	}
@@ -112,7 +103,6 @@ public class PGRUtils {
 		return null;
 	}
 
-	@SuppressWarnings("ForLoopReplaceableByWhile")
 	public static List<PortalStructure> findPortalsInAABB(World world, AxisAlignedBB box) {
 		List<PortalStructure> structures = new ArrayList<>();
 		List<PortalStructure> portals = Reference.serverEH.getPGRDataForWorld(world).portals;
@@ -133,6 +123,15 @@ public class PGRUtils {
 	public static PortalStructure findPortalOfSameType(World world, PortalStructure toCheck) {
 		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
 			if (struct.isSameStruct(toCheck)) {
+				return struct;
+			}
+		}
+		return null;
+	}
+
+	public static PortalStructure findPortalsByInfo(World world, ChannelInfo toCheck) {
+		for (PortalStructure struct : Reference.serverEH.getPGRDataForWorld(world).portals) {
+			if (struct.info.equals(toCheck)) {
 				return struct;
 			}
 		}
